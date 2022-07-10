@@ -1,0 +1,6 @@
+{{ session("apiKey") ?? "false" }}' 
+'{{ session("key_SHA256_checksum") ?? "false" }}' 
+v-bind:user="{{ json_encode(request()->user()) }}" 
+@if (isset($questionnaire))
+<questionnaire-component v-bind:questionnaire = "'{{$questionnaire}}'" v-bind:email="'{{request()->user()->email}}'"></questionnaire-component>
+@endif

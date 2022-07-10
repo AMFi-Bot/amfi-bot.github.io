@@ -1,0 +1,44 @@
+$trans_03: all 0.3s ease;
+
+$green_button_normal: #2c9f4b;
+$green_button_hover: #237e3b;
+$green_button_pressed: #1b612e;
+
+$darkblue_button_normal: #204ca1;
+$darkblue_button_hover: #1b3c80;
+$darkblue_button_pressed: #142e63;
+
+$dark_1: #34383c;
+$dark_2: #212426;
+$dark_3: #17181b;
+
+$hover_1: rgb(82, 82, 82);
+$hover_2: rgb(48, 48, 48);
+
+$font_color_1: #dcddde;
+$font_color_2: #b9bbbe;
+
+@mixin hover($color) {
+    transition: $trans_03;
+
+    &:hover {
+        transition: $trans_03;
+        background-color: $color;
+    }
+}
+
+%hover_1 {
+    @include hover($hover_1);
+}
+.hover_1 {
+    @extend %hover_1;
+}
+
+%hover_2 {
+    @include hover($hover_2);
+}
+.hover_2 {
+    @extend %hover_2;
+}
+
+

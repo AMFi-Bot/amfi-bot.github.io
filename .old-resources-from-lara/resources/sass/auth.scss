@@ -1,0 +1,146 @@
+.register,
+.login {
+    display: flex;
+    flex-direction: column;
+    background: #2a2c31;
+    padding: 32px;
+    width: 480px;
+    border-radius: 5px;
+
+    .reg-title,
+    .log-title {
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 30px;
+        text-align: center;
+        color: #dcddde;
+        margin-bottom: 10px;
+    }
+
+    .register-form,
+    .login-form {
+        display: flex;
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .form-body-wrapper {
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+
+            .form-input {
+                margin-top: 20px;
+                width: 100%;
+                .form-name {
+                    color: #b9bbbe;
+                }
+                .input-wrapper {
+                    background: rgba(0, 0, 0, 0.1);
+                    border: 1px solid rgba(0, 0, 0, 0.3);
+                    border-radius: 5px;
+                    width: 100%;
+                    height: 40px;
+                    margin-top: 8px;
+                    input {
+                        background: rgba(0, 0, 0, 0);
+                        width: 100%;
+                        height: 100%;
+                        padding: 10px;
+                        font-size: 16px;
+                        color: #dcddde;
+                    }
+                }
+            }
+            .submit-wrapper {
+                margin-top: 20px;
+                border-radius: 5px;
+                width: 100%;
+                height: 40px;
+
+                .submit-button {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                    color: #dcddde;
+
+                    transition: background-color 0.17s ease, color 0.17s ease;
+                    background-color: #5865f2;
+
+                    &:hover {
+                        background-color: #4651c3;
+                    }
+                    &:active {
+                        background-color: #3d45a4;
+                    }
+                }
+            }
+            .alr-registered,
+            .not-registered {
+                margin-top: 8px;
+            }
+        }
+    }
+
+    .register_extras,
+    .login_extras {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+
+        .relem,
+        .lelem {
+            display: flex;
+            width: 100%;
+            height: 40px;
+            justify-content: center;
+            margin-top: 10px;
+
+            .wrapper {
+                display: flex;
+                flex-direction: row;
+                background-color: #26282c;
+                border-radius: 5px;
+                border: 1px solid rgba(0, 0, 0, 0.3);
+                width: 200px;
+
+                &,
+                * {
+                    cursor: pointer;
+                }
+
+                .srvlogo,
+                .srvname {
+                    padding: 5px 5px;
+                }
+                img {
+                    margin-left: 5px;
+                    width: 25px;
+                }
+                .srvname {
+                    align-self: center;
+                    padding-left: 15px;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+.login_error,
+.register_error {
+    width: 480px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 0, 0, 0.15);
+    min-height: 50px;
+    border: 1px solid rgba(255, 0, 0, 0.6);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    color: #dbdbdb;
+    padding: 10px;
+}
