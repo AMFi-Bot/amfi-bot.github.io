@@ -1,3 +1,7 @@
+<script setup>
+import axios from "axios";
+</script>
+
 <template>
   <div class="register">
     <h2 class="reg-title">Регистрация</h2>
@@ -11,32 +15,17 @@
       <div class="relem with-tg" id="telegram_load">
         <div>Loading telegram authenticating...</div>
       </div>
-      <div class="relem with-google">
-        <a class="wrapper" href="/auth/services/google/redirect">
-          <img
-            src="/img/btn_google_dark_normal_ios.svg"
-            alt=""
-            style="width: 35px; margin-left: 3px"
-          />
-          <label class="srvname tg-srvname" style="padding-left: 9px"
-            >Sign up with Google</label
-          >
-        </a>
-      </div>
     </div>
 
-    <form class="register-form" method="POST" action="/api/auth/register">
+    <form class="register-form" @submit.prevent="submit">
       <div class="form-body-wrapper">
         <div class="form-input">
           <label class="form-name">Username</label>
           <div class="input-wrapper">
             <input
               type="text"
-              name="name"
-              aria-label="Username"
-              maxlength="255"
-              value=""
-              autocomplete="off"
+              v-model="form.name"
+              placeholder="Print username here"
             />
           </div>
         </div>
@@ -45,11 +34,8 @@
           <div class="input-wrapper">
             <input
               type="email"
-              name="email"
-              aria-label="E-mail"
-              maxlength="255"
-              value=""
-              autocomplete="on"
+              v-model="form.email"
+              placeholder="Print email here"
             />
           </div>
         </div>
@@ -58,12 +44,8 @@
           <div class="input-wrapper">
             <input
               type="password"
-              name="password"
-              aria-label="Password"
-              minlength="8"
-              maxlength="999"
-              value=""
-              autocomplete="new-password"
+              placeholder="Print password here"
+              v-model="form.password"
             />
           </div>
         </div>
@@ -72,11 +54,8 @@
           <div class="input-wrapper">
             <input
               type="password"
-              name="password_confirmation"
-              aria-label="Password"
-              minlength="8"
-              maxlength="999"
-              value=""
+              placeholder="Print your password password again"
+              v-model="form.password_confirmation"
             />
           </div>
         </div>
@@ -95,6 +74,10 @@
 export default {
   mounted() {
     console.log("register component mounted");
+
+    axios.get("/sanctum/csrf-cookie");
+
+    // load telegram script
 
     let telegram_widget_script = document.createElement("script");
     telegram_widget_script.setAttribute(
@@ -116,8 +99,38 @@ export default {
 
     load_tg_widget_elem.replaceChildren(telegram_widget_script);
   },
+
+  data() {
+    return {
+      form: {
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+      },
+    };
+  },
+
   methods: {
-    //register() {}, @click="register"
+    async submit() {
+      if (this.form.password !== this.form.password_confirmation) return;
+
+      axios
+        .post("/auth/register", this.form, {
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+        })
+        .then((response) => {
+          console.log(this.form);
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(this.form);
+          console.log(error);
+        });
+    },
   },
 };
 </script>

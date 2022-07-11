@@ -1,3 +1,7 @@
+<script setup>
+import axios from "axios";
+</script>
+
 <template>
   <div class="login">
     <h2 class="log-title">Вход</h2>
@@ -14,34 +18,17 @@
           <label class="srvname tg-srvname">Log in with Telegram</label>
         </a>
       </div>
-
-      <div class="lelem with-google">
-        <a class="wrapper" href="/auth/services/google/redirect">
-          <img
-            src="/img/btn_google_dark_normal_ios.svg"
-            alt=""
-            style="width: 35px; margin-left: 3px"
-          />
-          <label class="srvname tg-srvname" style="padding-left: 9px"
-            >Log in with Google</label
-          >
-        </a>
-      </div>
     </div>
 
-    <form class="login-form" method="POST">
-      @csrf
-
+    <form class="login-form" @submit.prevent="submit">
       <div class="form-body-wrapper">
         <div class="form-input">
           <label class="form-name">E-mail</label>
           <div class="input-wrapper">
             <input
               type="email"
-              name="email"
-              aria-label="E-mail"
-              maxlength="255"
-              value=""
+              placeholder="Enter your email here"
+              v-model="form.email"
             />
           </div>
         </div>
@@ -51,11 +38,8 @@
           <div class="input-wrapper">
             <input
               type="password"
-              name="password"
-              aria-label="Password"
-              maxlength="999"
-              value=""
-              autocomplete="current-password"
+              placeholder="Enter your password here"
+              v-model="form.password"
             />
           </div>
         </div>
@@ -70,3 +54,40 @@
     </form>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      form: {
+        email: "",
+        password: "",
+      },
+    };
+  },
+
+  mounted() {
+    axios.get("/sanctum/csrf-cookie");
+  },
+
+  methods: {
+    async submit() {
+      axios
+        .post("/auth/login", this.form, {
+          headers: {
+            "Content-type": "application/json",
+            Accept: "application/json",
+          },
+        })
+        .then((response) => {
+          console.log(this.form);
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(this.form);
+          console.log(error);
+        });
+    },
+  },
+};
+</script>

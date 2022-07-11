@@ -1,21 +1,10 @@
-import $ from "jquery";
-window.$ = $;
-
-import _ from "lodash";
-window._ = _;
-
-import tippy from "tippy.js";
-window.tippy = tippy;
-
-import Cookies from "js-cookie";
-window.cookies = Cookies;
-
-import axios from "axios";
-window.axios = axios;
-
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+
+import axios from "axios";
+axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.withCredentials = true;
 
 // import css files
 import "bootstrap/dist/css/bootstrap.css";
@@ -30,8 +19,6 @@ const messages = {
   en: enLocale,
   ru: ruLocale,
 };
-
-axios.get("/sanctum/csrf-cookie");
 
 // Создание экземпляра VueI18n с настройками
 const i18n = new createI18n({
