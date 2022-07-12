@@ -6,7 +6,7 @@ const errorsStore = useErrorsStore();
 <template>
   <div id="errors">
     <div class="error" v-for="error in errorsStore.errors" :key="error">
-      {{ error.text }} ({{ error.count }})
+      {{ error.text }} {{ error.count > 1 ? `(${error.count})` : "" }}
 
       <i class="removeError" @click="errorsStore.removeError(error.id)"></i>
     </div>
