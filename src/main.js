@@ -10,6 +10,14 @@ axios.defaults.withCredentials = true;
 import "bootstrap/dist/css/bootstrap.css";
 
 import "./assets/scss/base.scss";
+import "./assets/scss/menu.scss";
+import "./assets/scss/footer.scss";
+import "./assets/scss/dashboard.scss";
+import "./assets/scss/guild.scss";
+import "./assets/scss/root.scss";
+import "./assets/scss/auth.scss";
+import "./assets/scss/discord_setup.scss";
+import "./assets/scss/error.scss";
 
 // localization
 import { createI18n } from "vue-i18n";

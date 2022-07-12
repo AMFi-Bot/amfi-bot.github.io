@@ -3,15 +3,6 @@
 @import "nullstyle";
 @import "library";
 
-@import "menu";
-@import "footer";
-@import "dashboard";
-@import "guild";
-@import "root";
-@import "auth";
-@import "discord_setup";
-@import "error";
-
 * {
   scrollbar-color: rgba(0, 0, 0, 0.5) rgba(66, 64, 64, 0.75);
   /* «цвет ползунка» «цвет полосы скроллбара» */
