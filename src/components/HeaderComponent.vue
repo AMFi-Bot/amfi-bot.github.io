@@ -1,7 +1,7 @@
 <template>
   <div id="menu">
     <div id="menu_panel">
-      <RouterLink id="menu_name" to="/">Cat-bot</RouterLink>
+      <RouterLink id="menu_name" to="/">AFMi-Bot</RouterLink>
       <div class="menu_ops">
         <a href="/moderation" class="_mn_ops_elem __mn__moderation">
           <b>{{ $t("Moderation") }}</b>
