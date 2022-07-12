@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { v4 } from "uuid";
 
 export const useErrorsStore = defineStore("errors", {
-  state: () => {
+  state() {
     return {
       errors: [],
     };
