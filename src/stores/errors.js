@@ -12,15 +12,15 @@ export const useErrorsStore = defineStore("errors", {
     addError(text, cooldown = 10) {
       let id = v4();
 
-      for (const error of this.errors) {
-        if (error.text == text) {
-          error.id = id;
-          error.count++;
+      let last_error = this.errors[this.errors.length - 1];
 
-          setTimeout(() => this.removeError(id), cooldown * 1000);
+      if (last_error && last_error.text == text) {
+        last_error.id = id;
+        last_error.count++;
 
-          return;
-        }
+        setTimeout(() => this.removeError(id), cooldown * 1000);
+
+        return;
       }
 
       this.errors.push({ id, text, count: 1 });
