@@ -27,8 +27,12 @@ const i18n = new createI18n({
   messages, // set locale messages
 });
 
+import { createPinia } from "pinia";
+const pinia = createPinia();
+
 const app = createApp(App);
 
+app.use(pinia);
 app.use(i18n);
 app.use(router);
 
