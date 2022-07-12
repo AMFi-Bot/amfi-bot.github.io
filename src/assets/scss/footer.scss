@@ -1,3 +1,5 @@
+@import "library";
+
 #footer {
   background-color: rgb(33, 36, 38);
   width: 100%;
@@ -60,7 +62,7 @@
           position: relative;
           padding: 0;
 
-          &:hover{
+          &:hover {
             background-color: $dark_3;
           }
 
@@ -81,11 +83,11 @@
               cursor: pointer;
             }
 
-            .title{
+            .title {
               font-size: 14px;
-                font-family: "Open Sans";
-                font-weight: 400;
-                color: $font_color_1;
+              font-family: "Open Sans";
+              font-weight: 400;
+              color: $font_color_1;
             }
           }
 
@@ -96,7 +98,7 @@
             border-radius: 5px;
 
             overflow-y: hidden;
-            
+
             span {
               display: flex;
               padding: 5px 12px;
