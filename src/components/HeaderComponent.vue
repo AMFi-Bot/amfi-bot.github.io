@@ -1,3 +1,7 @@
+<script setup>
+import _ from "lodash";
+</script>
+
 <template>
   <div id="menu">
     <div id="menu_panel">
@@ -25,7 +29,14 @@
     </div>
 
     <div id="user_ops" class="user_ops">
-      <div class="user" v-if="user" @click="toggleCart">
+      <div class="user_loading" v-if="!user || userStore.loading">
+        Loading...
+      </div>
+      <div
+        class="user"
+        v-else-if="user && !_.isEqual(user, noUser)"
+        @click="toggleCart"
+      >
         <img class="_usr_avatar" :src="user.avatar" v-if="user.avatar" />
         <div class="_usr_name">
           {{ user.name }}
@@ -52,8 +63,12 @@
         </div>
       </div>
       <div class="mn_to_auth" v-else>
-        <RouterLink to="/login">{{ $t("Log In") }}</RouterLink>
-        <RouterLink to="/register">{{ $t("Sign Up") }}</RouterLink>
+        <RouterLink to="/login" class="login_link">{{
+          $t("Log In")
+        }}</RouterLink>
+        <RouterLink to="/register" class="register_link darkblue_button">{{
+          $t("Sign Up")
+        }}</RouterLink>
       </div>
       <ul id="cart" v-show="cart_visible">
         <a href="/dashboard/" class="dashboard_link">
@@ -103,13 +118,9 @@
             </li>
           </ul>
         </div>
-        <a
-          class="mn_logout_link"
-          href="/logout"
-          style="color: rgb(167, 42, 57)"
-        >
+        <div @click="userStore.logout()">
           {{ $t("Log out") }}
-        </a>
+        </div>
       </ul>
     </div>
   </div>
@@ -117,14 +128,25 @@
 
 <script>
 export default {
-  mounted() {
+  async mounted() {
     console.log("Menu mounted");
+
+    const { useUserStore, noUser } = await import("../stores/user");
+
+    const userStore = useUserStore();
+
+    this.userStore = userStore;
+    this.noUser = noUser;
+
+    this.user = userStore.user;
   },
-  props: ["user"],
   data() {
     return {
       cart_visible: false,
       languages_visible: false,
+      userStore: null,
+      noUser: null,
+      user: null,
     };
   },
   methods: {

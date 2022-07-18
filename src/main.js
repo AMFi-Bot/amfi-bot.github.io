@@ -3,8 +3,12 @@ import App from "./App.vue";
 import router from "./router";
 
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.withCredentials = true;
+axios.defaults.headers = {
+  "Content-type": "application/json",
+  Accept: "application/json",
+};
 
 // import css files
 import "bootstrap/dist/css/bootstrap.css";

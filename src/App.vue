@@ -17,3 +17,19 @@ import ErrorsComponent from "./components/ErrorsComponent.vue";
 
   <ErrorsComponent></ErrorsComponent>
 </template>
+
+<script>
+import _ from "lodash";
+
+export default {
+  async mounted() {
+    let { default: js_cookie } = await import("js-cookie");
+    let { useUserStore, noUser } = await import("./stores/user");
+
+    if (js_cookie.get("XSRF-TOKEN")) {
+      const userStore = useUserStore();
+      userStore.loadUser();
+    }
+  },
+};
+</script>

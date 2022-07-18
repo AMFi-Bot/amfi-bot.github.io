@@ -1,22 +1,24 @@
 <script setup>
 import axios from "axios";
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 </script>
 
 <template>
   <div class="login">
     <h2 class="log-title">Вход</h2>
-    <div class="login_extras">
-      <div class="lelem with-discord">
-        <a class="wrapper" href="/auth/services/discord/redirect">
+    <div class="register_extras">
+      <div class="relem with-discord">
+        <a class="wrapper" @click="userStore.login_discord">
           <img src="/img/dslogo_white.svg" alt="" width="25px" />
-          <label class="srvname discord-srvname">Log in with Discord</label>
+          <label class="srvname discord-srvname">Sign up with Discord</label>
         </a>
       </div>
-      <div class="lelem with-tg">
-        <a class="wrapper" href="#" onclick="return TWidgetLogin.auth();">
-          <img src="/img/tg_logo.svg" alt="" />
-          <label class="srvname tg-srvname">Log in with Telegram</label>
-        </a>
+      <div class="relem with-tg" id="telegram_load">
+        <div>Loading telegram authenticating...</div>
       </div>
     </div>
 
@@ -56,7 +58,12 @@ import axios from "axios";
 </template>
 
 <script>
+import { useUserStore } from "../stores/user";
+
 export default {
+  mounted() {
+    this.userStore.load_telegram_widget_script(document);
+  },
   data() {
     return {
       form: {
@@ -66,27 +73,9 @@ export default {
     };
   },
 
-  mounted() {
-    axios.get("/sanctum/csrf-cookie");
-  },
-
   methods: {
     async submit() {
-      axios
-        .post("/auth/login", this.form, {
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-        })
-        .then((response) => {
-          console.log(this.form);
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(this.form);
-          console.log(error);
-        });
+      console.log(await this.userStore.login(this.form));
     },
   },
 };

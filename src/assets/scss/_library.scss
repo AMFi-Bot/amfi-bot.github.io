@@ -19,26 +19,39 @@ $font_color_1: #dcddde;
 $font_color_2: #b9bbbe;
 
 @mixin hover($color) {
-    transition: $trans_03;
+  transition: $trans_03;
 
-    &:hover {
-        transition: $trans_03;
-        background-color: $color;
-    }
+  &:hover {
+    transition: $trans_03;
+    background-color: $color;
+  }
 }
 
 %hover_1 {
-    @include hover($hover_1);
+  @include hover($hover_1);
 }
 .hover_1 {
-    @extend %hover_1;
+  @extend %hover_1;
 }
 
 %hover_2 {
-    @include hover($hover_2);
+  @include hover($hover_2);
 }
 .hover_2 {
-    @extend %hover_2;
+  @extend %hover_2;
 }
 
+@mixin button($normal_background, $hover_background, $press_background) {
+  background-color: $normal_background;
+  transition: $trans_03;
 
+  &:hover {
+    transition: $trans_03;
+    background-color: $hover_background;
+  }
+
+  &:active {
+    transition: $trans_03;
+    background-color: $press_background;
+  }
+}

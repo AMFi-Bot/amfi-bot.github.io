@@ -9,7 +9,7 @@ export const useErrorsStore = defineStore("errors", {
     };
   },
   actions: {
-    addError(text, cooldown = 10) {
+    addError(text, cooldown = 20) {
       let id = v4();
 
       let last_error = this.errors[this.errors.length - 1];
@@ -29,6 +29,46 @@ export const useErrorsStore = defineStore("errors", {
     },
     removeError(id) {
       this.errors = this.errors.filter((f) => f.id !== id);
+    },
+
+    addAPIError(axios_error, message) {
+      var error_message = `Oops, something went wrong: ${message || ""}`;
+
+      var br_symbol = "\n";
+
+      if (axios_error) {
+        if (axios_error.message)
+          error_message += br_symbol + axios_error.message;
+
+        if (axios_error.response) {
+          if (axios_error.response.status && axios_error.response.statusText)
+            error_message +=
+              br_symbol +
+              axios_error.response.status +
+              " " +
+              axios_error.response.statusText;
+
+          if (axios_error.response.data) {
+            if (axios_error.response.data.message)
+              error_message += br_symbol + axios_error.response.data.message;
+
+            if (axios_error.response.data.error) {
+              if (axios_error.response.data.error.message) {
+                error_message +=
+                  br_symbol + axios_error.response.data.error.message;
+              }
+            }
+            if (axios_error.response.data.data) {
+              if (axios_error.response.data.data.message) {
+                error_message +=
+                  br_symbol + axios_error.response.data.data.message;
+              }
+            }
+          }
+        }
+      }
+
+      this.addError(error_message);
     },
   },
 });

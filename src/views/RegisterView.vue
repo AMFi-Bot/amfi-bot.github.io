@@ -1,5 +1,10 @@
 <script setup>
 import axios from "axios";
+
+import { useUserStore } from "../stores/user";
+const userStore = useUserStore();
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 </script>
 
 <template>
@@ -71,33 +76,11 @@ import axios from "axios";
 </template>
 
 <script>
+import { useUserStore } from "../stores/user";
+
 export default {
   mounted() {
-    console.log("register component mounted");
-
-    axios.get("/sanctum/csrf-cookie");
-
-    // load telegram script
-
-    let telegram_widget_script = document.createElement("script");
-    telegram_widget_script.setAttribute(
-      "src",
-      "https://telegram.org/js/telegram-widget.js?19"
-    );
-    telegram_widget_script.setAttribute(
-      "data-telegram-login",
-      "ThisIsTheCatBot"
-    );
-    telegram_widget_script.setAttribute("data-size", "large");
-    telegram_widget_script.setAttribute(
-      "data-auth-url",
-      "http://my-app-dev.com/api/auth/ext_services/telegram/callback"
-    );
-    telegram_widget_script.setAttribute("data-request-access", "write");
-    telegram_widget_script.setAttribute("data-userpic", "false");
-    let load_tg_widget_elem = document.getElementById("telegram_load");
-
-    load_tg_widget_elem.replaceChildren(telegram_widget_script);
+    this.userStore.load_telegram_widget_script(document);
   },
 
   data() {
@@ -115,21 +98,7 @@ export default {
     async submit() {
       if (this.form.password !== this.form.password_confirmation) return;
 
-      axios
-        .post("/auth/register", this.form, {
-          headers: {
-            "Content-type": "application/json",
-            Accept: "application/json",
-          },
-        })
-        .then((response) => {
-          console.log(this.form);
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(this.form);
-          console.log(error);
-        });
+      console.log(await this.userStore.register(this.form));
     },
   },
 };
