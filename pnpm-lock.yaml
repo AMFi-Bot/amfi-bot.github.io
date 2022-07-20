@@ -7,7 +7,6 @@ specifiers:
   axios: ^0.27.2
   js-cookie: ^3.0.1
   lodash: ^4.17.21
-  nprogress: ^0.2.0
   pinia: ^2.0.14
   query-parse: ^2.0.0
   sass: ^1.52.3
@@ -22,7 +21,6 @@ dependencies:
   axios: 0.27.2
   js-cookie: 3.0.1
   lodash: 4.17.21
-  nprogress: 0.2.0
   pinia: 2.0.16_vue@3.2.37
   query-parse: 2.0.0
   tippy.js: 6.3.7
@@ -609,10 +607,6 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
     dev: true
-
-  /nprogress/0.2.0:
-    resolution: {integrity: sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==}
-    dev: false
 
   /path-parse/1.0.7:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
