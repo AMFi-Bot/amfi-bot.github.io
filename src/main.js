@@ -1,27 +1,13 @@
+import { nProgress } from "./nProgress";
+
+nProgress.configure({ showSpinner: false });
+nProgress.inc();
+
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
-import axios from "axios";
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.withCredentials = true;
-axios.defaults.headers = {
-  "Content-type": "application/json",
-  Accept: "application/json",
-};
-
-// import css files
-import "bootstrap/dist/css/bootstrap.css";
-
-import "./assets/scss/base.scss";
-import "./assets/scss/menu.scss";
-import "./assets/scss/footer.scss";
-import "./assets/scss/dashboard.scss";
-import "./assets/scss/guild.scss";
-import "./assets/scss/root.scss";
-import "./assets/scss/auth.scss";
-import "./assets/scss/discord_setup.scss";
-import "./assets/scss/error.scss";
+import axios from "./axios";
 
 // localization
 import { createI18n } from "vue-i18n";
@@ -50,4 +36,18 @@ app.use(router);
 
 app.mount("#app");
 
-import "bootstrap/dist/js/bootstrap.js";
+nProgress.inc();
+
+// import css files
+
+import "./assets/scss/base.scss";
+import "./assets/scss/menu.scss";
+import "./assets/scss/footer.scss";
+import "./assets/scss/dashboard.scss";
+import "./assets/scss/guild.scss";
+import "./assets/scss/root.scss";
+import "./assets/scss/auth.scss";
+import "./assets/scss/discord_setup.scss";
+import "./assets/scss/error.scss";
+
+nProgress.inc();
