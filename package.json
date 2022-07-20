@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 4173",
+    "preview": "vite preview --port 4173"
   },
   "dependencies": {
     "axios": "^0.27.2",
@@ -22,7 +22,7 @@
   "devDependencies": {
     "@types/js-cookie": "^3.0.2",
     "@types/lodash": "^4.14.182",
-    "@vitejs/plugin-vue": "^2.3.3",
+    "@vitejs/plugin-vue": "^3.0.1",
     "sass": "^1.52.3",
     "vite": "^3.0.2"
   }
