@@ -1,6 +1,6 @@
 // Gets nprogress package
 
-const nProgress = NProgress;
+const nProgress = window.NProgress;
 
 export default nProgress;
 

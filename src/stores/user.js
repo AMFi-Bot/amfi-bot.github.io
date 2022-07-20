@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { useErrorsStore } from "../stores/errors";
 const errorsStore = useErrorsStore();
 
-import { default as axios } from "../api/api";
+import axios from "../axios";
 import _ from "lodash";
 
 import regenerateSession from "../api/regenerateSession";
@@ -11,6 +11,9 @@ import regenerateSession from "../api/regenerateSession";
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 import router from "../router/index";
+import js_cookie from "js-cookie";
+
+import nProgress from "../nProgress";
 
 export const noUser = {
   name: "",
@@ -18,6 +21,10 @@ export const noUser = {
   avatar: "",
   privilege: 0,
   questionnaire: "",
+  telegram_id: "",
+  discord_id: "",
+  discord_token: "",
+  discordd_refresh_token: "",
   logged: false,
   loading: false,
 };
@@ -28,18 +35,19 @@ export const useUserStore = defineStore("user", {
   },
   actions: {
     changeUserProperty(user) {
-      const cUser = { ..._.cloneDeep(user) };
+      const cUser = _.cloneDeep(user);
 
       this.$state = cUser;
-      return cUser;
+      return this.$state;
     },
 
     nullUser() {
+      nProgress.done();
       return this.changeUserProperty(noUser);
     },
 
     userAuthenticated(user) {
-      const cUser = this.changeUserProperty(user);
+      var cUser = this.changeUserProperty(user);
 
       cUser.loading = false;
       cUser.logged = this.user_logged;
@@ -48,8 +56,6 @@ export const useUserStore = defineStore("user", {
     },
 
     throwAuthError(error) {
-      console.error(error);
-
       const errorsStore = useErrorsStore();
 
       let err_message = `Oops somtehing went wrong: ${error.message}`;
@@ -64,7 +70,14 @@ export const useUserStore = defineStore("user", {
 
       errorsStore.addError(err_message);
 
+      nProgress.done();
+
       this.nullUser();
+    },
+
+    async postLogin() {
+      nProgress.done();
+      router.push({ name: "dashboard" });
     },
 
     /**
@@ -75,13 +88,18 @@ export const useUserStore = defineStore("user", {
       try {
         this.loading = true;
 
+        nProgress.inc();
+
         await regenerateSession();
+
+        nProgress.inc();
 
         let response = await axios.post("/auth/login", form);
 
         let user = response.data.data.user;
 
-        return this.userAuthenticated(user);
+        this.userAuthenticated(user);
+        return this.postLogin();
       } catch (error) {
         this.throwAuthError(error);
 
@@ -97,13 +115,18 @@ export const useUserStore = defineStore("user", {
       try {
         this.loading = true;
 
+        nProgress.inc();
+
         await regenerateSession();
+
+        nProgress.inc();
 
         let response = await axios.post("/auth/register", form);
 
         let user = response.data.data.user;
 
-        return this.userAuthenticated(user);
+        this.userAuthenticated(user);
+        return this.postLogin();
       } catch (error) {
         this.throwAuthError(error);
 
@@ -118,7 +141,30 @@ export const useUserStore = defineStore("user", {
       router.push("/");
     },
 
+    checkUserCokkieExists() {
+      return js_cookie.get("XSRF-TOKEN") ? true : false;
+    },
+
     async loadUser() {
+      if (!this.checkUserCokkieExists()) return false;
+
+      if (this.loading) {
+        if (this.logged) {
+          return this.user;
+        } else {
+          await new Promise((resolve, reject) => {
+            const interval = setInterval(async () => {
+              if (!this.loading) {
+                clearInterval(interval);
+                resolve();
+              }
+            }, 100);
+          });
+
+          return this.user;
+        }
+      }
+
       this.loading = true;
 
       try {
@@ -136,18 +182,23 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    login_discord() {
-      return this.login_popup(
-        `${backend_url}/auth/ext_services/discord/redirect`
-      );
-    },
+    async login_discord() {
+      const popup = window.open("/loading", "", "width=500,height=900");
 
-    async login_popup(url) {
+      nProgress.inc();
+
       await regenerateSession();
 
-      const popup = window.open(url, "", "width=500,height=900");
+      nProgress.inc();
 
-      console.log("popup opened");
+      const response = await axios.get(
+        `${backend_url}/auth/ext_services/discord/redirect`,
+        { maxRedirects: 0 }
+      );
+
+      nProgress.done();
+
+      popup.location = response.data.redirectTo;
 
       await new Promise((resolve, reject) => {
         const interval = setInterval(async () => {
@@ -161,14 +212,32 @@ export const useUserStore = defineStore("user", {
       console.log("popup closed");
 
       if (await this.loadUser()) {
-        router.push({ name: "dashboard" });
+        this.postLogin();
       } else {
         errorsStore.addError("Login failed.");
       }
     },
 
+    async discord_callback(query_string) {
+      this.loading = true;
+
+      nProgress.inc();
+
+      await regenerateSession();
+
+      nProgress.inc();
+
+      await axios.get(`/auth/ext_services/discord/callback?${query_string}`);
+
+      nProgress.done();
+
+      window.close();
+    },
+
     async login_telegram(query_string) {
       this.loading = true;
+
+      nProgress.inc();
 
       await regenerateSession();
 
@@ -177,14 +246,17 @@ export const useUserStore = defineStore("user", {
           `/auth/ext_services/telegram/callback?${query_string}`
         );
 
+        nProgress.inc();
+
         if (response.status !== 200) throw response;
 
         const user = response.data.data.user;
 
-        return this.userAuthenticated(user);
-      } catch {
+        this.userAuthenticated(user);
+        return this.postLogin();
+      } catch (error) {
         errorsStore.addError(
-          `Something went wrong: ${response}. ${response.data}`
+          `Something went wrong: ${error.message}. ${error.response.data}`
         );
 
         this.nullUser();
@@ -227,12 +299,12 @@ export const useUserStore = defineStore("user", {
 
   getters: {
     user() {
-      return this.$state;
+      return this.logged ? this.$state : false;
     },
     user_logged() {
-      this.logged = !_.isEqual(this.$state, noUser);
+      // this.logged = !_.isEqual(this.$state, noUser);
 
-      return this.logged;
+      return !_.isEqual(this.$state, noUser);
     },
   },
 });

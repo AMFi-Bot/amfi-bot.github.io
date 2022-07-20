@@ -6,14 +6,17 @@ import ErrorsComponent from "./components/ErrorsComponent.vue";
 </script>
 
 <template>
-  <HeaderComponent></HeaderComponent>
+  <HeaderComponent
+    v-if="!popup_routers[$router.currentRoute.value.name]"
+  ></HeaderComponent>
 
-  Hello World
   <main>
     <RouterView />
   </main>
 
-  <FooterComponent></FooterComponent>
+  <FooterComponent
+    v-if="!popup_routers[$router.currentRoute.value.name]"
+  ></FooterComponent>
 
   <ErrorsComponent></ErrorsComponent>
 </template>
@@ -23,13 +26,18 @@ import _ from "lodash";
 
 export default {
   async mounted() {
-    let { default: js_cookie } = await import("js-cookie");
-    let { useUserStore, noUser } = await import("./stores/user");
-
-    if (js_cookie.get("XSRF-TOKEN")) {
-      const userStore = useUserStore();
-      userStore.loadUser();
-    }
+    let { useUserStore } = await import("./stores/user");
+    const userStore = useUserStore();
+    userStore.loadUser();
+  },
+  data() {
+    return {
+      popup_routers: {
+        loading: true,
+        discord_auth: true,
+        telegram_auth: true,
+      },
+    };
   },
 };
 </script>

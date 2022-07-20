@@ -1,19 +1,17 @@
 import axios from "axios";
 
-import { useErrorsStore } from "../stores/errors";
-const errorsStore = useErrorsStore();
+import { baseOptions } from "../axios";
+import _ from "lodash";
 
-export const apiOptions = {
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-  withCredentials: true,
-  headers: {
-    "Content-type": "application/json",
-    Accept: "application/json",
-  },
-};
+import { useErrorsStore } from "../stores/errors";
+
+export const apiOptions = _.merge(baseOptions, {});
 
 export const apiErrorHandler = (error) => {
   console.error(`API returned an error: ${error.message}`);
+  console.error(error);
+
+  const errorsStore = useErrorsStore();
   errorsStore.addAPIError(error);
 
   throw error;

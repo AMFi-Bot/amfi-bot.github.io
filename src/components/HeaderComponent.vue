@@ -27,25 +27,24 @@ import _ from "lodash";
         </a>
       </div>
     </div>
-
     <div id="user_ops" class="user_ops">
-      <div class="user_loading" v-if="!user || userStore.loading">
+      <div class="user_loading" v-if="!userStore || userStore.loading">
         Loading...
       </div>
-      <div
-        class="user"
-        v-else-if="user && !_.isEqual(user, noUser)"
-        @click="toggleCart"
-      >
-        <img class="_usr_avatar" :src="user.avatar" v-if="user.avatar" />
+      <div class="user" v-else-if="userStore.logged" @click="toggleCart">
+        <img
+          class="_usr_avatar"
+          :src="userStore.avatar"
+          v-if="userStore.avatar"
+        />
         <div class="_usr_name">
-          {{ user.name }}
-          <div class="_usr_type" v-if="user.privilege !== 0">
+          {{ userStore.name }}
+          <div class="_usr_type" v-if="userStore.privilege !== 0">
             <img
               height="20px"
               width="20px"
               v-bind:src="
-                user.privilege === -1
+                userStore.privilege === -1
                   ? '/img/administrator.svg'
                   : '/img/premium-yellow.svg'
               "
@@ -71,9 +70,9 @@ import _ from "lodash";
         }}</RouterLink>
       </div>
       <ul id="cart" v-show="cart_visible">
-        <a href="/dashboard/" class="dashboard_link">
+        <RouterLink to="/dashboard" class="dashboard_link">
           {{ $t("Dashboard") }}
-        </a>
+        </RouterLink>
         <a href="/rank/" class="rank_link">{{ $t("My rank") }}</a>
         <a href="/premium/" class="premium_link">{{ $t("Premium") }}</a>
         <a href="/user/account/settings/" class="settings_link">
@@ -136,17 +135,12 @@ export default {
     const userStore = useUserStore();
 
     this.userStore = userStore;
-    this.noUser = noUser;
-
-    this.user = userStore.user;
   },
   data() {
     return {
       cart_visible: false,
       languages_visible: false,
       userStore: null,
-      noUser: null,
-      user: null,
     };
   },
   methods: {
