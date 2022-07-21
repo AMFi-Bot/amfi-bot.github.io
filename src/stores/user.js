@@ -236,7 +236,6 @@ export const useUserStore = defineStore("user", {
 
     async login_telegram(query_string) {
       this.loading = true;
-
       nProgress.inc();
 
       await regenerateSession();
@@ -264,7 +263,8 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    load_telegram_widget_script(document) {
+    load_telegram_widget_script(mount_to = "telegram_load") {
+      console.log("function");
       let telegram_widget_script = document.createElement("script");
       telegram_widget_script.setAttribute(
         "src",
@@ -281,9 +281,14 @@ export const useUserStore = defineStore("user", {
       );
       telegram_widget_script.setAttribute("data-request-access", "write");
       telegram_widget_script.setAttribute("data-userpic", "false");
-      let load_tg_widget_elem = document.getElementById("telegram_load");
+      const load_tg_widget_elems = document.getElementsByClassName(mount_to);
 
-      load_tg_widget_elem.replaceChildren(telegram_widget_script);
+      console.log(load_tg_widget_elems);
+
+      for (const load_tg_widget_elem of load_tg_widget_elems) {
+        console.log(load_tg_widget_elem);
+        load_tg_widget_elem.replaceChildren(telegram_widget_script);
+      }
 
       // <script
       //   async

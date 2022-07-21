@@ -2,59 +2,58 @@
   <div id="footer">
     <div id="footer-component">
       <div class="up_grid">
-        <div class="grid_elem dropdown_elem" id="_ft_language_sb">
-          <div class="language_label dropdown_title" @click="toggleLanguages">
-            <i
-              class="dropdown_arrow"
-              :class="languages_visible ? 'dropdown_shown' : 'dropdown_hidden'"
-            ></i>
-            <span class="title">{{ $t("Language") }}/Language</span>
-          </div>
-          <div
-            class="languages_list dropdown_list up"
-            v-show="languages_visible"
-          >
-            <span class="en language" @click="switchLanguage('en')">
-              <span aria-label="🇺🇸, us, flag-us" class="emoji-mart-emoji">
-                <span
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    display: inline-block;
-                    background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
-                    background-size: 5700% 5700%;
-                    background-position: 7.14286% 76.7857%;
-                  "
-                >
+        <tippy
+          class="grid_elem"
+          v-tippy="{
+            placement: 'top-start',
+            interactive: true,
+          }"
+        >
+          {{ $t("language") }}/Language
+
+          <template #content>
+            <div id="footer_languages">
+              <span class="en" @click="languageStore.switchLanguage('en')">
+                <span aria-label="🇺🇸, us, flag-us" class="emoji-mart-emoji">
+                  <span
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      display: inline-block;
+                      background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
+                      background-size: 5700% 5700%;
+                      background-position: 7.14286% 76.7857%;
+                    "
+                  >
+                  </span>
                 </span>
+                English
               </span>
-              English
-            </span>
-            <span class="ru language" @click="switchLanguage('ru')">
-              <span aria-label="🇷🇺, ru, flag-ru" class="emoji-mart-emoji">
-                <span
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    display: inline-block;
-                    background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
-                    background-size: 5700% 5700%;
-                    background-position: 5.35714% 100%;
-                  "
-                >
+              <span class="ru" @click="languageStore.switchLanguage('ru')">
+                <span aria-label="🇷🇺, ru, flag-ru" class="emoji-mart-emoji">
+                  <span
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      display: inline-block;
+                      background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
+                      background-size: 5700% 5700%;
+                      background-position: 5.35714% 100%;
+                    "
+                  >
+                  </span>
                 </span>
+                Русский
               </span>
-              Русский
-            </span>
-          </div>
-        </div>
+            </div>
+          </template>
+        </tippy>
+
         <a class="grid_elem" href="/tos">
-          {{ $t("Check ToS") }}
+          {{ $t("check_tos") }}
         </a>
-        <a class="grid_elem" href="/r_bug">{{ $t("Report a bug") }}</a>
-        <a class="grid_elem" href="/sug_ftrs">{{
-          $t("Suggest new features")
-        }}</a>
+        <a class="grid_elem" href="/r_bug">{{ $t("report_bug") }}</a>
+        <a class="grid_elem" href="/sug_ftrs">{{ $t("suggest_features") }}</a>
       </div>
       <div class="down_panel">
         <div class="links_panel">
@@ -98,7 +97,7 @@
             >
           </div>
           <div class="copyright">
-            © Vetrov V. D., 2021 - 2022 {{ $t("All rights reserved") }}
+            © Vetrov V. D., 2021 - 2022 {{ $t("rights_reserved") }}
           </div>
         </div>
       </div>
@@ -108,32 +107,25 @@
 
 <script>
 export default {
-  mounted() {
+  async mounted() {
     console.log("Footer mounted");
+
+    const { useLanguageStore } = await import("../stores/language");
+
+    const languageStore = useLanguageStore();
+
+    this.languageStore = languageStore;
   },
   data() {
     return {
-      languages_visible: false,
+      arrow_visible: false,
+      languageStore: null,
     };
   },
   methods: {
-    switchLanguage(lang) {
-      this.$cookies.set("language", lang, 2419200);
-
-      console.log(lang);
-      console.log(this.$cookies.get("language"));
+    log(msg) {
+      console.log(msg);
     },
-    closeCart(e) {
-      if (!document.getElementById("_ft_language_sb").contains(e.target)) {
-        this.languages_visible = false;
-      }
-    },
-    toggleLanguages() {
-      this.languages_visible = !this.languages_visible;
-    },
-  },
-  created() {
-    document.addEventListener("click", this.closeCart);
   },
 };
 </script>

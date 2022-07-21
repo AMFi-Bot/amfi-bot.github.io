@@ -133,66 +133,66 @@
       min-width: 40px;
     }
   }
+}
 
-  //display user options(cart)
-  #cart {
-    position: absolute;
-    top: 75px;
-    cursor: default;
-    width: 200px;
-    right: 30px;
-    background-color: rgb(23, 24, 27);
-    border-radius: 4px;
-    box-shadow: rgb(0, 0, 0) 0px 1px 3px;
-    z-index: 51;
+//display user options(cart)
+#cart {
+  background: $dark_3;
+  box-shadow: $box_shadow_1;
+  border-radius: $border_radius_1;
 
-    * {
-      text-align: left;
-    }
+  padding: 5px 10px;
 
-    //Languages div. Там и сама метка, и блок выбора языков. Этот div лежит в #cart, как обычный li
-    div {
-      display: block;
-      position: relative;
-      max-width: 200px;
-    }
-
-    li,
-    div li,
-    a {
-      display: flex;
-      margin: 5px;
-      padding: 5px 12px;
-      font-size: 14px;
-      font-family: "Open Sans";
-      font-weight: 400;
-      color: rgb(166, 170, 181);
-      -webkit-box-align: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    li,
-    a {
-      @include library.hover(rgb(31, 33, 39));
-    }
-
-    .languages {
-      background: rgb(23, 24, 27);
-      min-width: 80px;
-      box-shadow: rgb(0, 0, 0) 0px 1px 3px;
-      border-radius: 4px;
-      position: absolute;
-      top: 0px;
-      z-index: 2;
-      right: 105%;
-
-      li span {
-        min-width: 20px;
-      }
-    }
+  * {
+    text-align: left;
   }
 
+  .cart_link {
+    display: flex;
+    padding: 5px 10px;
+    border-radius: $border_radius_1;
+    color: $font_color_2;
+    cursor: pointer;
+
+    @include hover($hover_3);
+
+    &.logout_link {
+      color: $red_color_1;
+    }
+  }
+}
+
+.tippy-box[data-theme~="right-10"] {
+  right: 10px;
+}
+
+#cart_languages {
+  background: $dark_3;
+  box-shadow: $box_shadow_1;
+  border-radius: $border_radius_1;
+
+  padding: 5px 10px;
+
+  color: $font_color_2;
+  & > * {
+    border-radius: $border_radius_1;
+
+    padding: 5px 10px;
+
+    display: flex;
+
+    @include hover($hover_3);
+
+    span {
+      display: flex;
+      margin-right: 5px;
+    }
+
+    cursor: pointer;
+  }
+}
+
+#user_ops {
   .mn_to_auth {
     display: flex;
     flex-direction: row;

@@ -17,7 +17,7 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
           <label class="srvname discord-srvname">Sign up with Discord</label>
         </a>
       </div>
-      <div class="relem with-tg" id="telegram_load">
+      <div class="relem with-tg telegram_load">
         <div>Loading telegram authenticating...</div>
       </div>
     </div>
@@ -62,7 +62,7 @@ import { useUserStore } from "../stores/user";
 
 export default {
   mounted() {
-    this.userStore.load_telegram_widget_script(document);
+    this.userStore.load_telegram_widget_script();
   },
   data() {
     return {

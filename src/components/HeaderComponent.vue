@@ -7,16 +7,12 @@ import _ from "lodash";
     <div id="menu_panel">
       <RouterLink id="menu_name" to="/">AMFi-Bot</RouterLink>
       <div class="menu_ops">
-        <a href="/moderation" class="_mn_ops_elem __mn__moderation">
-          <b>{{ $t("Moderation") }}</b>
-        </a>
-
         <a href="/tutorials" class="_mn_ops_elem __mn__tutorials">
-          <b>{{ $t("Tutorials") }}</b>
+          <b>{{ $t("tutorials") }}</b>
         </a>
 
         <a href="/premium" class="_mn_ops_elem __mn__premium">
-          <b class="___mn__premium_title">{{ $t("Premium") }}</b>
+          <b class="___mn__premium_title">{{ $t("premium") }}</b>
           <img
             height="20px"
             width="20px"
@@ -31,7 +27,15 @@ import _ from "lodash";
       <div class="user_loading" v-if="!userStore || userStore.loading">
         Loading...
       </div>
-      <div class="user" v-else-if="userStore.logged" @click="toggleCart">
+      <tippy
+        class="user"
+        v-else-if="userStore.logged"
+        v-tippy="{
+          interactive: true,
+          arrow: false,
+          placement: 'bottom',
+        }"
+      >
         <img
           class="_usr_avatar"
           :src="userStore.avatar"
@@ -60,67 +64,80 @@ import _ from "lodash";
                         -->
           </div>
         </div>
-      </div>
+        <template #content>
+          <ul id="cart">
+            <RouterLink to="/dashboard" class="cart_link">
+              {{ $t("dashboard") }}
+            </RouterLink>
+            <RouterLink to="/premium" class="cart_link">{{
+              $t("premium")
+            }}</RouterLink>
+            <RouterLink to="/user/account/settings" class="cart_link">
+              {{ $t("user_settings") }}
+            </RouterLink>
+            <tippy
+              class="cart_link"
+              v-tippy="{
+                interactive: true,
+                placement: 'left',
+                arrow: false,
+                theme: 'right-10',
+              }"
+            >
+              {{ $t("language") }}/Language
+              <template #content>
+                <ul id="cart_languages">
+                  <li class="en" @click="languageStore.switchLanguage('en')">
+                    <span aria-label="🇺🇸, us, flag-us" class="emoji-mart-emoji">
+                      <span
+                        style="
+                          width: 20px;
+                          height: 20px;
+                          display: inline-block;
+                          background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
+                          background-size: 5700% 5700%;
+                          background-position: 7.14286% 76.7857%;
+                        "
+                      >
+                      </span>
+                    </span>
+                    English
+                  </li>
+                  <li class="ru" @click="languageStore.switchLanguage('ru')">
+                    <span aria-label="🇷🇺, ru, flag-ru" class="emoji-mart-emoji">
+                      <span
+                        style="
+                          width: 20px;
+                          height: 20px;
+                          display: inline-block;
+                          background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
+                          background-size: 5700% 5700%;
+                          background-position: 5.35714% 100%;
+                        "
+                      >
+                      </span>
+                    </span>
+                    Русский
+                  </li>
+                </ul>
+              </template>
+            </tippy>
+
+            <div @click="userStore.logout()" class="cart_link logout_link">
+              {{ $t("log_out") }}
+            </div>
+          </ul>
+        </template>
+      </tippy>
+
       <div class="mn_to_auth" v-else>
         <RouterLink to="/login" class="login_link">{{
-          $t("Log In")
+          $t("log_in")
         }}</RouterLink>
         <RouterLink to="/register" class="register_link darkblue_button">{{
-          $t("Sign Up")
+          $t("sign_up")
         }}</RouterLink>
       </div>
-      <ul id="cart" v-show="cart_visible">
-        <RouterLink to="/dashboard" class="dashboard_link">
-          {{ $t("Dashboard") }}
-        </RouterLink>
-        <a href="/rank/" class="rank_link">{{ $t("My rank") }}</a>
-        <a href="/premium/" class="premium_link">{{ $t("Premium") }}</a>
-        <a href="/user/account/settings/" class="settings_link">
-          {{ $t("Settings") }}
-        </a>
-        <div>
-          <li class="language" @click="toggleLanguages">
-            {{ $t("Language") }}/Language
-          </li>
-          <ul id="languages" class="languages" v-show="languages_visible">
-            <li class="en">
-              <span aria-label="🇺🇸, us, flag-us" class="emoji-mart-emoji">
-                <span
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    display: inline-block;
-                    background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
-                    background-size: 5700% 5700%;
-                    background-position: 7.14286% 76.7857%;
-                  "
-                >
-                </span>
-              </span>
-              English
-            </li>
-            <li class="ru">
-              <span aria-label="🇷🇺, ru, flag-ru" class="emoji-mart-emoji">
-                <span
-                  style="
-                    width: 20px;
-                    height: 20px;
-                    display: inline-block;
-                    background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
-                    background-size: 5700% 5700%;
-                    background-position: 5.35714% 100%;
-                  "
-                >
-                </span>
-              </span>
-              Русский
-            </li>
-          </ul>
-        </div>
-        <div @click="userStore.logout()">
-          {{ $t("Log out") }}
-        </div>
-      </ul>
     </div>
   </div>
 </template>
@@ -135,34 +152,20 @@ export default {
     const userStore = useUserStore();
 
     this.userStore = userStore;
+
+    const { useLanguageStore } = await import("../stores/language");
+
+    const languageStore = useLanguageStore();
+
+    this.languageStore = languageStore;
   },
   data() {
     return {
-      cart_visible: false,
-      languages_visible: false,
       userStore: null,
+      languageStore: null,
     };
   },
-  methods: {
-    closeCart(e) {
-      if (!document.getElementById("user_ops").contains(e.target)) {
-        this.cart_visible = false;
-        this.languages_visible = false;
-      }
-    },
-    toggleCart() {
-      this.cart_visible = !this.cart_visible;
-      if (!this.cart_visible) {
-        this.languages_visible = false;
-      }
-    },
-    toggleLanguages() {
-      this.languages_visible = !this.languages_visible;
-    },
-  },
-  created() {
-    document.addEventListener("click", this.closeCart);
-  },
+  methods: {},
 };
 </script>
 

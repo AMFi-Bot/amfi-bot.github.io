@@ -5,6 +5,8 @@ import _ from "lodash";
 
 import { useErrorsStore } from "../stores/errors";
 
+import nProgress from "../nProgress";
+
 export const apiOptions = _.merge(baseOptions, {});
 
 export const apiErrorHandler = (error) => {
@@ -13,6 +15,8 @@ export const apiErrorHandler = (error) => {
 
   const errorsStore = useErrorsStore();
   errorsStore.addAPIError(error);
+
+  nProgress.done();
 
   throw error;
 };

@@ -12,11 +12,20 @@ $dark_1: #34383c;
 $dark_2: #212426;
 $dark_3: #17181b;
 
-$hover_1: rgb(82, 82, 82);
-$hover_2: rgb(48, 48, 48);
+$hover_1: #525252;
+$hover_2: #303030;
+$hover_3: #1f2127;
 
 $font_color_1: #dcddde;
 $font_color_2: #b9bbbe;
+
+$box_shadow_1: #000 0px 1px 3px;
+
+$border_radius_1: 4px;
+
+$circle: 100500px;
+
+$red_color_1: #a72a39;
 
 @mixin hover($color) {
   transition: $trans_03;
