@@ -57,16 +57,12 @@ console.log(app);
 
 nProgress.inc();
 
-// import css files
+// import base scss files
 
 import "./assets/scss/base.scss";
 import "./assets/scss/menu.scss";
 import "./assets/scss/footer.scss";
-import "./assets/scss/dashboard.scss";
-import "./assets/scss/guild.scss";
 import "./assets/scss/root.scss";
-import "./assets/scss/auth.scss";
-import "./assets/scss/discord_setup.scss";
 import "./assets/scss/error.scss";
 
 nProgress.inc();

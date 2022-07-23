@@ -54,6 +54,9 @@ $red_color_1: #a72a39;
   background-color: $normal_background;
   transition: $trans_03;
 
+  user-select: none;
+  cursor: pointer;
+
   &:hover {
     transition: $trans_03;
     background-color: $hover_background;

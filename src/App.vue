@@ -36,6 +36,7 @@ export default {
         loading: true,
         discord_auth: true,
         telegram_auth: true,
+        discord_bot_callback: true,
       },
     };
   },

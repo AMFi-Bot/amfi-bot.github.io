@@ -1,3 +1,7 @@
+<script setup>
+import "@/assets/scss/dashboard.scss";
+</script>
+
 <template>
   <div id="dashboard" class="dashboard" v-if="userStore">
     <div class="setupMessengers">
@@ -20,7 +24,9 @@
           class="setup_button"
           :class="userStore.telegram_id ? 'green_button' : ''"
         >
-          <a href="/telegram" v-if="userStore.telegram_id"> Set up </a>
+          <RouterLink to="/telegram/dashboard" v-if="userStore.telegram_id">
+            Set up
+          </RouterLink>
           <div v-else>
             <div class="telegram_login_mount">
               <div>Loading telegram authenticating...</div>
@@ -49,8 +55,12 @@
           class="setup_button"
           :class="userStore.discord_id ? 'green_button' : 'darkblue_button'"
         >
-          <a href="/discord" v-if="userStore.discord_id"> Set up </a>
-          <div v-else @click="userStore.login_discord">Log In Discord and set up</div>
+          <RouterLink to="/discord/dashboard" v-if="userStore.discord_id">
+            Set up
+          </RouterLink>
+          <div v-else @click="userStore.login_discord">
+            Log In Discord and set up
+          </div>
         </div>
       </div>
     </div>

@@ -12,8 +12,13 @@ const RegiserView = () => import("../views/RegisterView.vue");
 const TelegramAuth = () => import("../views/TelegramAuth.vue");
 const DiscordAuth = () => import("../views/DiscordAuth.vue");
 const DashboardView = () => import("../views/DashboardView.vue");
+const DiscordBotAuthCallback = () =>
+  import("../views/DiscordBotAuthCallback.vue");
 
-export async function isAuthenticated() {
+//Discord components
+const DiscordDashboardView = () => import("../views/Discord/DashboardView.vue");
+
+export async function isAuthenticated(from) {
   const { useUserStore } = await import("../stores/user");
   const userStore = useUserStore();
 
@@ -41,6 +46,17 @@ export async function authenticatedGuard(to, from, next) {
 
 export async function noAuthenticatedGuard(to, from, next) {
   return !(await isAuthenticated()) ? next() : next(from);
+}
+
+export async function discordAuthenticated(to, from, next) {
+  const { useUserStore } = await import("../stores/user");
+  const userStore = useUserStore();
+
+  if (userStore && userStore.logged && userStore.discord_id) {
+    next();
+  }
+
+  next(from);
 }
 
 const router = createRouter({
@@ -74,6 +90,12 @@ const router = createRouter({
       component: DiscordAuth,
     },
     {
+      path: import.meta.env.VITE_DISCORD_BOT_CALLBACK_URL,
+      name: "discord_bot_auth",
+      component: DiscordBotAuthCallback,
+    },
+
+    {
       path: "/loading",
       name: "loading",
       component: LoadingView,
@@ -84,6 +106,22 @@ const router = createRouter({
       name: "dashboard",
       component: DashboardView,
       beforeEnter: authenticatedGuard,
+    },
+
+    {
+      path: "/discord",
+      beforeEnter: [authenticatedGuard, discordAuthenticated],
+      children: [
+        {
+          path: "dashboard",
+          name: "discord_dashboard",
+          component: DiscordDashboardView,
+        },
+        {
+          path: "guilds/{id}",
+          component: DiscordDashboardView,
+        },
+      ],
     },
   ],
 });

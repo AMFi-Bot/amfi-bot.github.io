@@ -131,33 +131,19 @@ main {
 }
 
 .green_button {
-  background-color: $green_button_normal;
-  transition: $trans_03;
-
-  &:hover {
-    transition: $trans_03;
-    background-color: #237e3b;
-  }
-
-  &:active {
-    transition: $trans_03;
-    background-color: #1b612e;
-  }
+  @include button(
+    $green_button_normal,
+    $green_button_hover,
+    $green_button_pressed
+  );
 }
 
 .darkblue_button {
-  background-color: $darkblue_button_normal;
-  transition: $trans_03;
-
-  &:hover {
-    transition: $trans_03;
-    background-color: $darkblue_button_hover;
-  }
-
-  &:active {
-    transition: $trans_03;
-    background-color: $darkblue_button_pressed;
-  }
+  @include button(
+    $darkblue_button_normal,
+    $darkblue_button_hover,
+    $darkblue_button_pressed
+  );
 }
 
 .setup_button {
