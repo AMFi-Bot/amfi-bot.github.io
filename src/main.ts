@@ -17,6 +17,9 @@ import { setupI18n } from "@/i18n";
 import { plugin as VueTippy } from "vue-tippy";
 import "tippy.js/dist/tippy.css"; // optional for styling
 
+import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
+import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
+
 const i18n = setupI18n();
 
 const app = createApp(App);
@@ -32,6 +35,9 @@ app.use(
     component: "tippy", // => <tippy/>
   }
 );
+
+app.component("LoadingLayout", LoadingLayoutVue);
+app.component("DefaultLayout", DefaultLayoutVue);
 
 app.mount("#app");
 

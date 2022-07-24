@@ -64,22 +64,34 @@ const router = createRouter({
       path: import.meta.env.VITE_TELEGRAM_REDIRECT_URL,
       name: "telegram_auth",
       component: TelegramAuth,
+      meta: {
+        layout: "LoadingLayout",
+      },
     },
     {
       path: import.meta.env.VITE_DISCORD_CALLBACK_URL,
       name: "discord_auth",
       component: DiscordAuth,
+      meta: {
+        layout: "LoadingLayout",
+      },
     },
     {
       path: import.meta.env.VITE_DISCORD_BOT_CALLBACK_URL,
       name: "discord_bot_auth",
       component: DiscordBotAuthCallback,
+      meta: {
+        layout: "LoadingLayout",
+      },
     },
 
     {
       path: "/loading",
       name: "loading",
       component: LoadingView,
+      meta: {
+        layout: "LoadingLayout",
+      },
     },
 
     {

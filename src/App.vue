@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import HeaderComponent from "./components/HeaderComponent.vue";
-import FooterComponent from "./components/FooterComponent.vue";
+
 import ErrorsComponent from "./components/ErrorsComponent.vue";
 
 import { useUserStore } from "./stores/user";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 const userStore = useUserStore();
 userStore.loadUser();
+
+const layout = computed(() => {
+  return useRoute().meta.layout || "DefaultLayout";
+});
 </script>
 
 <template>
-  <HeaderComponent></HeaderComponent>
-
-  <main>
+  <component :is="layout">
     <RouterView />
-  </main>
-
-  <FooterComponent></FooterComponent>
+  </component>
 
   <ErrorsComponent></ErrorsComponent>
 </template>
