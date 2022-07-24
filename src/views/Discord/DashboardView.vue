@@ -1,8 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import "@/assets/scss/dashboard.scss";
 
 import { useDiscordGuildsStore } from "../../stores/discordGuilds";
 const discordGuildsStore = useDiscordGuildsStore();
+
+discordGuildsStore.loadGuilds();
 </script>
 
 <template>
@@ -17,7 +19,7 @@ const discordGuildsStore = useDiscordGuildsStore();
       "
     >
       <div class="guild_list_text">Please choose a guild to setup</div>
-      <div v-for="guild in discordGuildsStore.guilds" v-bind:key="guild">
+      <div v-for="guild in discordGuildsStore.guilds">
         <div class="guild">
           <div class="guild_desc">
             <img
@@ -63,11 +65,3 @@ const discordGuildsStore = useDiscordGuildsStore();
     <div class="guilds_load_error" v-else>Something went wrong! Try again</div>
   </div>
 </template>
-
-<script>
-export default {
-  mounted() {
-    this.discordGuildsStore.loadGuilds();
-  },
-};
-</script>

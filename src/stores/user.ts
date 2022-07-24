@@ -1,21 +1,35 @@
 import { defineStore } from "pinia";
 
-import { useErrorsStore } from "../stores/errors";
-const errorsStore = useErrorsStore();
+import { useErrorsStore } from "@/stores/errors";
 
-import axios from "../axios";
-import _ from "lodash";
+import axios from "@/api";
+import _, { toInteger } from "lodash";
 
-import regenerateSession from "../api/regenerateSession";
+import regenerateSession from "@/api/regenerateSession";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-import router from "../router/index";
+import router from "@/router/index";
 import js_cookie from "js-cookie";
 
-import nProgress from "../nProgress";
+import nProgress from "@/nprogress";
+import { AxiosError } from "axios";
 
-export const noUser = {
+type userType = {
+  name: string;
+  email: string;
+  avatar: string;
+  privilege: number;
+  questionnaire: string;
+  telegram_id: string;
+  discord_id: string;
+  discord_token: string;
+  discordd_refresh_token: string;
+  logged: boolean;
+  loading: boolean;
+};
+
+export const noUser: userType = {
   name: "",
   email: "",
   avatar: "",
@@ -30,11 +44,11 @@ export const noUser = {
 };
 
 export const useUserStore = defineStore("user", {
-  state() {
-    return { ..._.cloneDeep(noUser) };
+  state(): userType {
+    return _.cloneDeep(noUser);
   },
   actions: {
-    changeUserProperty(user) {
+    changeUserProperty(user: userType) {
       const cUser = _.cloneDeep(user);
 
       this.$state = cUser;
@@ -46,7 +60,7 @@ export const useUserStore = defineStore("user", {
       return this.changeUserProperty(noUser);
     },
 
-    userAuthenticated(user) {
+    userAuthenticated(user: userType) {
       var cUser = this.changeUserProperty(user);
 
       cUser.loading = false;
@@ -55,16 +69,20 @@ export const useUserStore = defineStore("user", {
       return cUser;
     },
 
-    throwAuthError(error) {
+    throwAuthError(error: AxiosError) {
       const errorsStore = useErrorsStore();
 
       let err_message = `Oops somtehing went wrong: ${error.message}`;
 
-      if (error.response.data) {
-        if (error.response.data.error) {
-          if (error.response.data.error.message) {
-            err_message += ` ${error.response.data.error.message}`;
-          }
+      if (error.response && error.response.data) {
+        type responseType = {
+          error: {
+            message: string;
+          };
+        };
+        const response_data = <responseType>error.response.data;
+        if (response_data.error && response_data.error.message) {
+          err_message += ` ${response_data.error.message}`;
         }
       }
 
@@ -80,11 +98,7 @@ export const useUserStore = defineStore("user", {
       router.push({ name: "dashboard" });
     },
 
-    /**
-     *
-     * @param {{email: string, password: string}} form
-     */
-    async login(form) {
+    async login(form: { email: string; password: string }) {
       try {
         this.loading = true;
 
@@ -101,17 +115,18 @@ export const useUserStore = defineStore("user", {
         this.userAuthenticated(user);
         return this.postLogin();
       } catch (error) {
-        this.throwAuthError(error);
+        if (error instanceof AxiosError) this.throwAuthError(error);
 
         return false;
       }
     },
 
-    /**
-     *
-     * @param {{name:string, email: string, password: string, password_confirmation: string}} form
-     */
-    async register(form) {
+    async register(form: {
+      name: string;
+      email: string;
+      password: string;
+      password_confirmation: string;
+    }) {
       try {
         this.loading = true;
 
@@ -128,7 +143,7 @@ export const useUserStore = defineStore("user", {
         this.userAuthenticated(user);
         return this.postLogin();
       } catch (error) {
-        this.throwAuthError(error);
+        if (error instanceof AxiosError) this.throwAuthError(error);
 
         return false;
       }
@@ -156,7 +171,7 @@ export const useUserStore = defineStore("user", {
             const interval = setInterval(async () => {
               if (!this.loading) {
                 clearInterval(interval);
-                resolve();
+                resolve(undefined);
               }
             }, 100);
           });
@@ -185,6 +200,8 @@ export const useUserStore = defineStore("user", {
     async login_discord() {
       const popup = window.open("/loading", "", "width=500,height=900");
 
+      if (!popup) return useErrorsStore().addError("Cannot open popup");
+
       nProgress.inc();
 
       await regenerateSession();
@@ -204,7 +221,7 @@ export const useUserStore = defineStore("user", {
         const interval = setInterval(async () => {
           if (popup.closed) {
             clearInterval(interval);
-            resolve();
+            resolve(undefined);
           }
         }, 500);
       });
@@ -214,11 +231,11 @@ export const useUserStore = defineStore("user", {
       if (await this.loadUser()) {
         this.postLogin();
       } else {
-        errorsStore.addError("Login failed.");
+        useErrorsStore().addError("Login failed.");
       }
     },
 
-    async discord_callback(query_string) {
+    async discord_callback(query_string: string) {
       this.loading = true;
 
       nProgress.inc();
@@ -234,7 +251,7 @@ export const useUserStore = defineStore("user", {
       window.close();
     },
 
-    async login_telegram(query_string) {
+    async login_telegram(query_string: string) {
       this.loading = true;
       nProgress.inc();
 
@@ -254,9 +271,14 @@ export const useUserStore = defineStore("user", {
         this.userAuthenticated(user);
         return this.postLogin();
       } catch (error) {
-        errorsStore.addError(
-          `Something went wrong: ${error.message}. ${error.response.data}`
-        );
+        const errorsStore = useErrorsStore();
+
+        if (error instanceof AxiosError)
+          errorsStore.addError(
+            `Something went wrong: ${error.message}. ${
+              error.response ? error.response.data : ""
+            }`
+          );
 
         this.nullUser();
         return false;
@@ -283,10 +305,10 @@ export const useUserStore = defineStore("user", {
       telegram_widget_script.setAttribute("data-userpic", "false");
       const load_tg_widget_elems = document.getElementsByClassName(mount_to);
 
-      console.log(load_tg_widget_elems);
+      for (const i in load_tg_widget_elems) {
+        const load_tg_widget_elem = load_tg_widget_elems.item(toInteger(i));
+        if (!load_tg_widget_elem) continue;
 
-      for (const load_tg_widget_elem of load_tg_widget_elems) {
-        console.log(load_tg_widget_elem);
         load_tg_widget_elem.replaceChildren(telegram_widget_script);
       }
 
@@ -300,16 +322,27 @@ export const useUserStore = defineStore("user", {
       //   data-request-access="write"
       // ></script>;
     },
+
+    async isAuthenticated(): Promise<boolean> {
+      if (this.logged) {
+        return true;
+        // User not loaded. Trying load User
+      }
+      if (await this.loadUser()) return true;
+
+      return false;
+    },
   },
 
   getters: {
-    user() {
-      return this.logged ? this.$state : false;
+    user(state: userType): userType | false {
+      return state.logged ? state : false;
     },
-    user_logged() {
+
+    user_logged(state) {
       // this.logged = !_.isEqual(this.$state, noUser);
 
-      return !_.isEqual(this.$state, noUser);
+      return !_.isEqual(state, noUser);
     },
   },
 });

@@ -1,6 +1,9 @@
 // Gets nprogress package
-
-const nProgress = window.NProgress;
+if (window.NProgress) {
+  window.NProgress.done();
+}
+import nProgress from "nprogress";
+// const nProgress = window.NProgress;
 
 export default nProgress;
 

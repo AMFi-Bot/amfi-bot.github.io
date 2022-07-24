@@ -1,12 +1,21 @@
-<script setup>
+<script setup lang="ts">
 import "@/assets/scss/auth.scss";
 
 import axios from "axios";
+import { onMounted, reactive } from "vue";
 
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+onMounted(() => {
+  userStore.load_telegram_widget_script();
+});
+
+const form = reactive({ email: "", password: "" });
+
+const submit = async () => {
+  await userStore.login(form);
+};
 </script>
 
 <template>
@@ -58,27 +67,3 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
     </form>
   </div>
 </template>
-
-<script>
-import { useUserStore } from "../stores/user";
-
-export default {
-  mounted() {
-    this.userStore.load_telegram_widget_script();
-  },
-  data() {
-    return {
-      form: {
-        email: "",
-        password: "",
-      },
-    };
-  },
-
-  methods: {
-    async submit() {
-      console.log(await this.userStore.login(this.form));
-    },
-  },
-};
-</script>

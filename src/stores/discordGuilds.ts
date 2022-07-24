@@ -1,13 +1,26 @@
 import { defineStore } from "pinia";
 
-import axios from "../api/api";
+import axios from "@/api";
 
-import nProgress from "../nProgress";
+import nProgress from "../nprogress";
 
 import router from "../router/index";
 
+export type GuildType = {
+  name: string;
+  id: string | number;
+  icon: string;
+  bot_exists: boolean;
+};
+
+type StateType = {
+  guilds: GuildType[];
+  loading: boolean;
+  loaded: boolean;
+};
+
 export const useDiscordGuildsStore = defineStore("discordGuilds", {
-  state() {
+  state(): StateType {
     return {
       guilds: [],
       loading: true,
@@ -24,14 +37,8 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
         this.loaded = true;
       } catch (error) {}
     },
-    async loginGuild(id) {
+    async loginGuild(id: string | number) {
       nProgress.inc();
-
-      // `` +
-      //   `?client_id=735374790403031051&permissions=8` +
-      //   `&redirect_uri=http%3A%2F%2Fmy-app-dev.com%2Fdiscord%2Fnew_guild` +
-      //   `&response_type=code&scope=bot%20applications.commands` +
-      //   `&guild_id=${guild_id}&disable_guild_select=true`;
 
       // Generate bot auth uri
       var discordURI = "https://discord.com/api/oauth2/authorize?";
@@ -67,8 +74,10 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
 
       window.router = router;
     },
-    async loginGuildCallback(query_string) {
+    async loginGuildCallback(query_string: string) {
       window.opener.console.log(query_string);
+
+      if (!window.opener || !window.opener.router) return;
 
       window.opener.router.push("/");
 

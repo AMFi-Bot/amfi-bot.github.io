@@ -1,12 +1,28 @@
-<script setup>
+<script setup lang="ts">
 import "@/assets/scss/auth.scss";
 
 import axios from "axios";
 
-import { useUserStore } from "../stores/user";
+import { useUserStore } from "@/stores/user";
+import { onMounted, reactive } from "vue";
 const userStore = useUserStore();
 
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+const form = reactive({
+  name: "",
+  email: "",
+  password: "",
+  password_confirmation: "",
+});
+
+onMounted(() => {
+  userStore.load_telegram_widget_script();
+});
+
+const submit = async () => {
+  if (form.password !== form.password_confirmation) return;
+
+  console.log(await userStore.register(form));
+};
 </script>
 
 <template>
@@ -14,7 +30,7 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
     <h2 class="reg-title">Регистрация</h2>
     <div class="register_extras">
       <div class="relem with-discord">
-        <a class="wrapper" href="/api/auth/ext_services/discord/redirect">
+        <a class="wrapper" @click="userStore.login_discord">
           <img src="/img/dslogo_white.svg" alt="" width="25px" />
           <label class="srvname discord-srvname">Sign up with Discord</label>
         </a>
@@ -76,32 +92,3 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
     </form>
   </div>
 </template>
-
-<script>
-import { useUserStore } from "../stores/user";
-
-export default {
-  mounted() {
-    this.userStore.load_telegram_widget_script();
-  },
-
-  data() {
-    return {
-      form: {
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: "",
-      },
-    };
-  },
-
-  methods: {
-    async submit() {
-      if (this.form.password !== this.form.password_confirmation) return;
-
-      console.log(await this.userStore.register(this.form));
-    },
-  },
-};
-</script>

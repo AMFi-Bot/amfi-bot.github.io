@@ -1,44 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { RouterView } from "vue-router";
 import HeaderComponent from "./components/HeaderComponent.vue";
 import FooterComponent from "./components/FooterComponent.vue";
 import ErrorsComponent from "./components/ErrorsComponent.vue";
+
+import { useUserStore } from "./stores/user";
+const userStore = useUserStore();
+userStore.loadUser();
 </script>
 
 <template>
-  <HeaderComponent
-    v-if="!popup_routers[$router.currentRoute.value.name]"
-  ></HeaderComponent>
+  <HeaderComponent></HeaderComponent>
 
   <main>
     <RouterView />
   </main>
 
-  <FooterComponent
-    v-if="!popup_routers[$router.currentRoute.value.name]"
-  ></FooterComponent>
+  <FooterComponent></FooterComponent>
 
   <ErrorsComponent></ErrorsComponent>
 </template>
-
-<script>
-import _ from "lodash";
-
-export default {
-  async mounted() {
-    let { useUserStore } = await import("./stores/user");
-    const userStore = useUserStore();
-    userStore.loadUser();
-  },
-  data() {
-    return {
-      popup_routers: {
-        loading: true,
-        discord_auth: true,
-        telegram_auth: true,
-        discord_bot_callback: true,
-      },
-    };
-  },
-};
-</script>

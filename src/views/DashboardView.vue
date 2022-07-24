@@ -1,5 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import "@/assets/scss/dashboard.scss";
+import { onMounted } from "vue";
+import { useUserStore } from "../stores/user";
+
+const userStore = useUserStore();
+
+if (!userStore.telegram_id) {
+  onMounted(() => {
+    userStore.load_telegram_widget_script("telegram_login_mount");
+  });
+}
 </script>
 
 <template>
@@ -66,27 +76,3 @@ import "@/assets/scss/dashboard.scss";
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  async mounted() {
-    console.log("Dashboard is mounted");
-
-    const { useUserStore } = await import("../stores/user");
-
-    const userStore = useUserStore();
-    this.userStore = userStore;
-
-    if (!userStore.telegram_id)
-      setTimeout(() => {
-        userStore.load_telegram_widget_script("telegram_login_mount");
-      }, 1000);
-  },
-  data() {
-    return {
-      userStore: false,
-    };
-  },
-  methods: {},
-};
-</script>

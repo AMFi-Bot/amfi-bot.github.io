@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { setI18nLanguage } from "@/i18n";
+import { useI18n } from "vue-i18n";
+const i18n = useI18n();
+</script>
+
 <template>
   <div id="footer">
     <div id="footer-component">
@@ -13,7 +19,7 @@
 
           <template #content>
             <div id="footer_languages">
-              <span class="en" @click="languageStore.switchLanguage('en')">
+              <span class="en" @click="setI18nLanguage(i18n, 'en')">
                 <span aria-label="🇺🇸, us, flag-us" class="emoji-mart-emoji">
                   <span
                     style="
@@ -29,7 +35,7 @@
                 </span>
                 English
               </span>
-              <span class="ru" @click="languageStore.switchLanguage('ru')">
+              <span class="ru" @click="setI18nLanguage(i18n, 'ru')">
                 <span aria-label="🇷🇺, ru, flag-ru" class="emoji-mart-emoji">
                   <span
                     style="
@@ -104,28 +110,3 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  async mounted() {
-    console.log("Footer mounted");
-
-    const { useLanguageStore } = await import("../stores/language");
-
-    const languageStore = useLanguageStore();
-
-    this.languageStore = languageStore;
-  },
-  data() {
-    return {
-      arrow_visible: false,
-      languageStore: null,
-    };
-  },
-  methods: {
-    log(msg) {
-      console.log(msg);
-    },
-  },
-};
-</script>
