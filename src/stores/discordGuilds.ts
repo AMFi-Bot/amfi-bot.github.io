@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { DiscordGuildType } from "./discordGuild";
 
 import axios from "@/api";
 
@@ -6,15 +7,8 @@ import nProgress from "../nprogress";
 
 import router from "../router/index";
 
-export type GuildType = {
-  name: string;
-  id: string | number;
-  icon: string;
-  bot_exists: boolean;
-};
-
 type StateType = {
-  guilds: GuildType[];
+  guilds: DiscordGuildType[];
   loading: boolean;
   loaded: boolean;
 };
