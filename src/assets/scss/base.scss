@@ -58,7 +58,6 @@ main {
   align-items: flex-start;
   flex-direction: column;
   align-self: center;
-  align-items: center;
   justify-content: flex-start;
 
   margin: 20px 0;
@@ -164,10 +163,10 @@ main {
   }
 }
 
-.dd_arrow {
+.dropdown_arrow {
   margin: 5px 10px 7px 5px;
 
-  &.dd_arrow_shown {
+  &.dropdown_arrow_shown {
     transform: rotate(-135deg);
     -webkit-transform: rotate(-135deg);
 
@@ -177,7 +176,7 @@ main {
     padding: 3px;
   }
 
-  &.dd_arrow_hidden {
+  &.dropdown_arrow_hidden {
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
 

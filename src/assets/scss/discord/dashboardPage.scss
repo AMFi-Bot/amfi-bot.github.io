@@ -1,0 +1,34 @@
+@import "../library";
+
+.setup_content {
+  margin: 10px;
+  margin-left: 70px;
+  padding: 10px;
+
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+
+  .guild_head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    img {
+      margin-right: 15px;
+
+      height: 50px;
+      width: 50px;
+
+      border-radius: 999px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+}

@@ -19,6 +19,7 @@ import "tippy.js/dist/tippy.css"; // optional for styling
 
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
 import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
+import DiscordGuildLayoutVue from "./layouts/DiscordGuildLayout.vue";
 
 const i18n = setupI18n();
 
@@ -38,6 +39,7 @@ app.use(
 
 app.component("LoadingLayout", LoadingLayoutVue);
 app.component("DefaultLayout", DefaultLayoutVue);
+app.component("DiscordGuildLayout", DiscordGuildLayoutVue);
 
 app.mount("#app");
 

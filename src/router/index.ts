@@ -104,7 +104,7 @@ const router = createRouter({
     {
       path: "/discord",
       // beforeEnter: [authenticatedGuard, discordAuthenticated],
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true },
       children: [
         {
           path: "dashboard",
@@ -112,8 +112,51 @@ const router = createRouter({
           component: DiscordDashboardView,
         },
         {
-          path: "guilds/{id}",
-          component: DiscordDashboardView,
+          path: "guilds/:id/",
+          meta: { layout: "DiscordGuildLayout" },
+          children: [
+            {
+              path: "",
+              redirect: {
+                name: "DiscordDashboard",
+              },
+            },
+            {
+              path: "dashboard",
+              name: "DiscordDashboard",
+              component: () =>
+                import("@/views/Discord/Guild/DashboardView.vue"),
+            },
+            {
+              path: "general",
+              name: "DiscordGuildGeneral",
+              component: () => import("@/views/Discord/Guild/GeneralView.vue"),
+            },
+            {
+              path: "moderation",
+              name: "DiscordGuildModeration",
+              component: () =>
+                import("@/views/Discord/Guild/DashboardView.vue"),
+            },
+            {
+              path: "automoderation",
+              name: "DiscordGuildAutomoderation",
+              component: () =>
+                import("@/views/Discord/Guild/DashboardView.vue"),
+            },
+            {
+              path: "commands",
+              name: "DiscordGuildCommands",
+              component: () =>
+                import("@/views/Discord/Guild/DashboardView.vue"),
+            },
+            {
+              path: "features",
+              name: "DiscordGuildFeatures",
+              component: () =>
+                import("@/views/Discord/Guild/DashboardView.vue"),
+            },
+          ],
         },
       ],
     },
