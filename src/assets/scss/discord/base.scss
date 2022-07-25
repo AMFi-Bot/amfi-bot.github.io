@@ -63,6 +63,8 @@
       padding: 10px;
       border-radius: 5px;
 
+      margin-bottom: 20px;
+
       .instance_elem_title {
         margin-right: 10px;
         margin-bottom: 10px;
@@ -214,6 +216,8 @@
           padding: 10px;
 
           overflow-y: auto;
+
+          z-index: 60;
 
           .dropdown_content_elem {
             height: 30px;

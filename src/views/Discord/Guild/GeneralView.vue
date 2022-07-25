@@ -50,6 +50,45 @@ import DropDownComponentVue from "@/components/DropDownComponent.vue";
           />
         </div>
       </div>
+
+      <div class="log_channel instance_elem column">
+        <div class="instance_elem_title">
+          <span class="title">Logs</span>
+          <span class="description"
+            >Here you can setup logs sending by bot</span
+          >
+        </div>
+        <div class="instance_sub_elem row sbtw">
+          <div class="instance_sub_elem_title">
+            <span class="title">Log channel:</span>
+            <span class="description"
+              >Please choose a log channel where bot may send logs</span
+            >
+          </div>
+          <DropDownComponentVue
+            :config="{
+              clickButtonTitle: 'Click me!',
+              dropdownContent: [
+                'qwa',
+                'qwe',
+                'qwu',
+                'qwa',
+                'qwe',
+                'qwu',
+                'qwa',
+                'qwe',
+                'qwu',
+                'qwa',
+                'qwe',
+                'qwu',
+                'qwa',
+                'qwe',
+                'qwu',
+              ],
+            }"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
