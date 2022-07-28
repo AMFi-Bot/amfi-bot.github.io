@@ -191,6 +191,9 @@
           min-height: 50px;
           padding: 10px;
 
+          display: flex;
+          align-items: center;
+
           cursor: pointer;
 
           background-color: $dark_3;

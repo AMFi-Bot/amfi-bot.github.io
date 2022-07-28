@@ -1,14 +1,15 @@
 import { defineStore } from "pinia";
-import type { DiscordGuildType } from "./discordGuild";
 
-import axios from "@/api";
+import axios, { api } from "@/api";
 
 import nProgress from "../nprogress";
 
 import router from "../router/index";
+import type { apiSuccessResponseType } from "@/types/api/base";
+import type { DiscordGuild } from "@/types/discord/guild";
 
 type StateType = {
-  guilds: DiscordGuildType[];
+  guilds: DiscordGuild[];
   loading: boolean;
   loaded: boolean;
 };
@@ -69,15 +70,19 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
       window.router = router;
     },
     async loginGuildCallback(query_string: string) {
-      window.opener.console.log(query_string);
+      try {
+        const response = <apiSuccessResponseType>(
+          (await api.post(`/api/v1/discord/guilds?${query_string}`)).data
+        );
 
-      if (!window.opener || !window.opener.router) return;
+        if (!window.opener || !window.opener.router) return;
 
-      window.opener.router.push("/");
+        window.opener.router.push(`/discord/guilds/${response.data.guild.id}`);
 
-      window.opener.router = undefined;
+        window.opener.router = undefined;
 
-      window.close();
+        window.close();
+      } catch (error) {}
     },
   },
 });

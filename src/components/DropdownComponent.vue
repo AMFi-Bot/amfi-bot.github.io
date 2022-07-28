@@ -38,6 +38,7 @@ defineProps<{
         config.dropdownTitleClass ? config.dropdownTitleClass : 'dropdown_title'
       "
       @click="dropdownShow = !dropdownShow"
+      @focusout="dropdownShow = !dropdownShow"
     >
       <i
         class="dropdown_arrow"

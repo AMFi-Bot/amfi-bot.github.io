@@ -12,6 +12,7 @@ import { useUserStore } from "@/stores/user";
 
 import RootView from "@/views/RootView.vue";
 import LoadingView from "@/views/LoadingView.vue";
+import { useDiscordGuildStore } from "@/stores/discordGuild";
 
 // Lazy loaded views
 const LoginView = () => import("@/views/LoginView.vue");
@@ -112,8 +113,23 @@ const router = createRouter({
           component: DiscordDashboardView,
         },
         {
-          path: "guilds/:id/",
+          path: "guilds/:guild_id/",
           meta: { layout: "DiscordGuildLayout" },
+          beforeEnter: async (to, from, next) => {
+            nProgress.inc();
+            const discordGuildStore = useDiscordGuildStore();
+
+            const guild_id = <string>to.params.guild_id;
+            if (!guild_id) return next({ name: "discord_dashboard" });
+
+            nProgress.inc(2);
+            if (!(await discordGuildStore.getGuild(guild_id)))
+              return next({ name: "discord_dashboard" });
+
+            nProgress.inc(2);
+
+            return next();
+          },
           children: [
             {
               path: "",
