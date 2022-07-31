@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -114,3 +116,11 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+.DS_Store
+dist-ssr
+coverage
+*.local
+
+/cypress/videos/
+/cypress/screenshots/

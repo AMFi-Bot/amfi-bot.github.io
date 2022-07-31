@@ -10,8 +10,6 @@ const pinia = createPinia();
 import App from "@/App.vue";
 import router from "@/router";
 
-import axios from "@/api";
-
 import { setupI18n } from "@/i18n";
 
 import { plugin as VueTippy } from "vue-tippy";

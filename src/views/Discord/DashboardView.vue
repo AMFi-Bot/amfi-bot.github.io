@@ -19,7 +19,7 @@ discordGuildsStore.loadGuilds();
       "
     >
       <div class="guild_list_text">Please choose a guild to setup</div>
-      <div v-for="guild in discordGuildsStore.guilds">
+      <div v-for="guild in discordGuildsStore.guilds" :key="guild.id">
         <div class="guild">
           <div class="guild_desc">
             <img

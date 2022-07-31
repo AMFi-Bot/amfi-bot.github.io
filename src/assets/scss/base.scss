@@ -51,14 +51,11 @@ footer {
   width: 100%;
 }
 
-main {
+.content {
   flex: 1 0 auto;
 
   display: flex;
-  align-items: flex-start;
   flex-direction: column;
-  align-self: center;
-  justify-content: flex-start;
 
   margin: 20px 0;
   position: relative;

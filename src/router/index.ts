@@ -203,7 +203,7 @@ router.beforeResolve(async (to, from, next) => {
   next();
 });
 
-router.afterEach((to, from) => {
+router.afterEach(() => {
   nProgress.done();
 });
 export default router;
