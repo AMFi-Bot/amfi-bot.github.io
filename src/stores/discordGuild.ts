@@ -2,7 +2,7 @@ import api from "@/api";
 import type { apiSuccessResponseType } from "@/types/api/base";
 import type { DiscordBotGuild } from "@/types/discord/guild";
 import { defineStore } from "pinia";
-import { useRoute, useRouter } from "vue-router";
+// import { useRoute, useRouter } from "vue-router";
 import { useErrorsStore } from "./errors";
 
 type LoadingType = {

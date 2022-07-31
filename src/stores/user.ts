@@ -61,7 +61,7 @@ export const useUserStore = defineStore("user", {
     },
 
     userAuthenticated(user: userType) {
-      var cUser = this.changeUserProperty(user);
+      const cUser = this.changeUserProperty(user);
 
       cUser.loading = false;
       cUser.logged = this.user_logged;
@@ -108,9 +108,9 @@ export const useUserStore = defineStore("user", {
 
         nProgress.inc();
 
-        let response = await axios.post("/auth/login", form);
+        const response = await axios.post("/auth/login", form);
 
-        let user = response.data.data.user;
+        const user = response.data.data.user;
 
         this.userAuthenticated(user);
         return this.postLogin();
@@ -136,9 +136,9 @@ export const useUserStore = defineStore("user", {
 
         nProgress.inc();
 
-        let response = await axios.post("/auth/register", form);
+        const response = await axios.post("/auth/register", form);
 
-        let user = response.data.data.user;
+        const user = response.data.data.user;
 
         this.userAuthenticated(user);
         return this.postLogin();
@@ -167,7 +167,7 @@ export const useUserStore = defineStore("user", {
         if (this.logged) {
           return this.user;
         } else {
-          await new Promise((resolve, reject) => {
+          await new Promise((resolve) => {
             const interval = setInterval(async () => {
               if (!this.loading) {
                 clearInterval(interval);
@@ -183,11 +183,11 @@ export const useUserStore = defineStore("user", {
       this.loading = true;
 
       try {
-        let response = await axios.get("/api/v1/user");
+        const response = await axios.get("/api/v1/user");
 
         if (response.status !== 200) throw "error";
 
-        let user = response.data.data.user;
+        const user = response.data.data.user;
 
         return this.userAuthenticated(user);
       } catch {
@@ -217,7 +217,7 @@ export const useUserStore = defineStore("user", {
 
       popup.location = response.data.redirectTo;
 
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve) => {
         const interval = setInterval(async () => {
           if (popup.closed) {
             clearInterval(interval);
@@ -287,7 +287,7 @@ export const useUserStore = defineStore("user", {
 
     load_telegram_widget_script(mount_to = "telegram_load") {
       console.log("function");
-      let telegram_widget_script = document.createElement("script");
+      const telegram_widget_script = document.createElement("script");
       telegram_widget_script.setAttribute(
         "src",
         "https://telegram.org/js/telegram-widget.js?19"

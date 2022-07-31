@@ -34,7 +34,7 @@ export function setupI18n(locale?: string) {
 }
 
 export function getI18nLocale() {
-  var locale = js_cookie.get("locale");
+  let locale = js_cookie.get("locale");
 
   if (locale && SUPPORT_LOCALES.indexOf(locale) === -1) {
     // Detect locale

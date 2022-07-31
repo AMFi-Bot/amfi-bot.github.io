@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import "@/assets/scss/header.scss";
-import BaseVue from "./Headers/Base.vue";
-import UnloggedVue from "./Headers/Unlogged.vue";
-import _ from "lodash";
-import { useUserStore } from "@/stores/user";
-import { setI18nLanguage } from "@/i18n";
-import { useI18n } from "vue-i18n";
+import BaseVue from "./Headers/BaseContent.vue";
+import UnloggedVue from "./Headers/UnLogged.vue";
+// import _ from "lodash";
+// import { useUserStore } from "@/stores/user";
+// import { setI18nLanguage } from "@/i18n";
+// import { useI18n } from "vue-i18n";
 
-const userStore = useUserStore();
-const i18n = useI18n();
+// const userStore = useUserStore();
+// const i18n = useI18n();
 </script>
 
 <template>

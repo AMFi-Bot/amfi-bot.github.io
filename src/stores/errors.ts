@@ -43,9 +43,9 @@ export const useErrorsStore = defineStore("errors", {
     },
 
     addAPIError(axios_error: AxiosError, message: string) {
-      var error_message = `Oops, something went wrong: ${message || ""}`;
+      let error_message = `Oops, something went wrong: ${message || ""}`;
 
-      var br_symbol = "\n";
+      const br_symbol = "\n";
 
       if (axios_error) {
         if (axios_error.message)

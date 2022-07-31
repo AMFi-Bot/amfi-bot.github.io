@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import "@/assets/scss/auth.scss";
 
-import axios from "axios";
-
 import { useUserStore } from "@/stores/user";
 import { onMounted, reactive } from "vue";
 const userStore = useUserStore();

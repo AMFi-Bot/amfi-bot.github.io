@@ -5,7 +5,7 @@ import { ref } from "vue";
 
 const leftside_open = ref(false);
 
-const setup_page = ref("");
+// const setup_page = ref("");
 </script>
 
 <template>

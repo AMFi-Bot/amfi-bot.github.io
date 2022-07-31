@@ -23,7 +23,7 @@ defineProps<{
     dropdownContentClass?: string;
     dropdownContentElemClass?: string;
     useChoosedElementAsTitle?: boolean;
-    onChoose: (element: any) => any;
+    onChoose: (element: ElementType) => void;
   };
 }>();
 </script>
@@ -68,6 +68,7 @@ defineProps<{
             : 'dropdown_content_elem'
         "
         v-for="element of config.dropdownContent"
+        :key="typeof element == 'string' ? element : element.name"
         @click="
           choosedElement = element;
           config.onChoose ? config.onChoose(element) : '';

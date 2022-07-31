@@ -2,7 +2,7 @@
 import DiscordGuildHeaderVue from "@/components/Discord/Guild/DiscordGuildHeader.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 
-import NavigateVue from "@/components/Discord/Guild/Navigate.vue";
+import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
 
 import "@/assets/scss/discord/base.scss";
 </script>
