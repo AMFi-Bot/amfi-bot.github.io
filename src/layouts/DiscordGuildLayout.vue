@@ -10,9 +10,11 @@ import "@/assets/scss/discord/base.scss";
 <template>
   <DiscordGuildHeaderVue></DiscordGuildHeaderVue>
 
-  <main class="discord_guild">
-    <NavigateVue></NavigateVue>
-    <slot />
-  </main>
+  <div class="content">
+    <div class="discord_guild">
+      <NavigateVue></NavigateVue>
+      <slot />
+    </div>
+  </div>
   <FooterComponent></FooterComponent>
 </template>

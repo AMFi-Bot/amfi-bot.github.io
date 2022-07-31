@@ -35,9 +35,10 @@ const discordGuildStore = useDiscordGuildStore();
           <DropDownComponentVue
             :config="{
               clickButtonTitle: 'Click me!',
-              dropdownContent: JSON.parse(discordGuildStore.channels).filter(
-                (q: any) => q.type === 0
-              ),
+              dropdownContent: JSON.parse(discordGuildStore.channels).filter((q: any) => q.type === 0),
+              onChoose: async (element: any) => {
+                discordGuildStore.updateModuleProperty('general','log_channel', element.id);
+              }
             }"
           />
         </div>

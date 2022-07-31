@@ -6,9 +6,9 @@ import FooterComponent from "@/components/FooterComponent.vue";
 <template>
   <HeaderComponent></HeaderComponent>
 
-  <main>
+  <div class="content">
     <slot />
-  </main>
+  </div>
 
   <FooterComponent></FooterComponent>
 </template>
