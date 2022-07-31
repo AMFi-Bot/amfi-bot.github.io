@@ -29,22 +29,22 @@ jobs:
         run: npm install
 
       # Do some tests
-      - name: Check TypeScript syntax
-        run: npm run type-check
+      # - name: Check TypeScript syntax
+      #   run: npm run type-check
 
-      - name: Check syntax with eslint
-        run: npm run lint
+      # - name: Check syntax with eslint
+      #   run: npm run lint
 
-      - name: Run unit tests
-        run: npm run test:unit
+      # - name: Run unit tests
+      #   run: npm run test:unit
 
       # Build
       - name: Build project
         run: npm run build
 
-      #Fially E2E test
-      - name: Run E2E tests
-        run: npm run test:e2e:ci
+      # #Fially E2E test
+      # - name: Run E2E tests
+      #   run: npm run test:e2e:ci
 
       # If Ci tests completed, start to deploy
       - name: Deploy to Github Pages 🚀
