@@ -50,5 +50,6 @@ jobs:
       - name: Deploy to Github Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
+          token: ${{ secrets.PAGES_DEPLOY_SECRET }}
           folder: dist # The folder the action should deploy.
           repository-name: AMFi-Bot/amfi-bot.github.io
