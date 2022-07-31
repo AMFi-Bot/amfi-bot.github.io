@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DropDownComponentVue from "@/components/DropDownComponent.vue";
+import DropDownComponentVue from "@/components/DropdownComponent.vue";
 
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 

@@ -1,7 +1,7 @@
 import type {
   apiClientErrorResponseType,
   apiServerErrorResponseType,
-} from "@/api";
+} from "@/types/api/base";
 import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 
