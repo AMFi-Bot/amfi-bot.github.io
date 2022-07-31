@@ -53,3 +53,4 @@ jobs:
           token: ${{ secrets.PAGES_DEPLOY_SECRET }}
           folder: dist # The folder the action should deploy.
           repository-name: AMFi-Bot/amfi-bot.github.io
+          branch: main
