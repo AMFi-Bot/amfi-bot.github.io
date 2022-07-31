@@ -31,12 +31,14 @@ export const useErrorsStore = defineStore("errors", {
 
         setTimeout(() => this.removeError(id), cooldown * 1000);
 
-        return;
+        return id;
       }
 
       this.errors.push({ id, text, count: 1 });
 
       setTimeout(() => this.removeError(id), cooldown * 1000);
+
+      return id;
     },
     removeError(id: string) {
       this.errors = this.errors.filter((f) => !f || f.id !== id);
