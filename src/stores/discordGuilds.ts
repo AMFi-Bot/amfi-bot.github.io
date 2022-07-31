@@ -30,13 +30,15 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
         this.guilds = response.data.data.guilds;
         this.loading = false;
         this.loaded = true;
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     },
     async loginGuild(id: string | number) {
       nProgress.inc();
 
       // Generate bot auth uri
-      var discordURI = "https://discord.com/api/oauth2/authorize?";
+      let discordURI = "https://discord.com/api/oauth2/authorize?";
 
       // client id
       discordURI += `client_id=${import.meta.env.VITE_DISCORD_BOT_ID}&`;
@@ -63,7 +65,7 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
       discordURI += `disable_guild_select=true`;
 
       // Open popup
-      const popup = window.open(discordURI, "", "width=500,height=900");
+      window.open(discordURI, "", "width=500,height=900");
 
       nProgress.done();
 
@@ -82,7 +84,9 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
         window.opener.router = undefined;
 
         window.close();
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 });

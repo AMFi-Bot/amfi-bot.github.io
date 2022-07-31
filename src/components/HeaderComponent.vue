@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import _ from "lodash";
-import { useUserStore } from "@/stores/user";
-import { setI18nLanguage } from "@/i18n";
-import { useI18n } from "vue-i18n";
+import "@/assets/scss/header.scss";
+import BaseVue from "./Headers/BaseContent.vue";
+import UnloggedVue from "./Headers/UnLogged.vue";
+// import _ from "lodash";
+// import { useUserStore } from "@/stores/user";
+// import { setI18nLanguage } from "@/i18n";
+// import { useI18n } from "vue-i18n";
 
-const userStore = useUserStore();
-const i18n = useI18n();
+// const userStore = useUserStore();
+// const i18n = useI18n();
 </script>
 
 <template>
-  <div id="menu">
+  <BaseVue><UnloggedVue></UnloggedVue></BaseVue>
+  <!-- <div id="menu">
     <div id="menu_panel">
       <RouterLink id="menu_name" to="/">AMFi-Bot</RouterLink>
       <div class="menu_ops">
@@ -59,7 +63,7 @@ const i18n = useI18n();
                   : '/img/premium-yellow.svg'
               "
             />
-            <!--
+            
                         <script>
                             tippy('._usr_type img', {
                                 content: "{{($user.privelege == -1)
@@ -67,8 +71,8 @@ const i18n = useI18n();
                                 "Привелегированый пользователь"}}",
                             })
                         </script>
-                        -->
-          </div>
+                      
+   </div>
         </div>
         <template #content>
           <ul id="cart">
@@ -145,5 +149,5 @@ const i18n = useI18n();
         }}</RouterLink>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>

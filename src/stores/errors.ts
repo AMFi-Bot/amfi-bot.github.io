@@ -1,7 +1,7 @@
 import type {
   apiClientErrorResponseType,
   apiServerErrorResponseType,
-} from "@/api";
+} from "@/types/api/base";
 import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 
@@ -31,21 +31,23 @@ export const useErrorsStore = defineStore("errors", {
 
         setTimeout(() => this.removeError(id), cooldown * 1000);
 
-        return;
+        return id;
       }
 
       this.errors.push({ id, text, count: 1 });
 
       setTimeout(() => this.removeError(id), cooldown * 1000);
+
+      return id;
     },
     removeError(id: string) {
       this.errors = this.errors.filter((f) => !f || f.id !== id);
     },
 
     addAPIError(axios_error: AxiosError, message: string) {
-      var error_message = `Oops, something went wrong: ${message || ""}`;
+      let error_message = `Oops, something went wrong: ${message || ""}`;
 
-      var br_symbol = "\n";
+      const br_symbol = "\n";
 
       if (axios_error) {
         if (axios_error.message)

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import _ from "lodash";
 import { useUserStore } from "@/stores/user";
 import { setI18nLanguage } from "@/i18n";
 import { useI18n } from "vue-i18n";

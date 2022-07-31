@@ -5,9 +5,9 @@ import { useRoute } from "vue-router";
 
 const discordGuildStore = useDiscordGuildStore();
 
-const guild = ref(
-  discordGuildStore.getGuild(<string>useRoute().params.guild_id)
-);
+const id_param = useRoute().params.guild_id;
+const guild_id = typeof id_param == "string" ? id_param : id_param[0];
+const guild = ref(discordGuildStore.getGuild(guild_id));
 </script>
 
 <template>Dashboard</template>
