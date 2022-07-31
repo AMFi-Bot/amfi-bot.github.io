@@ -10,7 +10,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
     runs-on: ubuntu-latest
 
     strategy:
@@ -18,8 +19,6 @@ jobs:
         node-version: [16.x]
 
     steps:
-      concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
-
       # Install node and node modules
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
