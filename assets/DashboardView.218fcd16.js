@@ -1,0 +1,1 @@
+import{d as r,y as t,z as a,A as d}from"./index.e95916f5.js";const c=r({__name:"DashboardView",setup(i){const e=t(),s=a().params.guild_id,o=typeof s=="string"?s:s[0];return d(e.getGuild(o)),(n,u)=>"Dashboard"}});export{c as default};
