@@ -1,0 +1,54 @@
+name: CD Github Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+
+      # Install node and node modules
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+
+      # Do some tests
+      - name: Check TypeScript syntax
+        run: npm run type-check
+
+      - name: Check syntax with eslint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      # Build
+      - name: Build project
+        run: npm run build
+
+      #Fially E2E test
+      - name: Run E2E tests
+        run: npm run test:e2e:ci
+
+      # If Ci tests completed, start to deploy
+      - name: Deploy to Github Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build # The folder the action should deploy.
