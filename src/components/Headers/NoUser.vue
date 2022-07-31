@@ -6,7 +6,7 @@ const userStore = useUserStore();
 
 onMounted(() => {
   userStore.load_telegram_widget_script("telegram_auth_mount_point");
-});
+}); //
 </script>
 
 <template>

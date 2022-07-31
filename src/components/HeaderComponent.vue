@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import "@/assets/scss/header.scss";
 import BaseVue from "./Headers/BaseContent.vue";
-import UnloggedVue from "./Headers/UnLogged.vue";
+import UnloggedVue from "./Headers/NoUser.vue";
 // import _ from "lodash";
 // import { useUserStore } from "@/stores/user";
 // import { setI18nLanguage } from "@/i18n";
