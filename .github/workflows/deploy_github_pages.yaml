@@ -33,25 +33,25 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       # Do some tests
       - name: Check TypeScript syntax
-        run: npm run type-check
+        run: pnpm type-check
 
       - name: Check syntax with eslint
-        run: npm run lint
+        run: pnpm lint
 
       - name: Run unit tests
-        run: npm run test:unit
+        run: pnpm test:unit
 
       # Build
       - name: Build project
-        run: npm run build
+        run: pnpm build
 
       # #Fially E2E test
       - name: Run E2E tests
-        run: npm run test:e2e:ci
+        run: pnpm test:e2e:ci
 
       # If Ci tests completed, start to deploy
       - name: Deploy to Github Pages 🚀
