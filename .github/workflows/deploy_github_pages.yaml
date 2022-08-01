@@ -19,14 +19,21 @@ jobs:
         node-version: [16.x]
 
     steps:
-      # Install node and node modules
       - uses: actions/checkout@v3
+
+      # Install node and node modules (via pnpm)
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       # Do some tests
       - name: Check TypeScript syntax
