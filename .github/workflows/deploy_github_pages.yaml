@@ -33,7 +33,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --shamefully-hoist
 
       # Do some tests
       - name: Check TypeScript syntax
@@ -50,9 +50,6 @@ jobs:
         run: npm run build
 
       # #Fially E2E test
-      - name: Install cypress
-        run: cypress install
-
       - name: Run E2E tests
         run: npm run test:e2e:ci
 
