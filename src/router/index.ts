@@ -26,21 +26,6 @@ const DiscordBotAuthCallback = () =>
 //Discord components
 const DiscordDashboardView = () => import("@/views/Discord/DashboardView.vue");
 
-export async function discordAuthenticated(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
-  const { useUserStore } = await import("@/stores/user");
-  const userStore = useUserStore();
-
-  if (userStore && userStore.logged && userStore.discord_id) {
-    next();
-  }
-
-  next(from);
-}
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -48,18 +33,6 @@ const router = createRouter({
       path: "/",
       name: "root",
       component: RootView,
-    },
-    {
-      path: "/login",
-      name: "login",
-      component: LoginView,
-      meta: { noAuth: true },
-    },
-    {
-      path: "/register",
-      name: "register",
-      component: RegiserView,
-      meta: { noAuth: true },
     },
     {
       path: import.meta.env.VITE_TELEGRAM_REDIRECT_URL,
@@ -185,18 +158,9 @@ router.beforeResolve(async (to, from, next) => {
   const userStore = useUserStore();
 
   if (to.meta.requiresAuth && !(await userStore.isAuthenticated())) {
-    // this route requires auth, check if logged in
-    // if not, redirect to login page.
     return {
-      path: "/login",
-      // save the location we were at to come back later
-      query: { redirect: to.fullPath },
+      path: "/",
     };
-  } else if (to.meta.noAuth && (await userStore.isAuthenticated())) {
-    // this route NO requires auth and needs to be protected from authenticated user,
-    // check if logged in
-    // if yes, redirect to previos page.
-    return from;
   }
 
   nProgress.inc();
