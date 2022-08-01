@@ -105,61 +105,50 @@
   }
 }
 
-#user_ops {
+.user {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: row;
   align-items: center;
-  height: 80%;
+
+  margin-right: 30px;
+  padding: 5px 10px;
+
   text-align: center;
   cursor: pointer;
 
-  //display user
-  .user {
+  background-color: dodgerblue;
+  border-radius: 10px;
+
+  @include button(
+    $lightblue_button_normal,
+    $lightblue_button_hover,
+    $lightblue_button_hover
+  );
+  color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 18px;
+
+  .name {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-
-    margin-right: 30px;
-    height: 80%;
-    padding: 0 10px;
-
+    align-content: center;
+    margin-left: 10px;
     text-align: center;
-    cursor: pointer;
+    height: 100%;
+    position: relative;
+    padding-right: 10px !important;
 
-    background-color: dodgerblue;
-    border-radius: 0.5rem;
-    transition: background-color 0.17s ease, color 0.17s ease;
-
-    color: white;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 18px;
-
-    &:hover {
-      background-color: #1e80ff;
-    }
-
-    ._usr_name {
-      display: flex;
-      align-content: center;
-      margin-left: 10px;
-      text-align: center;
+    .type {
       height: 100%;
-      position: relative;
-      padding-right: 10px !important;
-
-      ._usr_type {
-        height: 100%;
-        padding-top: 3px;
-      }
+      padding-top: 3px;
     }
-    ._usr_avatar {
-      border-radius: 50%;
-      background-size: 40px;
-      width: 40px;
-      height: 40px;
-      min-height: 40px;
-      min-width: 40px;
-    }
+  }
+  .avatar {
+    border-radius: 50%;
+    background-size: 40px;
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    min-width: 40px;
   }
 }
 
