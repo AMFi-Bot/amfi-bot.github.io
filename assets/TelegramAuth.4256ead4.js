@@ -1,1 +1,0 @@
-import{d as a,u as n,g as s,h as r,f as c,L as _}from"./index.9e437c2d.js";const u=a({__name:"TelegramAuth",async setup(i){let e,t;const o=n();return[e,t]=s(()=>o.login_telegram(window.location.search)),await e,t(),(m,p)=>(c(),r(_))}});export{u as default};
