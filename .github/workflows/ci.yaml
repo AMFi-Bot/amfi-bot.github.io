@@ -28,7 +28,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --shamefully-hoist
+        run: pnpm install --frozen-lockfile
 
       - name: Check TypeScript syntax
         run: npm run type-check
