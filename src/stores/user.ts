@@ -98,57 +98,6 @@ export const useUserStore = defineStore("user", {
       router.push({ name: "dashboard" });
     },
 
-    async login(form: { email: string; password: string }) {
-      try {
-        this.loading = true;
-
-        nProgress.inc();
-
-        await regenerateSession();
-
-        nProgress.inc();
-
-        const response = await axios.post("/auth/login", form);
-
-        const user = response.data.data.user;
-
-        this.userAuthenticated(user);
-        return this.postLogin();
-      } catch (error) {
-        if (error instanceof AxiosError) this.throwAuthError(error);
-
-        return false;
-      }
-    },
-
-    async register(form: {
-      name: string;
-      email: string;
-      password: string;
-      password_confirmation: string;
-    }) {
-      try {
-        this.loading = true;
-
-        nProgress.inc();
-
-        await regenerateSession();
-
-        nProgress.inc();
-
-        const response = await axios.post("/auth/register", form);
-
-        const user = response.data.data.user;
-
-        this.userAuthenticated(user);
-        return this.postLogin();
-      } catch (error) {
-        if (error instanceof AxiosError) this.throwAuthError(error);
-
-        return false;
-      }
-    },
-
     async logout() {
       await axios.post("/auth/logout");
       this.nullUser();
