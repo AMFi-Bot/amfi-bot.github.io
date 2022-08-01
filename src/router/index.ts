@@ -7,6 +7,7 @@ import {
 import nProgress from "@/nprogress";
 
 import { useUserStore } from "@/stores/user";
+import { useErrorsStore } from "@/stores/errors";
 
 // Auto loaded views
 
@@ -23,6 +24,19 @@ const DiscordBotAuthCallback = () =>
 
 //Discord components
 const DiscordDashboardView = () => import("@/views/Discord/DashboardView.vue");
+
+export function discordAuthenticated(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) {
+  const userStore = useUserStore();
+  if (userStore && userStore.logged && userStore.discord_id) {
+    return next();
+  }
+  next("/");
+  useErrorsStore().addError("You are not authenticated with discord.");
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -75,8 +89,8 @@ const router = createRouter({
 
     {
       path: "/discord",
-      // beforeEnter: [authenticatedGuard, discordAuthenticated],
-      // meta: { requiresAuth: true },
+      beforeEnter: [discordAuthenticated],
+      meta: { requiresAuth: true },
       children: [
         {
           path: "dashboard",

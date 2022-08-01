@@ -48,67 +48,6 @@ export const useUserStore = defineStore("user", {
     return _.cloneDeep(noUser);
   },
   actions: {
-    changeUserProperty(user: userType) {
-      const cUser = _.cloneDeep(user);
-
-      this.$state = cUser;
-      return this.$state;
-    },
-
-    nullUser() {
-      nProgress.done();
-      return this.changeUserProperty(noUser);
-    },
-
-    userAuthenticated(user: userType) {
-      const cUser = this.changeUserProperty(user);
-
-      cUser.loading = false;
-      cUser.logged = this.user_logged;
-
-      return cUser;
-    },
-
-    throwAuthError(error: AxiosError) {
-      const errorsStore = useErrorsStore();
-
-      let err_message = `Oops somtehing went wrong: ${error.message}`;
-
-      if (error.response && error.response.data) {
-        type responseType = {
-          error: {
-            message: string;
-          };
-        };
-        const response_data = <responseType>error.response.data;
-        if (response_data.error && response_data.error.message) {
-          err_message += ` ${response_data.error.message}`;
-        }
-      }
-
-      errorsStore.addError(err_message);
-
-      nProgress.done();
-
-      this.nullUser();
-    },
-
-    async postLogin() {
-      nProgress.done();
-      router.push({ name: "dashboard" });
-    },
-
-    async logout() {
-      await axios.post("/auth/logout");
-      this.nullUser();
-
-      router.push("/");
-    },
-
-    checkUserCokkieExists() {
-      return js_cookie.get("XSRF-TOKEN") ? true : false;
-    },
-
     async loadUser() {
       if (!this.checkUserCokkieExists()) return false;
 
@@ -280,6 +219,67 @@ export const useUserStore = defineStore("user", {
       if (await this.loadUser()) return true;
 
       return false;
+    },
+
+    async logout() {
+      await axios.post("/auth/logout");
+      this.nullUser();
+
+      router.push("/");
+    },
+
+    async postLogin() {
+      nProgress.done();
+      router.push("/dashboard");
+    },
+
+    checkUserCokkieExists() {
+      return js_cookie.get("XSRF-TOKEN") ? true : false;
+    },
+
+    changeUserProperty(user: userType) {
+      const cUser = _.cloneDeep(user);
+
+      this.$state = cUser;
+      return this.$state;
+    },
+
+    nullUser() {
+      nProgress.done();
+      return this.changeUserProperty(noUser);
+    },
+
+    userAuthenticated(user: userType) {
+      const cUser = this.changeUserProperty(user);
+
+      cUser.loading = false;
+      cUser.logged = this.user_logged;
+
+      return cUser;
+    },
+
+    throwAuthError(error: AxiosError) {
+      const errorsStore = useErrorsStore();
+
+      let err_message = `Oops somtehing went wrong: ${error.message}`;
+
+      if (error.response && error.response.data) {
+        type responseType = {
+          error: {
+            message: string;
+          };
+        };
+        const response_data = <responseType>error.response.data;
+        if (response_data.error && response_data.error.message) {
+          err_message += ` ${response_data.error.message}`;
+        }
+      }
+
+      errorsStore.addError(err_message);
+
+      nProgress.done();
+
+      this.nullUser();
     },
   },
 
