@@ -50,6 +50,9 @@ jobs:
         run: npm run build
 
       # #Fially E2E test
+      - name: Install cypress
+        run: cypress install
+
       - name: Run E2E tests
         run: npm run test:e2e:ci
 
