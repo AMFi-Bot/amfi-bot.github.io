@@ -15,8 +15,6 @@ import LoadingView from "@/views/LoadingView.vue";
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 
 // Lazy loaded views
-const LoginView = () => import("@/views/LoginView.vue");
-const RegiserView = () => import("@/views/RegisterView.vue");
 const TelegramAuth = () => import("@/views/TelegramAuth.vue");
 const DiscordAuth = () => import("@/views/DiscordAuth.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
