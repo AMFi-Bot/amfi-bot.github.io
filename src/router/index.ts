@@ -25,13 +25,13 @@ const DiscordBotAuthCallback = () =>
 //Discord components
 const DiscordDashboardView = () => import("@/views/Discord/DashboardView.vue");
 
-export function discordAuthenticated(
+export async function discordAuthenticated(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
   const userStore = useUserStore();
-  if (userStore && userStore.logged && userStore.discord_id) {
+  if ((await userStore.isAuthenticated()) && userStore.discord_id) {
     return next();
   }
   next("/");

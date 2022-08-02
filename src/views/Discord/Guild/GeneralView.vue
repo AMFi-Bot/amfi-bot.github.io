@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import DropDownComponentVue from "@/components/DropdownComponent.vue";
-
 import { useDiscordGuildStore } from "@/stores/discordGuild";
+import DropdownComponent from "../../../components/DropdownComponent.vue";
 
 const discordGuildStore = useDiscordGuildStore();
 </script>
@@ -30,7 +29,7 @@ const discordGuildStore = useDiscordGuildStore();
               >Please choose a log channel where bot may send logs</span
             >
           </div>
-          <DropDownComponentVue
+          <DropdownComponent
             :config="{
               clickButtonTitle: 'Click me!',
               dropdownContent: JSON.parse(discordGuildStore.channels).filter((q: any) => q.type === 0),

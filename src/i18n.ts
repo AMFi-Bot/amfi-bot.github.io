@@ -28,7 +28,16 @@ export function setupI18n(locale?: string) {
     allowComposition: true,
   });
 
-  if (locale !== "en") loadLocaleMessages(i18n.global, locale);
+  if (locale && locale !== "en") {
+    const loadMessage = async (locale: string) => {
+      const messages = await import(`@/assets/locales/${locale}.ts`);
+
+      // set locale and locale message
+      i18n.global.setLocaleMessage(locale, messages.default);
+    };
+
+    loadMessage(locale);
+  }
 
   return i18n;
 }
@@ -51,10 +60,7 @@ export function getI18nLocale() {
   return locale;
 }
 
-export async function setI18nLanguage(
-  i18n: Composer<unknown, unknown, unknown, VueMessageType>,
-  locale: string
-) {
+export async function setI18nLanguage(i18n: Composer, locale: string) {
   if (SUPPORT_LOCALES.indexOf(locale) === -1) return false;
 
   js_cookie.set("locale", locale, { expires: 99999999999 });
@@ -66,12 +72,7 @@ export async function setI18nLanguage(
   return true;
 }
 
-export async function loadLocaleMessages(
-  i18n:
-    | Composer<unknown, unknown, unknown, VueMessageType>
-    | VueI18n<unknown, unknown, unknown>,
-  locale: string
-) {
+export async function loadLocaleMessages(i18n: Composer, locale: string) {
   const messages = await import(`@/assets/locales/${locale}.ts`);
 
   // set locale and locale message
