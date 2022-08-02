@@ -71,7 +71,7 @@ defineProps<{
         :key="typeof element == 'string' ? element : element.name"
         @click="
           choosedElement = element;
-          config.onChoose ? config.onChoose(element) : '';
+          config.onChoose(element);
         "
       >
         <span class="icon" v-if="typeof element !== 'string' && element.icon">
