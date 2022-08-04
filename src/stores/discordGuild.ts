@@ -1,7 +1,9 @@
 import api from "@/api";
 import type { apiSuccessResponseType } from "@/types/api/base";
 import type { DiscordBotGuild } from "@/types/discord/guild";
+import axios from "axios";
 import { defineStore } from "pinia";
+import { useRouter } from "vue-router";
 // import { useRoute, useRouter } from "vue-router";
 import { useErrorsStore } from "./errors";
 
@@ -17,12 +19,8 @@ export const useDiscordGuildStore = defineStore("discordGuild", {
       name: "",
       icon: "",
       module_general: {},
-      module_moderation: {},
-      module_automoderation: {},
-      module_commands: {},
-      module_features: {},
-      channels: {},
-      roles: {},
+      channels: [],
+      roles: [],
       loaded: false,
       loading: false,
     };
@@ -30,11 +28,11 @@ export const useDiscordGuildStore = defineStore("discordGuild", {
   actions: {
     async loadGuild(id: string | number) {
       try {
-        const response = <apiSuccessResponseType>(
-          (await api.get(`/api/v1/discord/guilds/${id}`)).data
+        const response = await api.get(
+          `/api/v1/discord/guilds/${id}?load=full`
         );
 
-        this.$state = { ...response.data.guild };
+        this.$state = response.data.data.guild;
         this.loading = false;
         this.loaded = true;
 
@@ -58,17 +56,14 @@ export const useDiscordGuildStore = defineStore("discordGuild", {
 
     async updateModule(module_name: "general", data: any) {
       try {
-        const response = <apiSuccessResponseType>(
-          (
-            await api.put(
-              `/api/v1/discord/guilds/${this.id}/modules/${module_name}`,
-              data
-            )
-          ).data
+        const response = await api.put(
+          `/api/v1/discord/guilds/${this.id}/modules/${module_name}`,
+          data
         );
 
-        this.$state[`module_${module_name}`] = response.data.module;
-        return response.data.module;
+        this.$state[`module_${module_name}`] = response.data.data;
+
+        return this.$state[`module_${module_name}`];
       } catch (error) {
         const errorsStore = useErrorsStore();
 
@@ -86,6 +81,29 @@ export const useDiscordGuildStore = defineStore("discordGuild", {
       const module = this.$state[`module_${module_name}`];
       module[propety_name] = property_value;
       return await this.updateModule(module_name, module);
+    },
+
+    async loadModule(module_name: "general") {
+      if (this.$state[`module_${module_name}`])
+        return this.$state[`module_${module_name}`];
+      try {
+        const response = await axios.get(
+          `/api/v1/discord/guilds/${this.id}/modules/module_${module_name}`
+        );
+
+        this.$state[`module_${module_name}`] =
+          response.data.data[`module_${module_name}`];
+
+        return this.$state[`module_${module_name}`];
+      } catch {
+        const errorsStore = useErrorsStore();
+
+        errorsStore.addError(`Cannot load module ${module_name}`);
+
+        useRouter().push({ name: "DiscordDashboard" });
+
+        return false;
+      }
     },
   },
 });

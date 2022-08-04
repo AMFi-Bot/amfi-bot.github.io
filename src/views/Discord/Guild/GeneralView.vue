@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 import DropdownComponent from "../../../components/DropdownComponent.vue";
+import LoadingComponent from "../../../components/LoadingComponent.vue";
 
 const discordGuildStore = useDiscordGuildStore();
+
+if (!discordGuildStore.module_general) discordGuildStore.loadModule("general");
 </script>
 
 <template>
@@ -14,7 +17,7 @@ const discordGuildStore = useDiscordGuildStore();
         important settings on your server.
       </p>
     </div>
-    <div class="instance_config">
+    <div class="instance_config" v-if="discordGuildStore.module_general">
       <div class="log_channel instance_elem column">
         <div class="instance_elem_title">
           <span class="title">Logs</span>
@@ -31,15 +34,23 @@ const discordGuildStore = useDiscordGuildStore();
           </div>
           <DropdownComponent
             :config="{
-              clickButtonTitle: 'Click me!',
-              dropdownContent: JSON.parse(discordGuildStore.channels).filter((q: any) => q.type === 0),
-              onChoose: async (element: any) => {
-                discordGuildStore.updateModuleProperty('general','log_channel', element.id);
+              clickButtonTitle: 
+                ( discordGuildStore.module_general.log_channel
+                  ? discordGuildStore.channels.filter(
+                      (q: any) => q.id === discordGuildStore.module_general.log_channel
+                    )[0].name
+                  : 'qwerty'
+                ) || 'Choose a channel',                
+                
+              dropdownContent: discordGuildStore.channels.filter((q: any) => q.type === 0),
+              onChoose: async (element) => {
+                discordGuildStore.updateModuleProperty('general','log_channel', typeof element === 'string' ? element: element.id);
               }
             }"
           />
         </div>
       </div>
     </div>
+    <LoadingComponent v-else />
   </div>
 </template>

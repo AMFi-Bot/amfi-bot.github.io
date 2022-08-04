@@ -65,23 +65,26 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", {
       discordURI += `disable_guild_select=true`;
 
       // Open popup
-      window.open(discordURI, "", "width=500,height=900");
+      const popup = window.open(discordURI, "", "width=500,height=900");
+
+      if (!popup) return;
 
       nProgress.done();
 
-      window.router = router;
+      await new Promise((resolve) => {
+        const interval = setInterval(async () => {
+          if (popup.closed) {
+            clearInterval(interval);
+            resolve(undefined);
+          }
+        }, 500);
+      });
+
+      router.push(`/discord/guilds/${id}`);
     },
     async loginGuildCallback(query_string: string) {
       try {
-        const response = <apiSuccessResponseType>(
-          (await api.post(`/api/v1/discord/guilds?${query_string}`)).data
-        );
-
-        if (!window.opener || !window.opener.router) return;
-
-        window.opener.router.push(`/discord/guilds/${response.data.guild.id}`);
-
-        window.opener.router = undefined;
+        await api.post(`/api/v1/discord/guilds?${query_string}`);
 
         window.close();
       } catch (error) {
