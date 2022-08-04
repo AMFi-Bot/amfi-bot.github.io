@@ -10,10 +10,6 @@ export type DiscordBotGuild = {
   name: string;
   icon?: string;
   module_general: any;
-  module_moderation: any;
-  module_automoderation: any;
-  module_commands: any;
-  module_features: any;
   channels: any;
   roles: any;
 };
