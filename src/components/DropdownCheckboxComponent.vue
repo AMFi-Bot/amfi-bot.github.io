@@ -1,0 +1,77 @@
+<script setup lang="tsx">
+import type { ElementType } from "@/types/components/DropdownComponents";
+import { ref, type Ref } from "vue";
+
+const dropdownShow = ref(false);
+
+const props = defineProps<{
+  config: {
+    clickButtonTitle: string;
+    dropdownContent: ElementType[];
+    initChoosed?: ElementType[];
+    onChoose: (elements: ElementType[]) => void;
+  };
+}>();
+
+const choosedElements: Ref<ElementType[]> = props.config.initChoosed
+  ? ref(props.config.initChoosed)
+  : ref([]);
+
+function onChoose(element: ElementType) {
+  choosedElements.value.filter((q) => q === element)[0]
+    ? (choosedElements.value = choosedElements.value.filter(
+        (q) => q !== element
+      ))
+    : choosedElements.value.push(element) &&
+      props.config.onChoose(choosedElements.value);
+}
+</script>
+
+<template>
+  <div class="dropdown_elem">
+    <div class="dropdown_title" @click="dropdownShow = !dropdownShow">
+      <i
+        class="dropdown_arrow"
+        :class="dropdownShow ? 'dropdown_arrow_shown' : 'dropdown_arrow_hidden'"
+      ></i>
+      <span class="title">{{ config.clickButtonTitle }}</span>
+    </div>
+    <div v-show="dropdownShow" class="dropdown_content">
+      <div
+        class="dropdown_content_elem"
+        v-for="element of config.dropdownContent"
+        :key="typeof element == 'string' ? element : element.name"
+        @click="onChoose(element)"
+      >
+        <i
+          class="checkbox"
+          :class="
+            choosedElements.filter((q) => q === element)[0]
+              ? 'checked'
+              : 'unchecked'
+          "
+        >
+        </i>
+        <div class="element">
+          <img
+            class="icon"
+            v-if="typeof element !== 'string' && element.icon"
+            :src="element.icon"
+          />
+          <span class="name" v-if="typeof element === 'string'">
+            {{ element }}
+          </span>
+          <span class="name" v-else>
+            {{ element.name }}
+          </span>
+          <span
+            class="value"
+            v-if="typeof element !== 'string' && element.value"
+          >
+            {{ element.value }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
