@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import DropdownComponent from "../DropdownComponent.vue";
 import type { ElementType } from "@/types/components/DropdownComponents";
+import VueClickAwayPlugin from "vue3-click-away";
 
 const clickButtonTitle = "Click me!";
 const dropdownContent: ElementType[] = [
@@ -24,6 +25,10 @@ const baseConfig = {
   useChoosedElementAsTitle: true,
 };
 
+const global = {
+  plugins: [VueClickAwayPlugin],
+};
+
 describe("Dropdown Component", () => {
   it("renders properly", async () => {
     // Mount element
@@ -31,6 +36,7 @@ describe("Dropdown Component", () => {
       props: {
         config: baseConfig,
       },
+      global,
     });
 
     const dropdownComponent = wrapper.find(".dropdown_elem");
@@ -78,6 +84,7 @@ describe("Dropdown Component", () => {
       props: {
         config: baseConfig,
       },
+      global,
     });
 
     const dropdownList = wrapper.find(".dropdown_content");
@@ -108,6 +115,7 @@ describe("Dropdown Component", () => {
           },
         },
       },
+      global,
     });
 
     const dropdownList = wrapper.find(".dropdown_content");
@@ -133,6 +141,7 @@ describe("Dropdown Component", () => {
           initChoosedElement: initialElement,
         },
       },
+      global,
     });
 
     const dropdownComponent = wrapper.find(".dropdown_elem");
@@ -159,6 +168,7 @@ describe("Dropdown Component", () => {
           },
         },
       },
+      global,
     });
 
     const dropdownComponent = wrapper.find(".dropdown_elem");

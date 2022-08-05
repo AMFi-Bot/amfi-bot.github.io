@@ -4,6 +4,8 @@ import { mount } from "@vue/test-utils";
 import DropdownCheckboxComponent from "../DropdownCheckboxComponent.vue";
 import type { ElementType } from "@/types/components/DropdownComponents";
 
+import VueClickAwayPlugin from "vue3-click-away";
+
 const clickButtonTitle = "Click me!";
 const dropdownContent: ElementType[] = [
   "content 1",
@@ -22,6 +24,9 @@ const baseConfig = {
     console.log(elements);
   },
 };
+const global = {
+  plugins: [VueClickAwayPlugin],
+};
 
 describe("Dropdown Checkbox", () => {
   it("renders properly", async () => {
@@ -30,6 +35,7 @@ describe("Dropdown Checkbox", () => {
       props: {
         config: baseConfig,
       },
+      global,
     });
 
     const dropdownComponent = wrapper.find(".dropdown_elem");
@@ -82,6 +88,7 @@ describe("Dropdown Checkbox", () => {
       props: {
         config: baseConfig,
       },
+      global,
     });
 
     const dropdownList = wrapper.find(".dropdown_content");
@@ -112,6 +119,7 @@ describe("Dropdown Checkbox", () => {
           },
         },
       },
+      global,
     });
 
     const dropdownList = wrapper.find(".dropdown_content");
@@ -152,6 +160,7 @@ describe("Dropdown Checkbox", () => {
           },
         },
       },
+      global,
     });
 
     const dropdownList = wrapper.find(".dropdown_content");
@@ -177,6 +186,7 @@ describe("Dropdown Checkbox", () => {
           initChoosed: dropdownContent,
         },
       },
+      global,
     });
 
     const dropdownList = wrapper.find(".dropdown_content");
