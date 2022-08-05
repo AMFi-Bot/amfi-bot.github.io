@@ -12,32 +12,33 @@ type ElementType =
       id?: string | number;
     };
 
-const choosedElement: Ref<undefined | ElementType> = ref();
-
-defineProps<{
+const props = defineProps<{
   config: {
     clickButtonTitle: string;
     dropdownContent: ElementType[];
-    dropdownElemClass?: string;
-    dropdownTitleClass?: string;
-    dropdownContentClass?: string;
-    dropdownContentElemClass?: string;
+    initChoosedElement?: ElementType;
     useChoosedElementAsTitle?: boolean;
     onChoose: (element: ElementType) => void;
   };
 }>();
+
+const choosedElement: Ref<undefined | ElementType> = props.config
+  .initChoosedElement
+  ? ref(props.config.initChoosedElement)
+  : ref();
+
+function onChoose(element: ElementType) {
+  if (choosedElement.value === element) return;
+
+  choosedElement.value = element;
+  props.config.onChoose(element);
+}
 </script>
 
 <template>
-  <div
-    :class="
-      config.dropdownElemClass ? config.dropdownElemClass : 'dropdown_elem'
-    "
-  >
+  <div class="dropdown_elem">
     <div
-      :class="
-        config.dropdownTitleClass ? config.dropdownTitleClass : 'dropdown_title'
-      "
+      class="dropdown_title"
       @click="dropdownShow = !dropdownShow"
       @focusout="dropdownShow = !dropdownShow"
     >
@@ -53,30 +54,18 @@ defineProps<{
           : config.clickButtonTitle
       }}</span>
     </div>
-    <div
-      v-show="dropdownShow"
-      :class="
-        config.dropdownContentClass
-          ? config.dropdownContentClass
-          : 'dropdown_content'
-      "
-    >
+    <div v-show="dropdownShow" class="dropdown_content">
       <div
-        :class="
-          config.dropdownContentElemClass
-            ? config.dropdownContentElemClass
-            : 'dropdown_content_elem'
-        "
+        class="dropdown_content_elem"
         v-for="element of config.dropdownContent"
         :key="typeof element == 'string' ? element : element.name"
-        @click="
-          choosedElement = element;
-          config.onChoose(element);
-        "
+        @click="onChoose(element)"
       >
-        <span class="icon" v-if="typeof element !== 'string' && element.icon">
-          {{ element.icon }}
-        </span>
+        <img
+          class="icon"
+          v-if="typeof element !== 'string' && element.icon"
+          :src="element.icon"
+        />
         <span class="name" v-if="typeof element !== 'string' && element.name">
           {{ element.name }}
         </span>
