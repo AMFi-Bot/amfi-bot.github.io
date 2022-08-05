@@ -1,6 +1,7 @@
-<script setup lang="tsx">
+<script setup lang="ts">
 import type { ElementType } from "@/types/components/DropdownComponents";
-import { ref, type Ref } from "vue";
+import { queuePostFlushCb, ref, type Ref } from "vue";
+import _ from "lodash";
 
 const dropdownShow = ref(false);
 
@@ -13,17 +14,18 @@ const props = defineProps<{
   };
 }>();
 
-const choosedElements: Ref<ElementType[]> = props.config.initChoosed
-  ? ref(props.config.initChoosed)
-  : ref([]);
+const choosedElements: Ref<ElementType[]> = ref([
+  ...(props.config.initChoosed || []),
+]);
 
 function onChoose(element: ElementType) {
-  choosedElements.value.filter((q) => q === element)[0]
+  choosedElements.value.filter((q) => _.isEqual(q, element))[0]
     ? (choosedElements.value = choosedElements.value.filter(
-        (q) => q !== element
+        (q) => !_.isEqual(q, element)
       ))
-    : choosedElements.value.push(element) &&
-      props.config.onChoose(choosedElements.value);
+    : choosedElements.value.push(element);
+
+  props.config.onChoose(choosedElements.value);
 }
 </script>
 
@@ -46,7 +48,7 @@ function onChoose(element: ElementType) {
         <i
           class="checkbox"
           :class="
-            choosedElements.filter((q) => q === element)[0]
+            choosedElements.filter((q) => _.isEqual(q, element))[0]
               ? 'checked'
               : 'unchecked'
           "

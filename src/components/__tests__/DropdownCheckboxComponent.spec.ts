@@ -131,11 +131,11 @@ describe("Dropdown Checkbox", () => {
       expect(elementCheckbox.classes()).not.toContain("unchecked");
       expect(elementCheckbox.classes()).toContain("checked");
 
+      expect(onChooseCallbackReturn).toEqual([element]);
+
       // Click again on choosed element must mark checkbox to unchecked state
       await renderedElement.trigger("click");
       expect(elementCheckbox.classes()).toContain("unchecked");
-
-      expect(onChooseCallbackReturn).toEqual([element]);
     }
   });
 
