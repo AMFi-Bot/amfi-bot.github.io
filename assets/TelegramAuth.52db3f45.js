@@ -1,0 +1,1 @@
+import{d as e,u as o,c as r,o as t,L as a}from"./index.f685280a.js";const m=e({__name:"TelegramAuth",setup(n){return o().login_telegram(window.location.search),(c,u)=>(t(),r(a))}});export{m as default};

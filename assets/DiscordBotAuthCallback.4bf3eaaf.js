@@ -1,0 +1,1 @@
+import{d as a,w as s,c,o as n,L as r}from"./index.f685280a.js";import{u as i}from"./discordGuilds.56525083.js";const m=a({__name:"DiscordBotAuthCallback",async setup(l){let o,t;const e=i();return[o,t]=s(()=>e.loginGuildCallback(window.location.search)),await o,t(),(d,_)=>(n(),c(r))}});export{m as default};
