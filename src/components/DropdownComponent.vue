@@ -33,10 +33,14 @@ function onChoose(element: ElementType) {
   choosedElement.value = element;
   props.config.onChoose(element);
 }
+
+function clickAway() {
+  dropdownShow.value = false;
+}
 </script>
 
 <template>
-  <div class="dropdown_elem">
+  <div class="dropdown_elem" v-click-away="clickAway">
     <div
       class="dropdown_title"
       @click="dropdownShow = !dropdownShow"

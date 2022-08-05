@@ -15,6 +15,8 @@ import { setupI18n } from "@/i18n";
 import { plugin as VueTippy } from "vue-tippy";
 import "tippy.js/dist/tippy.css"; // optional for styling
 
+import VueClickAway from "vue3-click-away";
+
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
 import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
 import DiscordGuildLayoutVue from "./layouts/DiscordGuildLayout.vue";
@@ -26,6 +28,7 @@ const app = createApp(App);
 app.use(pinia);
 app.use(i18n);
 app.use(router);
+app.use(VueClickAway);
 app.use(
   VueTippy,
   // optional
