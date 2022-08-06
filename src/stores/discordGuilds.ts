@@ -6,10 +6,10 @@ import nProgress from "../nprogress";
 
 import router from "../router/index";
 import type { apiSuccessResponseType } from "@/types/api/base";
-import type { DiscordGuild } from "@/types/discord/guild";
+import type { DiscordUserGuild } from "@/types/discord/guild";
 
 type StateType = {
-  guilds: DiscordGuild[];
+  guilds: DiscordUserGuild[];
   loading: boolean;
   loaded: boolean;
 };
