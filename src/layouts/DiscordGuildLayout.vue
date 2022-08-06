@@ -5,16 +5,19 @@ import FooterComponent from "@/components/FooterComponent.vue";
 import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
 
 import "@/assets/scss/discord/base.scss";
+import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
 </script>
 
 <template>
-  <DiscordGuildHeaderVue></DiscordGuildHeaderVue>
+  <DiscordGuildHeaderVue />
 
   <div class="content">
     <div class="discord_guild">
-      <NavigateVue></NavigateVue>
+      <NavigateVue />
       <slot />
+
+      <SaveChanges />
     </div>
   </div>
-  <FooterComponent></FooterComponent>
+  <FooterComponent />
 </template>
