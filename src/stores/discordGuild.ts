@@ -1,10 +1,9 @@
 import api from "@/api";
-import type { apiSuccessResponseType } from "@/types/api/base";
-import type { DiscordBotGuild } from "@/types/discord/guild";
+import type { DiscordFullGuild } from "@/types/discord/guild";
 import axios from "axios";
 import { defineStore } from "pinia";
+import { ref, type Ref } from "vue";
 import { useRouter } from "vue-router";
-// import { useRoute, useRouter } from "vue-router";
 import { useErrorsStore } from "./errors";
 
 type LoadingType = {
@@ -12,98 +11,129 @@ type LoadingType = {
   loaded: boolean;
 };
 
-export const useDiscordGuildStore = defineStore("discordGuild", {
-  state(): DiscordBotGuild & LoadingType {
-    return {
-      id: "",
-      name: "",
-      icon: "",
-      module_general: {},
-      channels: [],
-      roles: [],
-      loaded: false,
-      loading: false,
-    };
-  },
-  actions: {
-    async loadGuild(id: string | number) {
-      try {
-        const response = await api.get(
-          `/api/v1/discord/guilds/${id}?load=full`
-        );
+export const useDiscordGuildStore = defineStore("discordGuild", () => {
+  const guild: Ref<DiscordFullGuild | undefined> = ref();
+  const loading: Ref<boolean> = ref(false);
 
-        this.$state = response.data.data.guild;
-        this.loading = false;
-        this.loaded = true;
+  async function loadGuild(id: string | number) {
+    try {
+      loading.value = true;
+      const response = await api.get(`/api/v1/discord/guilds/${id}?load=full`);
 
-        return this.$state;
-      } catch (error) {
-        const errorsStore = useErrorsStore();
+      guild.value = response.data.data.guild;
+      loading.value = false;
 
-        errorsStore.addError("Cannot load guilds");
+      return guild;
+    } catch (error) {
+      loading.value = false;
 
+      const errorsStore = useErrorsStore();
+      errorsStore.addError("Cannot load guilds");
+
+      return false;
+    }
+  }
+
+  async function getGuild(id?: string) {
+    if (guild.value && !loading.value) {
+      return guild;
+    } else if (id) {
+      return await loadGuild(id);
+    } else {
+      return false;
+    }
+  }
+
+  async function updateModule(module_name: "general", data: any) {
+    if (!guild.value) return false;
+
+    try {
+      const response = await api.put(
+        `/api/v1/discord/guilds/${guild.value.id}/modules/${module_name}`,
+        data
+      );
+
+      guild.value[`module_${module_name}`] = response.data.data;
+
+      return guild.value[`module_${module_name}`];
+    } catch (error) {
+      const errorsStore = useErrorsStore();
+
+      errorsStore.addError("Cannot update module");
+
+      return false;
+    }
+  }
+
+  async function updateModuleProperty(
+    module_name: "general",
+    propety_name: string,
+    property_value: any
+  ) {
+    if (!guild.value) return false;
+
+    let module = guild.value[`module_${module_name}`];
+    if (!module)
+      module = {
+        id: guild.value.id,
+      };
+
+    module[propety_name] = property_value;
+    return await updateModule(module_name, module);
+  }
+
+  async function loadModule(module_name: "general") {
+    loading.value = true;
+
+    if (!guild.value) {
+      loading.value = false;
+      return false;
+    }
+
+    if (guild.value[`module_${module_name}`]) {
+      loading.value = false;
+      return guild.value[`module_${module_name}`];
+    }
+
+    try {
+      const response = await axios.get(
+        `/api/v1/discord/guilds/${guild.value.id}/modules/module_${module_name}`
+      );
+
+      guild.value[`module_${module_name}`] =
+        response.data.data[`module_${module_name}`];
+
+      loading.value = false;
+
+      return guild.value[`module_${module_name}`];
+    } catch (error: any) {
+      loading.value = false;
+      if (
+        error &&
+        error.response &&
+        error.response.status &&
+        error.response.status === 404
+      ) {
+        guild.value[`module_${module_name}`] = { id: guild.value.id };
         return false;
       }
-    },
+      const errorsStore = useErrorsStore();
 
-    async getGuild(id: string | number) {
-      if (this.loaded) {
-        return this.$state;
-      } else {
-        return await this.loadGuild(id);
-      }
-    },
+      errorsStore.addError(`Cannot load module ${module_name}`);
 
-    async updateModule(module_name: "general", data: any) {
-      try {
-        const response = await api.put(
-          `/api/v1/discord/guilds/${this.id}/modules/${module_name}`,
-          data
-        );
+      useRouter().push({ name: "DiscordDashboard" });
 
-        this.$state[`module_${module_name}`] = response.data.data;
+      return false;
+    }
+  }
 
-        return this.$state[`module_${module_name}`];
-      } catch (error) {
-        const errorsStore = useErrorsStore();
-
-        errorsStore.addError("Cannot update module");
-
-        return false;
-      }
-    },
-
-    async updateModuleProperty(
-      module_name: "general",
-      propety_name: string,
-      property_value: any
-    ) {
-      const module = this.$state[`module_${module_name}`];
-      module[propety_name] = property_value;
-      return await this.updateModule(module_name, module);
-    },
-
-    async loadModule(module_name: "general") {
-      if (this.$state[`module_${module_name}`])
-        return this.$state[`module_${module_name}`];
-      try {
-        const response = await axios.get(
-          `/api/v1/discord/guilds/${this.id}/modules/module_${module_name}`
-        );
-
-        this.$state[`module_${module_name}`] =
-          response.data.data[`module_${module_name}`];
-
-        return this.$state[`module_${module_name}`];
-      } catch {
-        const errorsStore = useErrorsStore();
-
-        errorsStore.addError(`Cannot load module ${module_name}`);
-
-        useRouter().push({ name: "DiscordDashboard" });
-
-        return false;
-      }
-    },
-  },
+  return {
+    guild,
+    loading,
+    loadGuild,
+    getGuild,
+    updateModule,
+    updateModuleProperty,
+    loadModule,
+  };
 });
