@@ -102,18 +102,8 @@ if (guild.value && !guild.value.module_general) loadModule("general");
               guild &&
                 guild.module_general &&
                 (guild.module_general.logEnabled
-                  ? (guild.module_general.logEnabled = false) ||
-                    updateModuleProperty(
-                      'general',
-                      'logEnabled',
-                      guild.module_general.logEnabled
-                    )
-                  : (guild.module_general.logEnabled = true) &&
-                    updateModuleProperty(
-                      'general',
-                      'logEnabled',
-                      guild.module_general.logEnabled
-                    ))
+                  ? updateModuleProperty('general', 'logEnabled', false)
+                  : updateModuleProperty('general', 'logEnabled', true))
             "
           >
             State:

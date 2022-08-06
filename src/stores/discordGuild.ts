@@ -103,13 +103,11 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
   ) {
     if (!guild.value) return false;
 
-    let module = _.cloneDeep(guild.value[`module_${module_name}`]);
-    if (!module)
-      module = {
-        id: guild.value.id,
-      };
+    const module = _.cloneDeep(guild.value[`module_${module_name}`]) || {
+      id: guild.value.id,
+    };
 
-    module[propety_name] = property_value;
+    module[propety_name] = _.cloneDeep(property_value);
     return updateModule(module_name, module);
   }
 
