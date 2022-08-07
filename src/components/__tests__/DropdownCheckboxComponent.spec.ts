@@ -5,6 +5,9 @@ import DropdownCheckboxComponent from "../DropdownCheckboxComponent.vue";
 import type { ElementType } from "@/types/components/DropdownComponents";
 
 import VueClickAwayPlugin from "vue3-click-away";
+import { ref, type Ref } from "vue";
+
+import _, { filter } from "lodash";
 
 const clickButtonTitle = "Click me!";
 const dropdownContent: ElementType[] = [
@@ -20,9 +23,6 @@ const dropdownContent: ElementType[] = [
 const baseConfig = {
   clickButtonTitle,
   dropdownContent,
-  onChoose(elements: ElementType[]) {
-    console.log(elements);
-  },
 };
 const global = {
   plugins: [VueClickAwayPlugin],
@@ -33,7 +33,7 @@ describe("Dropdown Checkbox", () => {
     // Mount element
     const wrapper = mount(DropdownCheckboxComponent, {
       props: {
-        config: baseConfig,
+        ...baseConfig,
       },
       global,
     });
@@ -86,7 +86,7 @@ describe("Dropdown Checkbox", () => {
     // Mount element
     const wrapper = mount(DropdownCheckboxComponent, {
       props: {
-        config: baseConfig,
+        ...baseConfig,
       },
       global,
     });
@@ -107,17 +107,10 @@ describe("Dropdown Checkbox", () => {
   });
 
   it("chooses elements", async () => {
-    let onChooseCallbackReturn: ElementType[] | undefined = undefined;
-
     // Mount element
     const wrapper = mount(DropdownCheckboxComponent, {
       props: {
-        config: {
-          ...baseConfig,
-          onChoose(elements: ElementType[]) {
-            onChooseCallbackReturn = elements;
-          },
-        },
+        ...baseConfig,
       },
       global,
     });
@@ -139,8 +132,6 @@ describe("Dropdown Checkbox", () => {
       expect(elementCheckbox.classes()).not.toContain("unchecked");
       expect(elementCheckbox.classes()).toContain("checked");
 
-      expect(onChooseCallbackReturn).toEqual([element]);
-
       // Click again on choosed element must mark checkbox to unchecked state
       await renderedElement.trigger("click");
       expect(elementCheckbox.classes()).toContain("unchecked");
@@ -148,17 +139,10 @@ describe("Dropdown Checkbox", () => {
   });
 
   it("chooses multiply elements", async () => {
-    let onChooseCallbackReturn: ElementType[] | undefined = undefined;
-
     // Mount element
     const wrapper = mount(DropdownCheckboxComponent, {
       props: {
-        config: {
-          ...baseConfig,
-          onChoose(elements: ElementType[]) {
-            onChooseCallbackReturn = elements;
-          },
-        },
+        ...baseConfig,
       },
       global,
     });
@@ -174,17 +158,24 @@ describe("Dropdown Checkbox", () => {
     }
 
     // Choosed every element
-    expect(onChooseCallbackReturn).toEqual(dropdownContent);
+
+    for (const key in dropdownContent) {
+      const element = dropdownContent[key];
+      const renderedElement = dropdownElements[key];
+
+      const elementCheckbox = renderedElement.find(".checkbox");
+
+      expect(elementCheckbox.classes()).not.toContain("unchecked");
+      expect(elementCheckbox.classes()).toContain("checked");
+    }
   });
 
   it("check initial elements config", async () => {
     // Mount element
     const wrapper = mount(DropdownCheckboxComponent, {
       props: {
-        config: {
-          ...baseConfig,
-          initChoosed: dropdownContent,
-        },
+        ...baseConfig,
+        initChoosed: dropdownContent,
       },
       global,
     });
@@ -200,6 +191,55 @@ describe("Dropdown Checkbox", () => {
       // All elements must be marked as choosed
       expect(elementCheckbox.classes()).not.toContain("unchecked");
       expect(elementCheckbox.classes()).toContain("checked");
+    }
+  });
+
+  it("check ref elements", async () => {
+    let refChoosedElements: ElementType[] = ["qwe"];
+
+    // Mount element
+    const wrapper = mount(DropdownCheckboxComponent, {
+      props: {
+        ...baseConfig,
+        refChoosedElements,
+      },
+
+      global,
+    });
+
+    const dropdownList = wrapper.find(".dropdown_content");
+    const dropdownElements = dropdownList.findAll(".dropdown_content_elem");
+
+    refChoosedElements = dropdownContent;
+    await wrapper.setProps({ refChoosedElements });
+    for (const renderedElement of dropdownElements) {
+      const elementCheckbox = renderedElement.find(".checkbox");
+
+      expect(elementCheckbox.classes()).not.toContain("unchecked");
+      expect(elementCheckbox.classes()).toContain("checked");
+    }
+    refChoosedElements = [];
+    await wrapper.setProps({ refChoosedElements });
+
+    for (const key in dropdownContent) {
+      const element = dropdownContent[key];
+      const renderedElement = dropdownElements[key];
+
+      const elementCheckbox = renderedElement.find(".checkbox");
+
+      // Check checkbox of element to unchecked state
+      expect(elementCheckbox.classes()).toContain("unchecked");
+
+      // Click on element event must mark checkbox to checked state(and delete unchecked)
+      refChoosedElements = [element];
+      await wrapper.setProps({ refChoosedElements });
+      expect(elementCheckbox.classes()).not.toContain("unchecked");
+      expect(elementCheckbox.classes()).toContain("checked");
+
+      // Click again on choosed element must mark checkbox to unchecked state
+      refChoosedElements = [];
+      await wrapper.setProps({ refChoosedElements });
+      expect(elementCheckbox.classes()).toContain("unchecked");
     }
   });
 });
