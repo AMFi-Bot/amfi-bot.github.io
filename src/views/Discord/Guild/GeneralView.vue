@@ -43,26 +43,27 @@ if (guild.value && !guild.value.module_general) loadModule("general");
             >
           </div>
           <DropdownComponent
-            :config="{
-              clickButtonTitle: 'Choose a channel',
-              useChoosedElementAsTitle: true,
-              initChoosedElement: guild.channels.filter(
+            clickButtonTitle="Choose a channel"
+            :useChoosedElementAsTitle="true"
+            :refChoosedElement="
+              guild.channels.filter(
                 (q) =>
                   q.id ===
                   (guild && guild.module_general
                     ? guild.module_general.logChannel
                     : undefined)
-              )[0],
-
-              dropdownContent: guild.channels.filter((q) => q.type === 0),
-              onChoose: async (element) => {
+              )[0]
+            "
+            :dropdownContent="guild.channels.filter((q) => q.type === 0)"
+            @choose="
+              (element) => {
                 discordGuildStore.updateModuleProperty(
                   'general',
                   'logChannel',
                   typeof element === 'string' ? element : element.id
                 );
-              },
-            }"
+              }
+            "
           />
         </div>
         <div class="instance_sub_elem row sbtw">
