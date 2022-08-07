@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import _ from "lodash";
+import { ref, toRefs, type Ref } from "vue";
 
 const dropdownShow = ref(false);
 
@@ -13,25 +14,38 @@ type ElementType =
     };
 
 const props = defineProps<{
-  config: {
-    clickButtonTitle: string;
-    dropdownContent: ElementType[];
-    initChoosedElement?: ElementType;
-    useChoosedElementAsTitle?: boolean;
-    onChoose: (element: ElementType) => void;
-  };
+  clickButtonTitle: string;
+  dropdownContent: ElementType[];
+  initChoosedElement?: ElementType;
+  useChoosedElementAsTitle?: boolean;
+  /**
+   *
+   * @param refChoosedElements If choosed ref parameter exists, onChoose event won't choose element as default.
+   *  Instead of it, elements choosing will provide outside the element, by changig this parameter.
+   *  Also, the initChoosed property won't be used
+   */
+  refChoosedElement?: ElementType | undefined;
 }>();
 
-const choosedElement: Ref<undefined | ElementType> = props.config
-  .initChoosedElement
-  ? ref(props.config.initChoosedElement)
-  : ref();
+const emit = defineEmits<{
+  (e: "choose", elements: ElementType): void;
+}>();
+
+const { dropdownContent, refChoosedElement } = toRefs(props);
+
+const choosedElement: Ref<ElementType | undefined> =
+  props.refChoosedElement && refChoosedElement
+    ? refChoosedElement
+    : ref(_.cloneDeep(props.initChoosedElement || undefined));
 
 function onChoose(element: ElementType) {
-  if (choosedElement.value === element) return;
-
-  choosedElement.value = element;
-  props.config.onChoose(element);
+  if (!props.refChoosedElement || !refChoosedElement) {
+    choosedElement.value = element;
+    emit("choose", _.cloneDeep(choosedElement.value));
+  } else {
+    const choosed = element;
+    emit("choose", _.cloneDeep(choosed));
+  }
 }
 
 function clickAway() {
@@ -51,19 +65,20 @@ function clickAway() {
         :class="dropdownShow ? 'dropdown_arrow_shown' : 'dropdown_arrow_hidden'"
       ></i>
       <span class="title">{{
-        config.useChoosedElementAsTitle && choosedElement
+        useChoosedElementAsTitle && choosedElement
           ? typeof choosedElement === "string"
             ? choosedElement
             : choosedElement.name
-          : config.clickButtonTitle
+          : clickButtonTitle
       }}</span>
     </div>
     <div v-show="dropdownShow" class="dropdown_content">
       <div
         class="dropdown_content_elem"
-        v-for="element of config.dropdownContent"
+        v-for="element of dropdownContent"
         :key="typeof element == 'string' ? element : element.name"
         @click="onChoose(element)"
+        :class="_.isEqual(choosedElement, element) && 'choosed'"
       >
         <img
           class="icon"

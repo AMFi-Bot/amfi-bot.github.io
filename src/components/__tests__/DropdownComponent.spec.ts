@@ -19,9 +19,6 @@ const dropdownContent: ElementType[] = [
 const baseConfig = {
   clickButtonTitle,
   dropdownContent,
-  onChoose(element: ElementType) {
-    console.log(element);
-  },
   useChoosedElementAsTitle: true,
 };
 
@@ -34,7 +31,7 @@ describe("Dropdown Component", () => {
     // Mount element
     const wrapper = mount(DropdownComponent, {
       props: {
-        config: baseConfig,
+        ...baseConfig,
       },
       global,
     });
@@ -82,7 +79,7 @@ describe("Dropdown Component", () => {
     // Mount element
     const wrapper = mount(DropdownComponent, {
       props: {
-        config: baseConfig,
+        ...baseConfig,
       },
       global,
     });
@@ -103,17 +100,10 @@ describe("Dropdown Component", () => {
   });
 
   it("chooses elements", async () => {
-    let onChooseCallbackReturn: ElementType | undefined = undefined;
-
     // Mount element
     const wrapper = mount(DropdownComponent, {
       props: {
-        config: {
-          ...baseConfig,
-          onChoose(element: ElementType) {
-            onChooseCallbackReturn = element;
-          },
-        },
+        ...baseConfig,
       },
       global,
     });
@@ -126,20 +116,18 @@ describe("Dropdown Component", () => {
       const renderedElement = dropdownElements[key];
 
       await renderedElement.trigger("click");
-      expect(onChooseCallbackReturn).toEqual(element);
+      expect(renderedElement.classes()).toContain("choosed");
     }
   });
 
   it("check initial element config", async () => {
-    const initialElement = { name: "qwerty" };
+    const initialElement = dropdownContent[5];
 
     // Mount element
     const wrapper = mount(DropdownComponent, {
       props: {
-        config: {
-          ...baseConfig,
-          initChoosedElement: initialElement,
-        },
+        ...baseConfig,
+        initChoosedElement: initialElement,
       },
       global,
     });
@@ -149,24 +137,32 @@ describe("Dropdown Component", () => {
 
     // Check title property exists
     expect(dropdownTitleElement.find(".title").text()).toEqual(
-      initialElement.name
+      typeof initialElement === "string" ? initialElement : initialElement.name
     );
+
+    const dropdownList = wrapper.find(".dropdown_content");
+    const dropdownElements = dropdownList.findAll(".dropdown_content_elem");
+
+    let initialElementFound = false;
+
+    for (const renderedElement of dropdownElements) {
+      renderedElement.find(".name").text() ===
+        (typeof initialElement === "string"
+          ? initialElement
+          : initialElement.name) && (initialElementFound = true);
+    }
+
+    expect(initialElementFound).toEqual(true);
   });
 
   it("check use choosed element as title config property", async () => {
-    let onChooseCallbackReturn: ElementType = dropdownContent[0];
-    const initialElement = { name: "qwerty" };
+    const initialElement = dropdownContent[5];
 
     // Mount element
     const wrapper = mount(DropdownComponent, {
       props: {
-        config: {
-          ...baseConfig,
-          initChoosedElement: initialElement,
-          onChoose(element: ElementType) {
-            onChooseCallbackReturn = element;
-          },
-        },
+        ...baseConfig,
+        initChoosedElement: initialElement,
       },
       global,
     });
@@ -176,7 +172,7 @@ describe("Dropdown Component", () => {
 
     // Check title property exists
     expect(dropdownTitleElement.find(".title").text()).toEqual(
-      initialElement.name
+      typeof initialElement === "string" ? initialElement : initialElement.name
     );
 
     const dropdownList = wrapper.find(".dropdown_content");
@@ -187,15 +183,57 @@ describe("Dropdown Component", () => {
       const renderedElement = dropdownElements[key];
 
       await renderedElement.trigger("click");
-      expect(onChooseCallbackReturn).toEqual(element);
+      expect(renderedElement.classes()).toContain("choosed");
+      expect(renderedElement.find(".name").text()).toContain(
+        typeof element === "string" ? element : element.name
+      );
 
       expect(dropdownTitleElement.find(".title").text()).toContain(
-        onChooseCallbackReturn
-          ? typeof onChooseCallbackReturn === "string"
-            ? onChooseCallbackReturn
-            : onChooseCallbackReturn.name
-          : onChooseCallbackReturn
+        typeof element === "string" ? element : element.name
       );
+    }
+  });
+
+  it("chooses elements by ref property", async () => {
+    let refChoosedElement: ElementType | undefined = dropdownContent[2];
+
+    // Mount element
+    const wrapper = mount(DropdownComponent, {
+      props: {
+        ...baseConfig,
+        refChoosedElement,
+      },
+
+      global,
+    });
+
+    const dropdownList = wrapper.find(".dropdown_content");
+    const dropdownElements = dropdownList.findAll(".dropdown_content_elem");
+
+    {
+      const renderedElement = dropdownElements[2]; // Same index as refChoosedElement
+
+      expect(renderedElement.classes()).toContain("choosed");
+    }
+    refChoosedElement = undefined;
+    await wrapper.setProps({ refChoosedElement });
+
+    for (const key in dropdownContent) {
+      const element = dropdownContent[key];
+      const renderedElement = dropdownElements[key];
+
+      // Check element to unchoosed state
+      expect(renderedElement.classes()).not.toContain("choosed");
+
+      // Change refChoosedElement event must mark the related element to choosed state
+      refChoosedElement = element;
+      await wrapper.setProps({ refChoosedElement });
+      expect(renderedElement.classes()).toContain("choosed");
+
+      // Change refChoosedElement event to undefined must unmark element from choosed state
+      refChoosedElement = undefined;
+      await wrapper.setProps({ refChoosedElement });
+      expect(renderedElement.classes()).not.toContain("choosed");
     }
   });
 });
