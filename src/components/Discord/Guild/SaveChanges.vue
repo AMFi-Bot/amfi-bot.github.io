@@ -1,11 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useDiscordGuildStore } from "@/stores/discordGuild.js";
+import { storeToRefs } from "pinia";
+import _ from "lodash";
+
+const discordGuildStore = useDiscordGuildStore();
+
+const { guild, oldGuild } = storeToRefs(discordGuildStore);
+
+const { syncGuild, resetGuildChanges } = discordGuildStore;
+</script>
 
 <template>
-  <div class="saveChangesAlert" v-show="true">
+  <div
+    class="saveChangesAlert"
+    v-show="!(guild && oldGuild ? _.isEqual(guild, oldGuild) : true)"
+  >
     <div class="unsavedText">Careful! You have unsaved changes</div>
     <div class="saveButtons">
-      <div class="resetChangesButton">Reset</div>
-      <div class="saveChangesButton green_button">Save changes</div>
+      <div class="resetChangesButton" @click="resetGuildChanges">Reset</div>
+      <div class="saveChangesButton green_button" @click="syncGuild">
+        Save changes
+      </div>
     </div>
   </div>
 </template>

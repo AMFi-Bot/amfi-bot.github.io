@@ -4,6 +4,7 @@ import { storeToRefs } from "pinia";
 import DropdownComponent from "@/components/DropdownComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vue";
+import { ref } from "vue";
 
 const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
 
@@ -42,26 +43,27 @@ if (guild.value && !guild.value.module_general) loadModule("general");
             >
           </div>
           <DropdownComponent
-            :config="{
-              clickButtonTitle: 'Choose a channel',
-              useChoosedElementAsTitle: true,
-              initChoosedElement: guild.channels.filter(
+            clickButtonTitle="Choose a channel"
+            :useChoosedElementAsTitle="true"
+            :refChoosedElement="
+              guild.channels.filter(
                 (q) =>
                   q.id ===
                   (guild && guild.module_general
                     ? guild.module_general.logChannel
                     : undefined)
-              )[0],
-
-              dropdownContent: guild.channels.filter((q) => q.type === 0),
-              onChoose: async (element) => {
+              )[0]
+            "
+            :dropdownContent="guild.channels.filter((q) => q.type === 0)"
+            @choose="
+              (element) => {
                 discordGuildStore.updateModuleProperty(
                   'general',
                   'logChannel',
                   typeof element === 'string' ? element : element.id
                 );
-              },
-            }"
+              }
+            "
           />
         </div>
         <div class="instance_sub_elem row sbtw">
@@ -72,23 +74,24 @@ if (guild.value && !guild.value.module_general) loadModule("general");
             >
           </div>
           <DropdownCheckboxComponent
-            :config="{
-              clickButtonTitle: 'Choose types',
-              initChoosed: guild.module_general.logTypes
+            clickButtonTitle="Choose types"
+            :refChoosedElements="
+              guild.module_general.logTypes
                 ? guild.module_general.logTypes.map(
                     (q) => logEvents.find((a) => a.id === q) || q
                   )
-                : undefined,
-
-              dropdownContent: logEvents,
-              onChoose: async (elements) => {
+                : []
+            "
+            :dropdownContent="logEvents"
+            @choose="
+              (elements) => {
                 discordGuildStore.updateModuleProperty(
                   'general',
                   'logTypes',
                   elements.map((q) => (typeof q === 'string' ? q : q.id))
                 );
-              },
-            }"
+              }
+            "
           />
         </div>
         <div class="instance_sub_elem row sbtw">
@@ -102,18 +105,8 @@ if (guild.value && !guild.value.module_general) loadModule("general");
               guild &&
                 guild.module_general &&
                 (guild.module_general.logEnabled
-                  ? (guild.module_general.logEnabled = false) ||
-                    updateModuleProperty(
-                      'general',
-                      'logEnabled',
-                      guild.module_general.logEnabled
-                    )
-                  : (guild.module_general.logEnabled = true) &&
-                    updateModuleProperty(
-                      'general',
-                      'logEnabled',
-                      guild.module_general.logEnabled
-                    ))
+                  ? updateModuleProperty('general', 'logEnabled', false)
+                  : updateModuleProperty('general', 'logEnabled', true))
             "
           >
             State:
