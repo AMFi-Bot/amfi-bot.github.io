@@ -186,32 +186,6 @@ footer {
   }
 }
 
-i.checkbox {
-  display: flex;
-
-  &.dark_2 {
-    border: 3px solid $dark_2;
-  }
-
-  border-radius: 2px;
-
-  position: relative;
-
-  &.checked {
-    &::after {
-      content: "";
-      position: absolute;
-      top: 1.5px;
-      left: 1.5px;
-      width: 13px;
-      height: 8px;
-      border-left: 3px solid white;
-      border-bottom: 3px solid white;
-      transform: rotate(-45deg);
-    }
-  }
-}
-
 /* Loaders */
 /* BIG-LOADER(50px) */
 .big-loader {
