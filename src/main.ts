@@ -49,7 +49,6 @@ nProgress.inc();
 // import base scss files
 
 import "./assets/scss/base.scss";
-import "./assets/scss/menu.scss";
 import "./assets/scss/footer.scss";
 import "./assets/scss/root.scss";
 import "./assets/scss/error.scss";
