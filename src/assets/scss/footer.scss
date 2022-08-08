@@ -3,7 +3,6 @@
 .footer {
   background-color: rgb(33, 36, 38);
   width: 100%;
-  max-height: 350px;
 
   z-index: 50;
 
@@ -91,6 +90,21 @@
 
     align-items: flex-end;
 
+    @media (max-width: 480px) {
+      flex-direction: column-reverse;
+      justify-content: center;
+      align-items: center;
+
+      .copyrights {
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
+        text-align: start !important;
+      }
+      .links_panel {
+        margin-top: 20px;
+      }
+    }
+
     .links_panel {
       display: flex;
       flex-direction: row;
@@ -112,12 +126,15 @@
       flex-direction: column;
       justify-content: flex-end;
       align-items: flex-end;
+      text-align: end;
       user-select: text;
 
       font-size: 14px;
       font-family: "Open Sans";
       font-weight: 400;
       color: $font_color_2;
+
+      margin-left: 20px;
 
       a {
         text-decoration: underline;
