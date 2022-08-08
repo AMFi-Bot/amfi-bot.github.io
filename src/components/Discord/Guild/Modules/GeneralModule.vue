@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 import { storeToRefs } from "pinia";
-import DropdownComponent from "@/components/DropdownComponent.vue";
+import DropdownComponent from "@/components/DropdownChooseComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vue";
 import { ref } from "vue";
