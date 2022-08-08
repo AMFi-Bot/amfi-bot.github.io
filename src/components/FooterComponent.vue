@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { setI18nLanguage } from "@/i18n";
-import { useI18n } from "vue-i18n";
 import DropdownComponent from "./DropdownComponent.vue";
 import DiscordLogoWhite from "./Icons/DiscordLogoWhite.vue";
 import TelegramLogo from "./Icons/TelegramLogo.vue";
-const i18n = useI18n();
+import LanguagesContent from "./LanguagesContent.vue";
 </script>
 
 <template>
@@ -17,38 +15,7 @@ const i18n = useI18n();
         <template #dropdownTitle> {{ $t("language") }}/Language </template>
 
         <template #default>
-          <span class="en" @click="setI18nLanguage(i18n, 'en')">
-            <span aria-label="🇺🇸, us, flag-us" class="emoji-mart-emoji">
-              <span
-                style="
-                  width: 20px;
-                  height: 20px;
-                  display: inline-block;
-                  background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
-                  background-size: 5700% 5700%;
-                  background-position: 7.14286% 76.7857%;
-                "
-              >
-              </span>
-            </span>
-            English
-          </span>
-          <span class="ru" @click="setI18nLanguage(i18n, 'ru')">
-            <span aria-label="🇷🇺, ru, flag-ru" class="emoji-mart-emoji">
-              <span
-                style="
-                  width: 20px;
-                  height: 20px;
-                  display: inline-block;
-                  background-image: url('https://unpkg.com/emoji-datasource-twitter@5.0.1/img/twitter/sheets-256/64.png');
-                  background-size: 5700% 5700%;
-                  background-position: 5.35714% 100%;
-                "
-              >
-              </span>
-            </span>
-            Русский
-          </span>
+          <LanguagesContent />
         </template>
       </DropdownComponent>
 
