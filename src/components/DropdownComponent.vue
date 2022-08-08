@@ -15,7 +15,8 @@ const props = defineProps<{
     | "bottom-left";
   elem_class?: string;
   title_class?: string;
-  conent_class?: string;
+  content_class?: string;
+  noHideOnClickContent?: boolean;
 }>();
 
 const positionStyle = computed(() => {
@@ -54,17 +55,26 @@ function switchDropdownState() {
   emit("dropdownStateSwitched", dropdownShow.value);
 }
 
-function clickAway() {
+function clickAwayFromElem() {
+  if (!props.noHideOnClickContent) return;
+  dropdownShow.value = false;
+}
+function clickAwayFromTitle() {
+  if (props.noHideOnClickContent) return;
   dropdownShow.value = false;
 }
 </script>
 
 <template>
-  <div class="dropdown_elem" :class="elem_class">
+  <div
+    class="dropdown_elem"
+    :class="elem_class"
+    v-click-away="clickAwayFromElem"
+  >
     <div
       class="dropdown_title"
       :class="title_class"
-      v-click-away="clickAway"
+      v-click-away="clickAwayFromTitle"
       @click="switchDropdownState"
     >
       <slot name="dropdownTitle" />
@@ -72,7 +82,7 @@ function clickAway() {
     <div
       v-show="dropdownShow"
       class="dropdown_content"
-      :class="conent_class"
+      :class="content_class"
       :style="positionStyle"
     >
       <slot />
