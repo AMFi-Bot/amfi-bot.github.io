@@ -1,51 +1,57 @@
 <script setup lang="ts">
-import _ from "lodash";
-import { ref, toRefs, type Ref } from "vue";
+import { computed, ref } from "vue";
 
 const dropdownShow = ref(false);
 
-type ElementType =
-  | string
-  | {
-      name: string;
-      value?: string;
-      icon?: string;
-      id?: string | number;
-    };
-
 const props = defineProps<{
-  clickButtonTitle: string;
-  dropdownContent: ElementType[];
-  initChoosedElement?: ElementType;
-  useChoosedElementAsTitle?: boolean;
-  /**
-   *
-   * @param refChoosedElements If choosed ref parameter exists, onChoose event won't choose element as default.
-   *  Instead of it, elements choosing will provide outside the element, by changig this parameter.
-   *  Also, the initChoosed property won't be used
-   */
-  refChoosedElement?: ElementType | undefined;
+  position?:
+    | "top"
+    | "left"
+    | "right"
+    | "bottom"
+    | "top-right"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-left";
+  elem_class?: string;
+  title_class?: string;
+  conent_class?: string;
 }>();
+
+const positionStyle = computed(() => {
+  const topStyle = "bottom: 100%;";
+  const leftStyle = "right: 100%;";
+  const rightStyle = "left: 100%;";
+  const leftCombinatedStyle = "left: 0;";
+  const rightCombinatedStyle = "right: 0;";
+  const bottomStyle = "top: 100%;";
+
+  const position = props.position || "top-left";
+
+  return position === "left"
+    ? leftStyle
+    : position === "right"
+    ? rightStyle
+    : position === "bottom"
+    ? bottomStyle
+    : position === "top-right"
+    ? topStyle + rightCombinatedStyle
+    : position === "top-left"
+    ? topStyle + leftCombinatedStyle
+    : position === "bottom-right"
+    ? bottomStyle + rightCombinatedStyle
+    : position === "bottom-left"
+    ? bottomStyle + leftCombinatedStyle
+    : topStyle;
+});
 
 const emit = defineEmits<{
-  (e: "choose", elements: ElementType): void;
+  (e: "dropdownStateSwitched", state: boolean): void;
 }>();
 
-const { dropdownContent, refChoosedElement } = toRefs(props);
-
-const choosedElement: Ref<ElementType | undefined> =
-  props.refChoosedElement && refChoosedElement
-    ? refChoosedElement
-    : ref(_.cloneDeep(props.initChoosedElement || undefined));
-
-function onChoose(element: ElementType) {
-  if (!props.refChoosedElement || !refChoosedElement) {
-    choosedElement.value = element;
-    emit("choose", _.cloneDeep(choosedElement.value));
-  } else {
-    const choosed = element;
-    emit("choose", _.cloneDeep(choosed));
-  }
+function switchDropdownState() {
+  dropdownShow.value = !dropdownShow.value;
+  emit("dropdownStateSwitched", dropdownShow.value);
 }
 
 function clickAway() {
@@ -54,47 +60,22 @@ function clickAway() {
 </script>
 
 <template>
-  <div class="dropdown_elem" v-click-away="clickAway">
+  <div class="dropdown_elem" :class="elem_class">
     <div
       class="dropdown_title"
-      @click="dropdownShow = !dropdownShow"
-      @focusout="dropdownShow = !dropdownShow"
+      :class="title_class"
+      v-click-away="clickAway"
+      @click="switchDropdownState"
     >
-      <i
-        class="dropdown_arrow"
-        :class="dropdownShow ? 'dropdown_arrow_shown' : 'dropdown_arrow_hidden'"
-      ></i>
-      <span class="title">{{
-        useChoosedElementAsTitle && choosedElement
-          ? typeof choosedElement === "string"
-            ? choosedElement
-            : choosedElement.name
-          : clickButtonTitle
-      }}</span>
+      <slot name="dropdownTitle" />
     </div>
-    <div v-show="dropdownShow" class="dropdown_content">
-      <div
-        class="dropdown_content_elem"
-        v-for="element of dropdownContent"
-        :key="typeof element == 'string' ? element : element.name"
-        @click="onChoose(element)"
-        :class="_.isEqual(choosedElement, element) && 'choosed'"
-      >
-        <img
-          class="icon"
-          v-if="typeof element !== 'string' && element.icon"
-          :src="element.icon"
-        />
-        <span class="name" v-if="typeof element !== 'string' && element.name">
-          {{ element.name }}
-        </span>
-        <span class="name" v-if="typeof element === 'string'">
-          {{ element }}
-        </span>
-        <span class="value" v-if="typeof element !== 'string' && element.value">
-          {{ element.value }}
-        </span>
-      </div>
+    <div
+      v-show="dropdownShow"
+      class="dropdown_content"
+      :class="conent_class"
+      :style="positionStyle"
+    >
+      <slot />
     </div>
   </div>
 </template>
