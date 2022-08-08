@@ -188,8 +188,9 @@ footer {
 
 .dropdown_elem {
   user-select: none;
-
   position: relative;
+
+  padding: 0;
 
   .dropdown_title {
     display: flex;
