@@ -186,6 +186,36 @@ footer {
   }
 }
 
+.dropdown_elem {
+  user-select: none;
+
+  position: relative;
+
+  .dropdown_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    height: 100%;
+    width: 100%;
+  }
+
+  .dropdown_content {
+    position: absolute;
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 5px;
+
+    padding: 10px;
+
+    z-index: 60;
+  }
+}
+
 /* Loaders */
 /* BIG-LOADER(50px) */
 .big-loader {
