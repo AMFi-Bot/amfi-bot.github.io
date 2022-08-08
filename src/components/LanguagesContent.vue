@@ -14,3 +14,16 @@ const i18n = useI18n();
     Русский
   </li>
 </template>
+
+<style lang="scss">
+@import "@/assets/scss/library";
+li {
+  display: flex;
+  align-items: center;
+
+  span {
+    font-size: 20px;
+    margin-right: 5px;
+  }
+}
+</style>
