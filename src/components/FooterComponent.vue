@@ -2,6 +2,8 @@
 import { setI18nLanguage } from "@/i18n";
 import { useI18n } from "vue-i18n";
 import DropdownComponent from "./DropdownComponent.vue";
+import DiscordLogoWhite from "./Icons/DiscordLogoWhite.vue";
+import TelegramLogo from "./Icons/TelegramLogo.vue";
 const i18n = useI18n();
 </script>
 
@@ -60,25 +62,27 @@ const i18n = useI18n();
       <div class="links_panel">
         <a
           class="link_elem discord_logo logo element"
-          a
           href="https://discord.gg/3qZCnzNXcq"
+          target="_blank"
         >
-          <img height="68" width="68" src="/img/discord_logo.png" />
+          <DiscordLogoWhite />
         </a>
         <a
           class="link_elem github_logo logo element"
           href="https://github.com/Waujito"
+          target="_blank"
         >
-          <img height="50" width="50" src="/img/github_logo.png" />
+          <img src="/img/GitHub-Mark-Light-64px.png" />
         </a>
         <a
           class="link_elem telegram_logo logo element"
           href="https://t.me/cat_bot_ds"
+          target="_blank"
         >
-          <img height="70" width="70" src="/img/telegram_logo.png" />
+          <TelegramLogo />
         </a>
       </div>
-      <div class="copyrights element">
+      <div class="copyrights">
         <div class="copyright" style="margin-bottom: 5px">
           Icons made by
           <a
