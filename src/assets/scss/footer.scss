@@ -1,6 +1,6 @@
 @import "library";
 
-#footer {
+.footer {
   background-color: rgb(33, 36, 38);
   width: 100%;
   max-height: 350px;
@@ -11,136 +11,129 @@
     user-select: none;
   }
 
-  /*
+  .up_grid {
+    width: 100%;
+    min-height: 100px;
+    display: grid;
+    gap: 10px;
+    max-height: 260px;
+    grid-template-columns: repeat(auto-fit, minmax(174px, 1fr));
 
-  _ft_ = footer;
+    margin-bottom: 25px;
 
-  _dw_ = down left;
+    .grid_elem,
+    .grid_dropdown_elem {
+      display: flex;
 
-  _rl_ = relative
+      margin: 5px;
 
-  */
+      max-height: 60px;
 
-  #footer-component {
-    .up_grid {
-      width: 100%;
-      min-height: 100px;
-      display: grid;
-      gap: 10px;
-      max-height: 260px;
-      grid-template-columns: repeat(auto-fit, minmax(174px, 1fr));
-
-      margin-bottom: 25px;
-
-      .tippy-content {
-        padding: 0;
-      }
-
-      .grid_elem {
-        display: flex;
-
-        padding: 15px;
-        margin: 5px;
-
-        min-width: 170px;
-
-        min-height: 35px;
-        max-height: 60px;
-
-        max-width: 400px;
-
-        align-items: center;
-        justify-content: center;
-
-        background-color: $dark_3;
-        border-radius: 5px;
-
-        @extend %hover_1;
-
-        color: $font_color_1;
-
-        cursor: pointer;
-      }
+      align-items: center;
+      justify-content: center;
     }
 
-    .down_panel {
+    .grid_elem,
+    .grid_dropdown_elem .dropdown_title {
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      height: 60px;
-      width: 100%;
 
-      .links_panel {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-      }
-      .element {
-        display: flex;
-        margin-right: 10px;
-        height: 50px;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-family: "Open Sans";
-        font-weight: 400;
-        color: rgb(166, 170, 181);
-        min-width: 50px;
-        margin-bottom: 5px;
+      padding: 15px;
 
-        &.circle {
-          background-color: white;
-          width: 50px;
-          border-radius: 50px;
-          margin-right: 10px;
-        }
+      align-items: center;
+      justify-content: center;
 
-        &.logo {
-          background: none;
-        }
+      background-color: $dark_3;
+      border-radius: 5px;
 
-        &.copyrights {
-          user-select: text;
-          height: 100%;
-          flex-direction: column;
-          max-width: 600px;
-          justify-content: flex-end;
+      @extend %hover_1;
 
-          .copyright {
-            align-self: flex-end;
+      color: $font_color_1;
 
-            a {
-              text-decoration: underline;
-              color: rgb(166, 170, 181);
-            }
+      cursor: pointer;
+    }
+
+    .grid_dropdown_elem {
+      .dropdown_content {
+        background: $dark_3;
+        box-shadow: $box_shadow_1;
+        border-radius: $border_radius_1;
+
+        margin-bottom: 10px;
+
+        padding: 5px 10px;
+
+        & > * {
+          display: flex;
+          padding: 5px 10px;
+
+          color: $font_color_2;
+
+          border-radius: $border_radius_1;
+
+          @include hover($hover_3);
+
+          span {
+            margin-right: 5px;
           }
+
+          cursor: pointer;
         }
       }
     }
   }
-}
 
-#footer_languages {
-  background: $dark_3;
-  box-shadow: $box_shadow_1;
-  border-radius: $border_radius_1;
-
-  padding: 5px 10px;
-
-  & > * {
+  .down_panel {
     display: flex;
-    padding: 5px 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 60px;
+    width: 100%;
 
-    color: $font_color_2;
-
-    border-radius: $border_radius_1;
-
-    @include hover($hover_3);
-
-    span {
-      margin-right: 5px;
+    .links_panel {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
+    .element {
+      display: flex;
+      margin-right: 10px;
+      height: 50px;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-family: "Open Sans";
+      font-weight: 400;
+      color: rgb(166, 170, 181);
+      min-width: 50px;
+      margin-bottom: 5px;
 
-    cursor: pointer;
+      &.circle {
+        background-color: white;
+        width: 50px;
+        border-radius: 50px;
+        margin-right: 10px;
+      }
+
+      &.logo {
+        background: none;
+      }
+
+      &.copyrights {
+        user-select: text;
+        height: 100%;
+        flex-direction: column;
+        max-width: 600px;
+        justify-content: flex-end;
+
+        .copyright {
+          align-self: flex-end;
+
+          a {
+            text-decoration: underline;
+            color: rgb(166, 170, 181);
+          }
+        }
+      }
+    }
   }
 }
