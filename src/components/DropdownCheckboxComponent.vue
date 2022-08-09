@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { ElementType } from "@/types/components/DropdownComponents";
-import { ref, toRef, toRefs, watch, type Ref } from "vue";
+import { ref, toRef, toRefs, watch, type Ref, computed } from "vue";
 import _ from "lodash";
+import DropdownComponent from "./DropdownComponent.vue";
 
 const dropdownShow = ref(false);
 
@@ -16,7 +17,35 @@ const props = defineProps<{
    *  Also, the initChoosed property won't be used
    */
   refChoosedElements?: ElementType[];
+
+  position?:
+    | "top"
+    | "left"
+    | "right"
+    | "bottom"
+    | "top-right"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-left";
+  elem_class?: string;
+  title_class?: string;
+  content_class?: string;
+  noHideOnClickContent?: boolean;
+  useArrow?: boolean;
+  arrowAnimationSide?: "right" | "left";
+  disableArrowAnimation?: boolean;
 }>();
+
+const dropdownComponentProps = computed(() => ({
+  position: props.position,
+  elem_class: props.elem_class,
+  title_class: props.title_class,
+  content_class: props.content_class,
+  noHideOnClickContent: props.noHideOnClickContent,
+  useArrow: props.useArrow || true,
+  arrowAnimationSide: props.arrowAnimationSide,
+  disableArrowAnimation: props.disableArrowAnimation,
+}));
 
 const { dropdownContent, refChoosedElements } = toRefs(props);
 
@@ -55,22 +84,14 @@ function onChoose(element: ElementType) {
     emit("choose", _.cloneDeep(choosed));
   }
 }
-
-function clickAway() {
-  dropdownShow.value = false;
-}
 </script>
 
 <template>
-  <div class="dropdown_elem" v-click-away="clickAway">
-    <div class="dropdown_title" @click="dropdownShow = !dropdownShow">
-      <i
-        class="dropdown_arrow"
-        :class="dropdownShow ? 'dropdown_arrow_shown' : 'dropdown_arrow_hidden'"
-      ></i>
+  <DropdownComponent v-bind="{ ...dropdownComponentProps }">
+    <template #dropdownTitle>
       <span class="title">{{ clickButtonTitle }}</span>
-    </div>
-    <div v-show="dropdownShow" class="dropdown_content">
+    </template>
+    <template #default>
       <div
         class="dropdown_content_elem"
         v-for="element of dropdownContent"
@@ -106,6 +127,6 @@ function clickAway() {
           </span>
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </DropdownComponent>
 </template>

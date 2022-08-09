@@ -11,6 +11,17 @@
   font-family: Roboto, "Lucida Grande", Helvetica, Arial, sans-serif !important;
 }
 
+html {
+  min-height: 100%;
+  display: flex;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 body {
   background-color: #34383c;
   color: white;
@@ -159,61 +170,6 @@ footer {
 
   * {
     cursor: pointer;
-  }
-}
-
-.dropdown_arrow {
-  margin: 5px 10px 7px 5px;
-
-  &.dropdown_arrow_shown {
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 3px;
-  }
-
-  &.dropdown_arrow_hidden {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 3px;
-  }
-}
-
-.dropdown_elem {
-  user-select: none;
-  position: relative;
-
-  padding: 0;
-
-  .dropdown_title {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-    height: 100%;
-    width: 100%;
-  }
-
-  .dropdown_content {
-    position: absolute;
-
-    display: flex;
-    flex-direction: column;
-
-    border-radius: 5px;
-
-    padding: 10px;
-
-    z-index: 60;
   }
 }
 

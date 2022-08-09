@@ -50,6 +50,7 @@ if (guild.value && !guild.value.module_general) loadModule("general");
                     : undefined)
               )[0]
             "
+            :position="'bottom-right'"
             :dropdownContent="guild.channels.filter((q) => q.type === 0)"
             @choose="
               (element) => {
@@ -76,6 +77,7 @@ if (guild.value && !guild.value.module_general) loadModule("general");
                 : []
             "
             :dropdownContent="logEvents"
+            :position="'bottom-right'"
             @choose="
               (elements) => {
                 discordGuildStore.updateModuleProperty(
