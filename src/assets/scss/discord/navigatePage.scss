@@ -35,6 +35,20 @@
     @extend %hover_2;
   }
 
+  @keyframes animateOpen {
+    from {
+    }
+    to {
+    }
+  }
+
+  // @keyframes animateHide {
+  //   from {
+  //   }
+  //   to {
+  //   }
+  // }
+
   &.nav_opened {
     padding: 10px;
     & > div,

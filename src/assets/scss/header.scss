@@ -31,9 +31,7 @@
       display: none !important;
     }
     .menu_ops {
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: all !important;
+      display: flex !important;
       position: static !important;
       padding: 0 10px !important;
     }
@@ -132,9 +130,7 @@
       display: none !important;
     }
     .login_panel {
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: all !important;
+      display: flex !important;
       position: static !important;
     }
   }

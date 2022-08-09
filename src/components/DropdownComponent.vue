@@ -101,13 +101,16 @@ function clickAwayFromTitle() {
       ></i>
       <slot name="dropdownTitle" />
     </div>
-    <div
-      class="dropdown_content"
-      :class="[content_class, dropdownShow ? 'visible' : 'hidden']"
-      :style="positionStyle"
-    >
-      <slot />
-    </div>
+    <Transition name="dropdown">
+      <div
+        class="dropdown_content"
+        :class="[content_class]"
+        :style="positionStyle"
+        v-show="dropdownShow"
+      >
+        <slot />
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -133,38 +136,48 @@ function clickAwayFromTitle() {
     width: 100%;
   }
 
+  .dropdown-enter-active,
+  .dropdown-leave-active {
+    transition: opacity 200ms ease-out;
+  }
+
+  .dropdown-enter-from,
+  .dropdown-leave-to {
+    opacity: 0;
+  }
+
   .dropdown_content {
-    @keyframes animateVisible {
-      from {
-        opacity: 0;
-        visibility: hidden;
-      }
-      to {
-        opacity: 1;
-        visibility: visible;
-      }
-    }
+    // @keyframes dropdownComponentAnimateVisible {
+    //   from {
+    //     opacity: 0;
+    //     visibility: hidden;
+    //   }
+    //   to {
+    //     opacity: 1;
+    //     visibility: visible;
+    //   }
+    // }
 
-    @keyframes animateHide {
-      from {
-        visibility: visible;
-        opacity: 1;
-      }
-      to {
-        visibility: hidden;
-        opacity: 0;
-      }
-    }
+    // @keyframes dropdownComponentAnimateHide {
+    //   from {
+    //     visibility: visible;
+    //     opacity: 1;
+    //   }
+    //   to {
+    //     visibility: hidden;
+    //     opacity: 0;
+    //   }
+    // }, dropdownShow ? 'visible' : 'hidden'
 
-    &.hidden {
-      animation: animateHide 200ms ease-out forwards;
-      pointer-events: none;
-    }
+    // &.hidden {
+    //   animation: dropdownComponentAnimateHide 200ms ease-out forwards;
+    //   pointer-events: none;
+    // }
 
-    &.visible {
-      animation: animateVisible 200ms ease-out forwards;
-      pointer-events: unset;
-    }
+    // &.visible {
+    //   animation: dropdownComponentAnimateVisible 200ms ease-out forwards;
+    //   pointer-events: unset;
+    // } name="dropdown"
 
     position: absolute;
 
