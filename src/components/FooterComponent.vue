@@ -11,6 +11,7 @@ import LanguagesContent from "./LanguagesContent.vue";
       <DropdownComponent
         :elem_class="'grid_dropdown_elem'"
         :conent_class="'footer_languages'"
+        :position="'top-left'"
       >
         <template #dropdownTitle> {{ $t("language") }}/Language </template>
 
