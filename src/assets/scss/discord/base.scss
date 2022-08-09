@@ -198,7 +198,7 @@
 
           margin-right: 5px;
           position: relative;
-          transition: $trans_03;
+          transition: all 0.2s ease-out;
 
           &.checked {
             background: $lightblue_button_hover;
