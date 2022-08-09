@@ -71,3 +71,38 @@ $red_color_1: #a72a39;
     background-color: $press_background;
   }
 }
+
+@mixin dropdownArrow(
+  $sideSize: 8px,
+  $width: 2px,
+  $color: #ddd,
+  $animationSpeed: 200ms
+) {
+  display: inline-block;
+  content: "";
+  height: $sideSize;
+  width: $sideSize;
+
+  border-left: $width solid $color;
+  border-bottom: $width solid $color;
+
+  transition: transform $animationSpeed cubic-bezier(0.79, 0.14, 0.15, 0.86);
+
+  margin: 0 10px;
+
+  &.dropdown_arrow_shown {
+    transform: rotate(-225deg);
+
+    &.arrow_animate_left {
+      transform: rotate(135deg);
+    }
+
+    &.arrow_animate_right {
+      transform: rotate(-225deg);
+    }
+  }
+
+  &.dropdown_arrow_hidden {
+    transform: rotate(-45deg);
+  }
+}

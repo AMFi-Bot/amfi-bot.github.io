@@ -102,9 +102,8 @@ function clickAwayFromTitle() {
       <slot name="dropdownTitle" />
     </div>
     <div
-      v-show="dropdownShow"
       class="dropdown_content"
-      :class="content_class"
+      :class="[content_class, dropdownShow ? 'visible' : 'hidden']"
       :style="positionStyle"
     >
       <slot />
@@ -113,6 +112,7 @@ function clickAwayFromTitle() {
 </template>
 
 <style lang="scss">
+@import "@/assets/scss/library";
 .dropdown_elem {
   user-select: none;
   position: relative;
@@ -121,56 +121,7 @@ function clickAwayFromTitle() {
 
   .dropdown_title {
     .dropdown_arrow {
-      margin: 5px 10px 7px 5px;
-
-      &.dropdown_arrow_shown {
-        transform: rotate(-135deg);
-        -webkit-transform: rotate(-135deg);
-
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        display: inline-block;
-        padding: 3px;
-      }
-
-      &.dropdown_arrow_hidden {
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        display: inline-block;
-        padding: 3px;
-      }
-
-      // &.arrow_animate_left {
-      //   animation: arrow_left_animation 1s ease-out 1 alternate 0 forwards;
-      // }
-
-      // &.arrow_animate_right {
-      //   animation: arrow_right_animation 1s ease-out 1 alternate 0 forwards;
-      // }
-
-      // @keyframes arrow_left_animation {
-      //   from {
-      //   }
-
-      //   50% {
-      //   }
-
-      //   to {
-      //   }
-      // }
-      // @keyframes arrow_right_animation {
-      //   from {
-      //   }
-
-      //   50% {
-      //   }
-
-      //   to {
-      //   }
-      // }
+      @include dropdownArrow(8px, 2px, $font_color_1, 200ms);
     }
     display: flex;
     flex-direction: row;
@@ -183,10 +134,39 @@ function clickAwayFromTitle() {
   }
 
   .dropdown_content {
-    position: absolute;
+    @keyframes animateVisible {
+      from {
+        opacity: 0;
+        visibility: hidden;
+      }
+      to {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
 
-    display: flex;
-    flex-direction: column;
+    @keyframes animateHide {
+      from {
+        visibility: visible;
+        opacity: 1;
+      }
+      to {
+        visibility: hidden;
+        opacity: 0;
+      }
+    }
+
+    &.hidden {
+      animation: animateHide 200ms ease-out forwards;
+      pointer-events: none;
+    }
+
+    &.visible {
+      animation: animateVisible 200ms ease-out forwards;
+      pointer-events: unset;
+    }
+
+    position: absolute;
 
     border-radius: 5px;
 
