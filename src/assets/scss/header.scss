@@ -310,36 +310,6 @@
   }
 }
 
-#user_ops {
-  .mn_to_auth {
-    display: flex;
-    flex-direction: row;
-    height: 80%;
-
-    .login_link,
-    .register_link {
-      display: flex;
-      align-items: center;
-
-      margin-right: 30px;
-      height: 100%;
-      padding: 0 10px;
-
-      text-align: center;
-      cursor: pointer;
-
-      border-radius: 5px;
-      transition: $trans_03;
-
-      color: white;
-      font-family: Verdana, Geneva, Tahoma, sans-serif;
-      font-size: 18px;
-
-      @include button(#1e90ff, #1980de, #1470bd);
-    }
-  }
-}
-
 #logout {
   color: rgb(167, 42, 57);
 }
