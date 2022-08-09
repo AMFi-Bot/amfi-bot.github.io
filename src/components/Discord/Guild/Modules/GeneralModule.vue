@@ -78,6 +78,7 @@ if (guild.value && !guild.value.module_general) loadModule("general");
             "
             :dropdownContent="logEvents"
             :position="'bottom-right'"
+            :no-hide-on-click-content="true"
             @choose="
               (elements) => {
                 discordGuildStore.updateModuleProperty(
