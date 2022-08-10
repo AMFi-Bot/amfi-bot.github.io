@@ -3,13 +3,16 @@ import LoadingComponentVue from "../components/LoadingComponent.vue";
 </script>
 
 <template>
-  <LoadingComponentVue></LoadingComponentVue>
+  <div class="loaderView">
+    <LoadingComponentVue
+      :loader-type="'dotted'"
+      :dotted-animation-duration="'15s'"
+    ></LoadingComponentVue>
+  </div>
 </template>
 
 <style lang="scss">
-@import "@/assets/scss/library";
-
-.loader {
+.loaderView {
   min-width: 100px;
   min-height: 100px;
 
@@ -21,13 +24,23 @@ import LoadingComponentVue from "../components/LoadingComponent.vue";
     width: 300px;
     height: 300px;
 
-    @include dottedLoader($font_color_1, 10px, 15s);
+    .dropdown-point {
+      &::after {
+        width: 10px !important;
+        height: 10px !important;
+      }
+    }
   }
   @media (min-width: 900px) {
     width: 500px;
     height: 500px;
 
-    @include dottedLoader($font_color_1, 20px, 15s);
+    .dropdown-point {
+      &::after {
+        width: 20px !important;
+        height: 20px !important;
+      }
+    }
   }
 }
 </style>
