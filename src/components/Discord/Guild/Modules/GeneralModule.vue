@@ -105,6 +105,6 @@ if (guild.value && !guild.value.module_general) loadModule("general");
         </SubInstance>
       </BaseInstance>
     </div>
-    <LoadingComponent v-else />
+    <LoadingComponent :loader-type="'dotted'" v-else />
   </div>
 </template>
