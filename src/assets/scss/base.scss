@@ -153,3 +153,44 @@ footer {
   border-top: thin solid rgba(255, 255, 255, 0.85);
   align-self: center;
 }
+
+@keyframes dottedLoaderAnimation {
+  from {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+
+  16% {
+    opacity: 0.5;
+  }
+
+  32% {
+    transform: rotate(360deg);
+  }
+
+  64% {
+    transform: rotate(720deg);
+  }
+  80% {
+    opacity: 0.5;
+  }
+
+  96% {
+    transform: rotate(1080deg);
+    opacity: 0;
+  }
+
+  to {
+    transform: rotate(1080deg);
+    opacity: 0;
+  }
+}
+
+@keyframes dualRingLoader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
