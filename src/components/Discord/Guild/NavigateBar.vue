@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import "@/assets/scss/discord/navigatePage.scss";
-
 import { ref } from "vue";
 
 const leftside_open = ref(false);
@@ -13,7 +11,10 @@ const leftside_open = ref(false);
       $style[leftside_open ? 'nav_opened' : 'nav_hidden'],
     ]"
   >
-    <div class="toggle_visible" v-on:click="leftside_open = !leftside_open">
+    <div
+      :class="$style.toggle_visible"
+      v-on:click="leftside_open = !leftside_open"
+    >
       <img src="/img/menu.svg" />
       <span>Visible</span>
     </div>
