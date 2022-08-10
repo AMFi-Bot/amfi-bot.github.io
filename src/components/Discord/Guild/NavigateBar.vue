@@ -4,14 +4,14 @@ import "@/assets/scss/discord/navigatePage.scss";
 import { ref } from "vue";
 
 const leftside_open = ref(false);
-
-// const setup_page = ref("");
 </script>
 
 <template>
   <div
-    class="discord_guild_nav"
-    :class="leftside_open ? 'nav_opened' : 'nav_hidden'"
+    :class="[
+      $style.discord_guild_nav,
+      $style[leftside_open ? 'nav_opened' : 'nav_hidden'],
+    ]"
   >
     <div class="toggle_visible" v-on:click="leftside_open = !leftside_open">
       <img src="/img/menu.svg" />
@@ -43,34 +43,84 @@ const leftside_open = ref(false);
       <img src="/img/star.svg" />
       <span>Features</span>
     </RouterLink>
-
-    <!-- <div class="nav_opened" v-if="leftside_open">
-      
-    </div>
-    <div class="nav_hidden" v-else>
-      <div class="toggle_visible" v-on:click="leftside_open = true">
-        <img src="/img/menu.svg" />
-      </div>
-      <i class="separator_1" style="width: 80%"></i>
-      <div v-on:click="setup_page = 'general'">
-        <img src="/img/home.svg" />
-      </div>
-      <i class="separator_1" style="width: 93%"></i>
-      <div v-on:click="setup_page = 'general'">
-        <img src="/img/settings-sliders.svg" />
-      </div>
-      <div v-on:click="setup_page = 'moderation'">
-        <img src="/img/moderation.svg" />
-      </div>
-      <div v-on:click="setup_page = 'automoderation'">
-        <img src="/img/automoderation.svg" />
-      </div>
-      <div v-on:click="setup_page = 'commands'">
-        <img src="/img/terminal.svg" />
-      </div>
-      <div v-on:click="setup_page = 'features'">
-        <img src="/img/star.svg" />
-      </div>
-    </div> -->
   </div>
 </template>
+
+<style module lang="scss">
+@import "@/assets/scss/library";
+
+.discord_guild_nav {
+  display: flex;
+  flex-direction: column;
+
+  position: fixed;
+  left: 10px;
+
+  border-radius: 10px;
+
+  background-color: $dark_3;
+
+  & > div,
+  & > a {
+    display: flex;
+    flex-direction: row;
+
+    padding: 5px 10px;
+    max-width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    align-items: center;
+    cursor: pointer;
+
+    img {
+      height: 100%;
+      width: 100%;
+    }
+
+    &.toggle_visible {
+      margin-bottom: 10px !important;
+    }
+
+    @extend %hover_2;
+  }
+
+  @keyframes animateOpen {
+    from {
+    }
+    to {
+    }
+  }
+
+  // @keyframes animateHide {
+  //   from {
+  //   }
+  //   to {
+  //   }
+  // }
+
+  &.nav_opened {
+    padding: 10px;
+    & > div,
+    & > a {
+      max-width: none;
+
+      span {
+        margin-left: 15px;
+      }
+
+      img {
+        height: 30px;
+        width: 30px;
+      }
+    }
+  }
+
+  &.nav_hidden {
+    padding: 10px 2px;
+
+    span {
+      display: none;
+    }
+  }
+}
+</style>
