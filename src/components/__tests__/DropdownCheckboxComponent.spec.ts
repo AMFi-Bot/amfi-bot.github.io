@@ -82,30 +82,6 @@ describe("Dropdown Checkbox", () => {
     }
   });
 
-  it("dropdown list switches visibility on click", async () => {
-    // Mount element
-    const wrapper = mount(DropdownCheckboxComponent, {
-      props: {
-        ...baseConfig,
-      },
-      global,
-    });
-
-    const dropdownList = wrapper.find(".dropdown_content");
-    const dropdownTitleElement = wrapper.find(".dropdown_title");
-
-    // Check dropdown list to be hidden by default
-    expect(dropdownList.attributes()["style"]).toContain("display: none;");
-
-    // Check dropdown list to displays on click to title
-    await dropdownTitleElement.trigger("click");
-    expect(dropdownList.attributes()["style"]).not.toContain("display: none;");
-
-    // And hides on click again
-    await dropdownTitleElement.trigger("click");
-    expect(dropdownList.attributes()["style"]).toContain("display: none;");
-  });
-
   it("chooses elements", async () => {
     // Mount element
     const wrapper = mount(DropdownCheckboxComponent, {
