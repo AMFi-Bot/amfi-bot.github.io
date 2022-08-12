@@ -47,10 +47,6 @@ jobs:
       - name: Build project
         run: pnpm build
 
-      # #Fially E2E test
-      - name: Run E2E tests
-        run: pnpm test:e2e:ci
-
       # If Ci tests completed, start to deploy
       - name: Deploy to Github Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4

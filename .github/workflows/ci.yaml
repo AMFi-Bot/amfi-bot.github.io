@@ -41,6 +41,3 @@ jobs:
 
       - name: Build project
         run: pnpm build
-
-      - name: Run E2E tests
-        run: npm run test:e2e:ci
