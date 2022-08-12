@@ -1,30 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AMFi-Bot | The bot for messengers</title>
-  <style>
-    body {
-      background-color: #34383c;
-      color: #ddd;
-    }
-  </style>
 
-    <script type="module" crossorigin src="/assets/index.e2698149.js"></script>
-    <link rel="stylesheet" href="/assets/index.58d1e572.css">
-  </head>
-  <body>
-    <div id="app">Loading page...</div>
+<head>
+	<meta charset="UTF-8" />
+	<link rel="icon" href="/favicon.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>AMFi-Bot | The bot for messengers</title>
+	<style>
+		body {
+			background-color: #34383c;
+			color: #ddd;
 
-    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
-    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
-    <script>
-      NProgress.configure({ showSpinner: false });
-      NProgress.inc();
-    </script>
+		}
 
-    
-  </body>
+		.lds-dual-ring {
+			display: inline-block;
+			width: 80px;
+			height: 80px;
+		}
+
+		.lds-dual-ring:after {
+			content: " ";
+			display: block;
+			width: 64px;
+			height: 64px;
+			margin: 8px;
+			border-radius: 50%;
+			border: 6px solid #ddd;
+			border-color: #ddd transparent #ddd transparent;
+			animation: lds-dual-ring 1.2s linear infinite;
+		}
+
+		@keyframes lds-dual-ring {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+
+  <script type="module" crossorigin src="/assets/index.9756dbd0.js"></script>
+  <link rel="stylesheet" href="/assets/index.35dee294.css">
+</head>
+
+<body>
+	<div id="app">
+		<div class="lds-dual-ring"></div>
+	</div>
+
+	<link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
+	<script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+	<script>
+		NProgress.configure({ showSpinner: false });
+		NProgress.inc();
+	</script>
+
+	
+</body>
+
 </html>
