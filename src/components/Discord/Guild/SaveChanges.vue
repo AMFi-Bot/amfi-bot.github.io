@@ -2,6 +2,29 @@
 import { useDiscordGuildStore } from "@/stores/discordGuild.js";
 import { storeToRefs } from "pinia";
 import _ from "lodash";
+import { computed, ref, type Ref } from "vue";
+
+const unsavedChangesAlertProperty = ref(false);
+const unsavedChangesAlertTimeout: Ref<number | undefined> = ref();
+
+const unsavedChangesAlert = computed({
+  get() {
+    return unsavedChangesAlertProperty.value;
+  },
+  set(value) {
+    if (value) {
+      if (unsavedChangesAlertProperty.value) {
+        clearTimeout(unsavedChangesAlertTimeout.value);
+        unsavedChangesAlertTimeout.value = undefined;
+      }
+      unsavedChangesAlertProperty.value = true;
+      unsavedChangesAlertTimeout.value = setTimeout(
+        () => (unsavedChangesAlertProperty.value = false),
+        820
+      );
+    } else unsavedChangesAlertProperty.value = false;
+  },
+});
 
 const discordGuildStore = useDiscordGuildStore();
 
@@ -11,20 +34,27 @@ const { syncGuild, resetGuildChanges } = discordGuildStore;
 </script>
 
 <template>
-  <div
-    :class="$style.saveChangesAlert"
-    v-show="!(guild && oldGuild ? _.isEqual(guild, oldGuild) : true)"
-  >
-    <div :class="$style.unsavedText">Careful! You have unsaved changes</div>
-    <div :class="$style.saveButtons">
-      <div :class="$style.resetChangesButton" @click="resetGuildChanges">
-        Reset
+  <Transition>
+    <div
+      :class="[
+        $style.saveChangesAlert,
+        unsavedChangesAlert && $style['unsaved-changes-shake'],
+      ]"
+      v-show="!(guild && oldGuild ? _.isEqual(guild, oldGuild) : true)"
+    >
+      <div :class="$style.unsavedText" @click="unsavedChangesAlert = true">
+        Careful! You have unsaved changes
       </div>
-      <div :class="$style.saveChangesButton" @click="syncGuild">
-        Save changes
+      <div :class="$style.saveButtons">
+        <div :class="$style.resetChangesButton" @click="resetGuildChanges">
+          Reset
+        </div>
+        <div :class="$style.saveChangesButton" @click="syncGuild">
+          Save changes
+        </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <style module lang="scss">
@@ -44,6 +74,8 @@ const { syncGuild, resetGuildChanges } = discordGuildStore;
 
   position: absolute;
   bottom: 0;
+
+  transform: translateX(0);
 
   .unsavedText {
     font-size: 18px;
@@ -82,6 +114,64 @@ const { syncGuild, resetGuildChanges } = discordGuildStore;
 
       @extend %green_button;
     }
+  }
+
+  &.unsaved-changes-shake {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) alternate
+      infinite;
+  }
+
+  @keyframes shake {
+    from {
+      background: rgba($color: $red_color_1, $alpha: 0.7);
+    }
+    10%,
+    90% {
+      transform: translateX(-1px);
+      background: rgba($color: $red_color_1, $alpha: 0.7);
+    }
+
+    20%,
+    80% {
+      transform: translateX(2px);
+    }
+
+    30%,
+    50%,
+    70% {
+      transform: translateX(-4px);
+      background: rgba($color: $red_color_1, $alpha: 0.5);
+    }
+
+    40%,
+    60% {
+      transform: translateX(4px);
+      background: rgba($color: $red_color_1, $alpha: 0.7);
+    }
+
+    to {
+      background: rgba($color: $red_color_1, $alpha: 0.7);
+    }
+  }
+}
+</style>
+
+<style scoped lang="scss">
+.v-enter-active {
+  animation: bounce-in 0.5s;
+}
+.v-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: translateY(120px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
 </style>
