@@ -15,8 +15,12 @@ const leftside_open = ref(false);
       :class="$style.toggle_visible"
       v-on:click="leftside_open = !leftside_open"
     >
-      <img src="/img/menu.svg" />
-      <span>Visible</span>
+      <div :class="[$style.icon]">
+        <div :class="[$style.show_hide_icon_wrapper]">
+          <div :class="$style.show_hide_icon"></div>
+        </div>
+      </div>
+      <!-- <span>Visible</span> -->
     </div>
     <i class="separator_1" style="width: 93%"></i>
     <RouterLink to="dashboard">
@@ -65,6 +69,60 @@ const leftside_open = ref(false);
 
   transition: all 200ms ease;
 
+  .icon .show_hide_icon_wrapper {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    .show_hide_icon,
+    .show_hide_icon::after,
+    .show_hide_icon::before {
+      background: $font_color_2;
+      content: "";
+      display: block;
+      height: 4px;
+      position: absolute;
+      transition: background ease 0.3s, top ease 0.3s 0.3s, transform ease 0.3s;
+      width: 30px;
+      border-radius: 100px;
+    }
+
+    .show_hide_icon {
+      left: 0;
+      top: 15px;
+    }
+
+    .show_hide_icon::before {
+      top: -9px;
+    }
+
+    .show_hide_icon::after {
+      top: 9px;
+    }
+  }
+
+  &.nav_opened {
+    .icon .show_hide_icon_wrapper {
+      .show_hide_icon {
+        background: transparent;
+
+        &::before {
+          transform: rotate(45deg);
+        }
+        &::after {
+          transform: rotate(-45deg);
+        }
+
+        &::after,
+        &::before {
+          top: 0;
+          transition: top ease 0.3s, transform ease 0.3s 0.3s;
+        }
+      }
+    }
+  }
+
   & > div,
   & > a {
     display: flex;
@@ -76,9 +134,11 @@ const leftside_open = ref(false);
     align-items: center;
     cursor: pointer;
 
+    .icon,
     img {
       height: 30px;
       width: 30px;
+      min-width: 30px;
     }
 
     span {
