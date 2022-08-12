@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import "@/assets/scss/header.scss";
+//import "@/assets/scss/header.scss";
 import BaseVue from "./Headers/BaseContent.vue";
 import UnloggedVue from "./Headers/NoUser.vue";
 import DiscordLogged from "./Headers/DiscordLogged.vue";
