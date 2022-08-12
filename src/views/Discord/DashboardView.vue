@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import "@/assets/scss/dashboard.scss";
-
 import { useDiscordGuildsStore } from "../../stores/discordGuilds";
 const discordGuildsStore = useDiscordGuildsStore();
 
@@ -8,40 +6,48 @@ discordGuildsStore.loadGuilds();
 </script>
 
 <template>
-  <div id="discord_dashboard" class="discord_dashboard">
-    <div class="guilds_loading" v-if="discordGuildsStore.loading">
+  <div :class="$style.discord_dashboard">
+    <div :class="$style.guilds_loading" v-if="discordGuildsStore.loading">
       Loading guilds...
     </div>
     <div
-      class="guild_list"
+      :class="$style.guild_list"
       v-else-if="
         discordGuildsStore.loaded && discordGuildsStore.guilds.length !== 0
       "
     >
-      <div class="guild_list_text">Please choose a guild to setup</div>
+      <div :class="$style.guild_list_title">Please choose a guild to setup</div>
       <div v-for="guild in discordGuildsStore.guilds" :key="guild.id">
-        <div class="guild">
-          <div class="guild_desc">
+        <div :class="$style.guild">
+          <div :class="$style.guild_desc">
             <img
-              class="guild_icon"
+              :class="$style.guild_icon"
               v-bind:src="`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`"
               width="40"
               height="40"
               v-if="guild.icon"
             />
             <div v-else>N</div>
-            <div class="guild_name">{{ guild.name }}</div>
+            <div :class="$style.guild_name">{{ guild.name }}</div>
           </div>
 
           <RouterLink
-            class="guild_setup setup_button green_button"
+            :class="[
+              $style.guild_setup,
+              $style.green_button,
+              $style.setup_button,
+            ]"
             :to="`/discord/guilds/${guild.id}`"
             v-if="guild.bot_exists"
           >
             Set up
           </RouterLink>
           <div
-            class="guild_setup setup_button darkblue_button"
+            :class="[
+              $style.guild_setup,
+              $style.darkblue_button,
+              $style.setup_button,
+            ]"
             v-else
             @click="
               () => {
@@ -55,13 +61,82 @@ discordGuildsStore.loadGuilds();
       </div>
     </div>
     <div
-      class="no_guilds"
+      :class="$style.no_guild_alert"
       v-else-if="
         discordGuildsStore.loaded && discordGuildsStore.guilds.length === 0
       "
     >
       Oops you dont have any guilds
     </div>
-    <div class="guilds_load_error" v-else>Something went wrong! Try again</div>
+    <div :class="$style.guilds_load_error" v-else>
+      Something went wrong! Try again
+    </div>
   </div>
 </template>
+
+<style module lang="scss">
+@import "@/assets/scss/library";
+.discord_dashboard {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  .guild_list {
+    display: flex;
+    flex-direction: column;
+    width: 600px;
+    padding: 5px;
+    margin: 20px 0;
+    border-radius: 5px;
+    background-color: #212426;
+
+    .guild_list_title {
+      margin: 10px 0;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .guild {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      height: 50px;
+      border: 1px dotted rgba(216, 216, 216, 0.5);
+      border-radius: 5px;
+      margin: 10px 0;
+      padding: 5px;
+
+      .guild_desc {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        align-items: center;
+        text-align: center;
+
+        .guild_icon {
+          border-radius: 500px;
+          margin-right: 10px;
+        }
+      }
+      .setup_button {
+        @include setup_button();
+        margin-right: 5px;
+
+        padding: 5px 15px;
+
+        &.green_button {
+          @extend %green_button;
+        }
+        &.darkblue_button {
+          @extend %darkblue_button;
+        }
+      }
+    }
+  }
+}
+</style>

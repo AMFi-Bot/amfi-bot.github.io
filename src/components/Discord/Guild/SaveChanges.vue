@@ -12,20 +12,22 @@ const { syncGuild, resetGuildChanges } = discordGuildStore;
 
 <template>
   <div
-    class="saveChangesAlert"
+    :class="$style.saveChangesAlert"
     v-show="!(guild && oldGuild ? _.isEqual(guild, oldGuild) : true)"
   >
-    <div class="unsavedText">Careful! You have unsaved changes</div>
-    <div class="saveButtons">
-      <div class="resetChangesButton" @click="resetGuildChanges">Reset</div>
-      <div class="saveChangesButton green_button" @click="syncGuild">
+    <div :class="$style.unsavedText">Careful! You have unsaved changes</div>
+    <div :class="$style.saveButtons">
+      <div :class="$style.resetChangesButton" @click="resetGuildChanges">
+        Reset
+      </div>
+      <div :class="$style.saveChangesButton" @click="syncGuild">
         Save changes
       </div>
     </div>
   </div>
 </template>
 
-<style lang="scss">
+<style module lang="scss">
 @import "@/assets/scss/library";
 
 .saveChangesAlert {
@@ -77,6 +79,8 @@ const { syncGuild, resetGuildChanges } = discordGuildStore;
 
       padding: 10px 15px;
       border-radius: 5px;
+
+      @extend %green_button;
     }
   }
 }

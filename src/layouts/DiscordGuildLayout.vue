@@ -4,7 +4,6 @@ import FooterComponent from "@/components/FooterComponent.vue";
 
 import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
 
-import "@/assets/scss/discord/base.scss";
 import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
 </script>
 
@@ -12,7 +11,7 @@ import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
   <DiscordGuildHeaderVue />
 
   <div class="content">
-    <div class="discord_guild">
+    <div :class="$style.discord_guild">
       <NavigateVue />
       <slot />
 
@@ -21,3 +20,17 @@ import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
   </div>
   <FooterComponent />
 </template>
+
+<style module lang="scss">
+@import "@/assets/scss/library";
+
+.discord_guild {
+  display: flex;
+  flex-direction: row;
+
+  position: relative;
+  justify-content: center;
+
+  margin-top: 10px;
+}
+</style>

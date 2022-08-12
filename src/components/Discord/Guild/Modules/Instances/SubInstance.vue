@@ -1,20 +1,20 @@
 <script setup lang="ts">
-const props = defineProps<{
-  instanceName: string;
-  instanceDescription: string;
-  instanceBaseClass?: string;
-  instanceAboutClass?: string;
-  instanceBodyClass?: string;
+defineProps<{
+  subinstanceName: string;
+  subinstanceDescription: string;
+  subinstanceBaseClass?: string;
+  subinstanceAboutClass?: string;
+  subinstanceBodyClass?: string;
 }>();
 </script>
 
 <template>
-  <div :class="[$style.instance, instanceBaseClass]">
-    <div :class="[$style.instance_title, instanceAboutClass]">
-      <h2 :class="$style.title">{{ instanceName }}</h2>
-      <p :class="$style.description">{{ instanceDescription }}</p>
+  <div :class="[$style.instance, subinstanceBaseClass]">
+    <div :class="[$style.instance_title, subinstanceAboutClass]">
+      <h2 :class="$style.title">{{ subinstanceName }}</h2>
+      <p :class="$style.description">{{ subinstanceDescription }}</p>
     </div>
-    <div :class="[$style.instance_body, instanceBodyClass]">
+    <div :class="[$style.instance_body, subinstanceBodyClass]">
       <slot />
     </div>
   </div>
@@ -22,7 +22,7 @@ const props = defineProps<{
 
 <style module lang="scss">
 @import "@/assets/scss/library";
-.instance {
+.subinstance {
   display: flex;
 
   flex-direction: column;
@@ -37,7 +37,7 @@ const props = defineProps<{
 
   margin-bottom: 20px;
 
-  .instance_title {
+  .subinstance_title {
     margin-bottom: 10px;
 
     display: flex;

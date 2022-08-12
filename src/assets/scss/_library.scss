@@ -1,5 +1,3 @@
-$trans_03: all 0.3s ease;
-
 $green_button_normal: #2c9f4b;
 $green_button_hover: #237e3b;
 $green_button_pressed: #1b612e;
@@ -27,15 +25,15 @@ $box_shadow_1: #000 0px 1px 3px;
 
 $border_radius_1: 4px;
 
-$circle: 100500px;
+$circle: 50%;
 
 $red_color_1: #a72a39;
 
 @mixin hover($color) {
-  transition: $trans_03;
+  transition: background-color 0.2 ease-out;
 
   &:hover {
-    transition: $trans_03;
+    transition: background-color 0.2 ease-out;
     background-color: $color;
   }
 }
@@ -56,18 +54,47 @@ $red_color_1: #a72a39;
 
 @mixin button($normal_background, $hover_background, $press_background) {
   background-color: $normal_background;
-  transition: $trans_03;
+  transition: background-color 0.2 ease-out;
 
   user-select: none;
   cursor: pointer;
 
   &:hover {
-    transition: $trans_03;
+    transition: background-color 0.2 ease-out;
     background-color: $hover_background;
   }
 
   &:active {
-    transition: $trans_03;
+    transition: background-color 0.2 ease-out;
     background-color: $press_background;
   }
+}
+
+%green_button {
+  @include button(
+    $green_button_normal,
+    $green_button_hover,
+    $green_button_pressed
+  );
+}
+%darkblue_button {
+  @include button(
+    $darkblue_button_normal,
+    $darkblue_button_hover,
+    $darkblue_button_pressed
+  );
+}
+
+@mixin setup_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 5px;
+
+  padding: 0px 10px;
+
+  font-size: 18px;
+
+  cursor: pointer;
 }

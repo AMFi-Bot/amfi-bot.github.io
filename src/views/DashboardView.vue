@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import "@/assets/scss/dashboard.scss";
 import { onMounted } from "vue";
 import { useUserStore } from "../stores/user";
+import TelegramLogo from "../components/Icons/TelegramLogo.vue";
+import DiscordLogoWhite from "../components/Icons/DiscordLogoWhite.vue";
 
 const userStore = useUserStore();
 
@@ -13,26 +14,22 @@ if (!userStore.telegram_id) {
 </script>
 
 <template>
-  <div id="dashboard" class="dashboard" v-if="userStore">
-    <div class="setupMessengers">
-      <div class="setupMessenger setupTelegram">
-        <div class="msgDesc">
-          <h2 class="mainText">Set up Telegram</h2>
-          <img
-            class="msgLogo"
-            src="/img/tg_logo.svg"
-            width="50"
-            height="50"
-            alt=""
-          />
-          <p class="desc">
+  <div :class="$style.dashboard" v-if="userStore">
+    <div :class="$style.setupMessengers">
+      <div :class="[$style.setupMessenger, $style.setupTelegram]">
+        <div :class="$style.messengerDescription">
+          <h2 :class="$style.title">Set up Telegram</h2>
+          <TelegramLogo :class="[$style.logo, $style.telegram_logo]" />
+          <p :class="$style.desc">
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae,
             impedit.
           </p>
         </div>
         <div
-          class="setup_button"
-          :class="userStore.telegram_id ? 'green_button' : ''"
+          :class="[
+            $style.setup_button,
+            userStore.telegram_id ? $style.green_button : undefined,
+          ]"
         >
           <RouterLink to="/telegram/dashboard" v-if="userStore.telegram_id">
             Set up
@@ -45,25 +42,20 @@ if (!userStore.telegram_id) {
         </div>
       </div>
 
-      <div class="setupMessenger setupDiscord">
-        <div class="msgDesc">
-          <h2 class="mainText">Set up Discord</h2>
-          <img
-            class="msgLogo"
-            src="/img/discord_logo.svg"
-            width="70"
-            height="70"
-            alt=""
-            style="margin-bottom: -10px; margin-top: -5px"
-          />
-          <p class="desc">
+      <div :class="[$style.setupMessenger, $style.setupDiscord]">
+        <div :class="$style.messengerDescription">
+          <h2 :class="$style.title">Set up Discord</h2>
+          <DiscordLogoWhite :class="[$style.logo, $style.discord_logo]" />
+          <p :class="$style.desc">
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Molestiae,
             impedit.
           </p>
         </div>
         <div
-          class="setup_button"
-          :class="userStore.discord_id ? 'green_button' : 'darkblue_button'"
+          :class="[
+            $style.setup_button,
+            userStore.discord_id ? $style.green_button : $style.darkblue_button,
+          ]"
         >
           <RouterLink to="/discord/dashboard" v-if="userStore.discord_id">
             Set up
@@ -76,3 +68,89 @@ if (!userStore.telegram_id) {
     </div>
   </div>
 </template>
+
+<style module lang="scss">
+@import "@/assets/scss/library";
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+
+  margin: 25px;
+
+  .setupMessengers {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    @media (max-width: 540px) {
+      flex-direction: column-reverse;
+      align-items: center;
+    }
+
+    gap: 25px;
+
+    margin-top: 10px;
+
+    width: 100%;
+
+    > .setupMessenger {
+      display: flex;
+      flex-direction: column;
+
+      justify-content: space-between;
+      align-items: center;
+
+      min-height: 290px;
+      max-width: 315px;
+
+      border-radius: $border_radius_1;
+      padding: 10px;
+
+      background-color: $dark_2;
+
+      .messengerDescription {
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 5px;
+
+        .title {
+          font-size: 24px;
+          color: $font_color_1;
+        }
+
+        .logo {
+          width: 50px;
+          height: 50px;
+        }
+
+        .desc {
+          font-size: 20px;
+          color: $font_color_2;
+          text-align: center;
+        }
+      }
+
+      .setup_button {
+        @include setup_button();
+        align-self: center;
+        margin-bottom: 10px;
+        margin-top: 20px;
+
+        min-width: 100px;
+        min-height: 35px;
+
+        &.green_button {
+          @extend %green_button;
+        }
+        &.darkblue_button {
+          @extend %darkblue_button;
+        }
+      }
+    }
+  }
+}
+</style>

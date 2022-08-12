@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DropdownArrow from "./DropdownArrow.vue";
 
 const dropdownShow = ref(false);
 
@@ -49,20 +50,6 @@ const positionStyle = computed(() => {
     : topStyle;
 });
 
-const arrowAnimationClass = computed(() =>
-  props.arrowAnimationSide === "left"
-    ? "arrow_animate_left"
-    : props.arrowAnimationSide === "right"
-    ? "arrow_animate_right"
-    : props.disableArrowAnimation
-    ? ""
-    : "arrow_animate_right"
-);
-
-const arrowState = computed(() =>
-  dropdownShow.value ? "dropdown_arrow_shown" : "dropdown_arrow_hidden"
-);
-
 const emit = defineEmits<{
   (e: "dropdownStateSwitched", state: boolean): void;
 }>();
@@ -94,25 +81,28 @@ function clickAwayFromTitle() {
       v-click-away="clickAwayFromTitle"
       @click="switchDropdownState"
     >
-      <i
+      <DropdownArrow
         v-if="useArrow"
-        class="dropdown_arrow"
-        :class="[arrowState, arrowAnimationClass]"
-      ></i>
+        :arrow-state-show="dropdownShow"
+        :arrow-animation-side="props.arrowAnimationSide"
+        :disable-arrow-animation="props.disableArrowAnimation"
+      />
       <slot name="dropdownTitle" />
     </div>
-    <div
-      v-show="dropdownShow"
-      class="dropdown_content"
-      :class="content_class"
-      :style="positionStyle"
-    >
-      <slot />
-    </div>
+    <Transition name="dropdown">
+      <div
+        class="dropdown_content"
+        :class="[content_class]"
+        :style="positionStyle"
+        v-show="dropdownShow"
+      >
+        <slot />
+      </div>
+    </Transition>
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .dropdown_elem {
   user-select: none;
   position: relative;
@@ -120,58 +110,6 @@ function clickAwayFromTitle() {
   padding: 0;
 
   .dropdown_title {
-    .dropdown_arrow {
-      margin: 5px 10px 7px 5px;
-
-      &.dropdown_arrow_shown {
-        transform: rotate(-135deg);
-        -webkit-transform: rotate(-135deg);
-
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        display: inline-block;
-        padding: 3px;
-      }
-
-      &.dropdown_arrow_hidden {
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        display: inline-block;
-        padding: 3px;
-      }
-
-      // &.arrow_animate_left {
-      //   animation: arrow_left_animation 1s ease-out 1 alternate 0 forwards;
-      // }
-
-      // &.arrow_animate_right {
-      //   animation: arrow_right_animation 1s ease-out 1 alternate 0 forwards;
-      // }
-
-      // @keyframes arrow_left_animation {
-      //   from {
-      //   }
-
-      //   50% {
-      //   }
-
-      //   to {
-      //   }
-      // }
-      // @keyframes arrow_right_animation {
-      //   from {
-      //   }
-
-      //   50% {
-      //   }
-
-      //   to {
-      //   }
-      // }
-    }
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -182,11 +120,18 @@ function clickAwayFromTitle() {
     width: 100%;
   }
 
+  .dropdown-enter-active,
+  .dropdown-leave-active {
+    transition: opacity 200ms ease-out;
+  }
+
+  .dropdown-enter-from,
+  .dropdown-leave-to {
+    opacity: 0;
+  }
+
   .dropdown_content {
     position: absolute;
-
-    display: flex;
-    flex-direction: column;
 
     border-radius: 5px;
 
