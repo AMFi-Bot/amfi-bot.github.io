@@ -12,7 +12,7 @@ import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
   <DiscordGuildHeaderVue />
 
   <div class="content">
-    <div class="discord_guild">
+    <div :class="$style.discord_guild">
       <NavigateVue />
       <slot />
 
@@ -21,3 +21,17 @@ import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
   </div>
   <FooterComponent />
 </template>
+
+<style module lang="scss">
+@import "../library";
+
+.discord_guild {
+  display: flex;
+  flex-direction: row;
+
+  position: relative;
+  justify-content: center;
+
+  margin-top: 10px;
+}
+</style>

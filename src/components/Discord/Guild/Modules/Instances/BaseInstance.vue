@@ -2,17 +2,60 @@
 const props = defineProps<{
   instanceName: string;
   instanceDescription: string;
+  instanceBaseClass?: string;
+  instanceAboutClass?: string;
+  instanceBodyClass?: string;
 }>();
 </script>
 
 <template>
-  <div class="instance">
-    <div class="instance_title">
-      <span class="title">Logs</span>
-      <span class="description">Here you can setup logs sending by bot</span>
+  <div :class="[$style.instance, instanceBaseClass]">
+    <div :class="[$style.instance_title, instanceAboutClass]">
+      <h2 :class="$style.title">{{ instanceName }}</h2>
+      <p :class="$style.description">{{ instanceDescription }}</p>
     </div>
-    <div class="instance_body">
+    <div :class="[$style.instance_body, instanceBodyClass]">
       <slot />
     </div>
   </div>
 </template>
+
+<style module lang="scss">
+.instance {
+  display: flex;
+
+  flex-direction: column;
+  &.row {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  background-color: $dark_2;
+  padding: 10px;
+  border-radius: 5px;
+
+  margin-bottom: 20px;
+
+  .instance_title {
+    margin-bottom: 10px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-self: center;
+
+    align-items: center;
+
+    .title {
+      font-size: 26px;
+
+      color: $font_color_1;
+    }
+
+    .description {
+      font-size: 16px;
+      color: $font_color_2;
+    }
+  }
+}
+</style>
