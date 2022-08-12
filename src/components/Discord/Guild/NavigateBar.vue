@@ -14,13 +14,13 @@ const leftside_open = ref(false);
     <div
       :class="$style.toggle_visible"
       v-on:click="leftside_open = !leftside_open"
+      v-click-away="() => leftside_open && (leftside_open = false)"
     >
       <div :class="[$style.icon]">
         <div :class="[$style.show_hide_icon_wrapper]">
           <div :class="$style.show_hide_icon"></div>
         </div>
       </div>
-      <!-- <span>Visible</span> -->
     </div>
     <i class="separator_1" style="width: 93%"></i>
     <RouterLink to="dashboard">
