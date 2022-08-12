@@ -4,7 +4,6 @@ import FooterComponent from "@/components/FooterComponent.vue";
 
 import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
 
-import "@/assets/scss/discord/base.scss";
 import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
 </script>
 
@@ -23,7 +22,7 @@ import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
 </template>
 
 <style module lang="scss">
-@import "../library";
+@import "@/assets/scss/library";
 
 .discord_guild {
   display: flex;

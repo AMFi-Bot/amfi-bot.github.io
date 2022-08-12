@@ -6,7 +6,8 @@ import LoadingComponent from "@/components/LoadingComponent.vue";
 import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vue";
 import { ref } from "vue";
 import BaseInstance from "./Instances/BaseInstance.vue";
-import SubInstance from "./Instances/Helpers/SubInstance.vue";
+import BaseModule from "./BaseModule.vue";
+import BaseElement from "./Elements/BaseElement.vue";
 
 const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
 
@@ -21,22 +22,19 @@ if (guild.value && !guild.value.module_general) loadModule("general");
 </script>
 
 <template>
-  <div class="general module">
-    <div class="module_about">
-      <h1>General</h1>
-      <p>
-        Bot general settings module. Here you can configure most of the
-        important settings on your server.
-      </p>
-    </div>
-    <div class="module_body" v-if="guild && guild.module_general">
+  <BaseModule
+    :module-name="'General'"
+    :module-descriprion="`        Bot general settings module. Here you can configure most of the
+        important settings on your server.`"
+  >
+    <div v-if="guild && guild.module_general">
       <BaseInstance
         instance-name="Logs"
         instance-description="Here you can setup logs sending by bot"
       >
-        <SubInstance
-          subinstance-title="Log channel:"
-          subinstance-description="Please choose a log channel where bot may send logs"
+        <BaseElement
+          element-title="Log channel:"
+          element-description="Please choose a log channel where bot may send logs"
         >
           <DropdownComponent
             clickButtonTitle="Choose a channel"
@@ -62,10 +60,10 @@ if (guild.value && !guild.value.module_general) loadModule("general");
               }
             "
           />
-        </SubInstance>
-        <SubInstance
-          subinstance-title="Log types:"
-          subinstance-description="Please select types of logs to handle:"
+        </BaseElement>
+        <BaseElement
+          element-title="Log types:"
+          element-description="Please select types of logs to handle:"
         >
           <DropdownCheckboxComponent
             clickButtonTitle="Choose types"
@@ -89,8 +87,8 @@ if (guild.value && !guild.value.module_general) loadModule("general");
               }
             "
           />
-        </SubInstance>
-        <SubInstance subinstance-title="Log state:">
+        </BaseElement>
+        <BaseElement element-title="Log state:">
           <div
             class="state_checkbox"
             :class="guild.module_general.logEnabled ? 'enabled' : 'disabled'"
@@ -102,9 +100,9 @@ if (guild.value && !guild.value.module_general) loadModule("general");
                   : updateModuleProperty('general', 'logEnabled', true))
             "
           />
-        </SubInstance>
+        </BaseElement>
       </BaseInstance>
     </div>
     <LoadingComponent :loader-type="'dotted'" v-else />
-  </div>
+  </BaseModule>
 </template>

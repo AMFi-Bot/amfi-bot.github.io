@@ -21,6 +21,7 @@ const props = defineProps<{
 </template>
 
 <style module lang="scss">
+@import "@/assets/scss/library";
 .instance {
   display: flex;
 
