@@ -102,7 +102,7 @@ import LanguagesContent from "./LanguagesContent.vue";
   background-color: rgb(33, 36, 38);
   width: 100%;
 
-  z-index: 50;
+  z-index: 999999;
 
   * {
     user-select: none;

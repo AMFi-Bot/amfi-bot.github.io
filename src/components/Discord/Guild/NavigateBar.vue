@@ -14,9 +14,13 @@ const leftside_open = ref(false);
     <div
       :class="$style.toggle_visible"
       v-on:click="leftside_open = !leftside_open"
+      v-click-away="() => leftside_open && (leftside_open = false)"
     >
-      <img src="/img/menu.svg" />
-      <span>Visible</span>
+      <div :class="[$style.icon]">
+        <div :class="[$style.show_hide_icon_wrapper]">
+          <div :class="$style.show_hide_icon"></div>
+        </div>
+      </div>
     </div>
     <i class="separator_1" style="width: 93%"></i>
     <RouterLink to="dashboard">
@@ -53,13 +57,71 @@ const leftside_open = ref(false);
 .discord_guild_nav {
   display: flex;
   flex-direction: column;
+  gap: 5px;
 
   position: fixed;
   left: 10px;
+  z-index: 1000;
 
   border-radius: 10px;
 
   background-color: $dark_3;
+
+  transition: all 200ms ease;
+
+  .icon .show_hide_icon_wrapper {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    .show_hide_icon,
+    .show_hide_icon::after,
+    .show_hide_icon::before {
+      background: $font_color_2;
+      content: "";
+      display: block;
+      height: 4px;
+      position: absolute;
+      transition: background ease 0.3s, top ease 0.3s 0.3s, transform ease 0.3s;
+      width: 30px;
+      border-radius: 100px;
+    }
+
+    .show_hide_icon {
+      left: 0;
+      top: 15px;
+    }
+
+    .show_hide_icon::before {
+      top: -9px;
+    }
+
+    .show_hide_icon::after {
+      top: 9px;
+    }
+  }
+
+  &.nav_opened {
+    .icon .show_hide_icon_wrapper {
+      .show_hide_icon {
+        background: transparent;
+
+        &::before {
+          transform: rotate(45deg);
+        }
+        &::after {
+          transform: rotate(-45deg);
+        }
+
+        &::after,
+        &::before {
+          top: 0;
+          transition: top ease 0.3s, transform ease 0.3s 0.3s;
+        }
+      }
+    }
+  }
 
   & > div,
   & > a {
@@ -67,61 +129,35 @@ const leftside_open = ref(false);
     flex-direction: row;
 
     padding: 5px 10px;
-    max-width: 50px;
     height: 50px;
     border-radius: 10px;
     align-items: center;
     cursor: pointer;
 
+    .icon,
     img {
-      height: 100%;
-      width: 100%;
+      height: 30px;
+      width: 30px;
+      min-width: 30px;
     }
 
-    &.toggle_visible {
-      margin-bottom: 10px !important;
+    span {
+      overflow: hidden;
+      white-space: nowrap;
+      margin-left: 15px;
     }
 
     @extend %hover_2;
   }
 
-  @keyframes animateOpen {
-    from {
-    }
-    to {
-    }
-  }
-
-  // @keyframes animateHide {
-  //   from {
-  //   }
-  //   to {
-  //   }
-  // }
-
   &.nav_opened {
     padding: 10px;
-    & > div,
-    & > a {
-      max-width: none;
-
-      span {
-        margin-left: 15px;
-      }
-
-      img {
-        height: 30px;
-        width: 30px;
-      }
-    }
+    width: 200px;
   }
 
   &.nav_hidden {
     padding: 10px 2px;
-
-    span {
-      display: none;
-    }
+    width: 54px;
   }
 }
 </style>
