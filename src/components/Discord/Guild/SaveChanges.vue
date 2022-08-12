@@ -6,7 +6,7 @@ import { computed, ref, type Ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 const unsavedChangesAlertProperty = ref(false);
-const unsavedChangesAlertTimeout: Ref<number | undefined> = ref();
+const unsavedChangesAlertTimeout: Ref<any> = ref();
 
 const unsavedChangesAlert = computed({
   get() {
