@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DropdownArrow from "./DropdownArrow.vue";
 
 const dropdownShow = ref(false);
 
@@ -49,20 +50,6 @@ const positionStyle = computed(() => {
     : topStyle;
 });
 
-const arrowAnimationClass = computed(() =>
-  props.arrowAnimationSide === "left"
-    ? "arrow_animate_left"
-    : props.arrowAnimationSide === "right"
-    ? "arrow_animate_right"
-    : props.disableArrowAnimation
-    ? ""
-    : "arrow_animate_right"
-);
-
-const arrowState = computed(() =>
-  dropdownShow.value ? "dropdown_arrow_shown" : "dropdown_arrow_hidden"
-);
-
 const emit = defineEmits<{
   (e: "dropdownStateSwitched", state: boolean): void;
 }>();
@@ -94,11 +81,12 @@ function clickAwayFromTitle() {
       v-click-away="clickAwayFromTitle"
       @click="switchDropdownState"
     >
-      <i
+      <DropdownArrow
         v-if="useArrow"
-        class="dropdown_arrow"
-        :class="[arrowState, arrowAnimationClass]"
-      ></i>
+        :arrow-state-show="dropdownShow"
+        :arrow-animation-side="props.arrowAnimationSide"
+        :disable-arrow-animation="props.disableArrowAnimation"
+      />
       <slot name="dropdownTitle" />
     </div>
     <Transition name="dropdown">
@@ -114,8 +102,7 @@ function clickAwayFromTitle() {
   </div>
 </template>
 
-<style lang="scss">
-@import "@/assets/scss/library";
+<style scoped lang="scss">
 .dropdown_elem {
   user-select: none;
   position: relative;
@@ -123,9 +110,6 @@ function clickAwayFromTitle() {
   padding: 0;
 
   .dropdown_title {
-    .dropdown_arrow {
-      @include dropdownArrow(8px, 2px, $font_color_1, 200ms);
-    }
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -147,38 +131,6 @@ function clickAwayFromTitle() {
   }
 
   .dropdown_content {
-    // @keyframes dropdownComponentAnimateVisible {
-    //   from {
-    //     opacity: 0;
-    //     visibility: hidden;
-    //   }
-    //   to {
-    //     opacity: 1;
-    //     visibility: visible;
-    //   }
-    // }
-
-    // @keyframes dropdownComponentAnimateHide {
-    //   from {
-    //     visibility: visible;
-    //     opacity: 1;
-    //   }
-    //   to {
-    //     visibility: hidden;
-    //     opacity: 0;
-    //   }
-    // }, dropdownShow ? 'visible' : 'hidden'
-
-    // &.hidden {
-    //   animation: dropdownComponentAnimateHide 200ms ease-out forwards;
-    //   pointer-events: none;
-    // }
-
-    // &.visible {
-    //   animation: dropdownComponentAnimateVisible 200ms ease-out forwards;
-    //   pointer-events: unset;
-    // } name="dropdown"
-
     position: absolute;
 
     border-radius: 5px;
