@@ -53,13 +53,17 @@ const leftside_open = ref(false);
 .discord_guild_nav {
   display: flex;
   flex-direction: column;
+  gap: 5px;
 
   position: fixed;
   left: 10px;
+  z-index: 1000;
 
   border-radius: 10px;
 
   background-color: $dark_3;
+
+  transition: all 200ms ease;
 
   & > div,
   & > a {
@@ -67,61 +71,33 @@ const leftside_open = ref(false);
     flex-direction: row;
 
     padding: 5px 10px;
-    max-width: 50px;
     height: 50px;
     border-radius: 10px;
     align-items: center;
     cursor: pointer;
 
     img {
-      height: 100%;
-      width: 100%;
+      height: 30px;
+      width: 30px;
     }
 
-    &.toggle_visible {
-      margin-bottom: 10px !important;
+    span {
+      overflow: hidden;
+      white-space: nowrap;
+      margin-left: 15px;
     }
 
     @extend %hover_2;
   }
 
-  @keyframes animateOpen {
-    from {
-    }
-    to {
-    }
-  }
-
-  // @keyframes animateHide {
-  //   from {
-  //   }
-  //   to {
-  //   }
-  // }
-
   &.nav_opened {
     padding: 10px;
-    & > div,
-    & > a {
-      max-width: none;
-
-      span {
-        margin-left: 15px;
-      }
-
-      img {
-        height: 30px;
-        width: 30px;
-      }
-    }
+    width: 200px;
   }
 
   &.nav_hidden {
     padding: 10px 2px;
-
-    span {
-      display: none;
-    }
+    width: 54px;
   }
 }
 </style>
