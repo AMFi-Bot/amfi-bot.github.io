@@ -26,6 +26,7 @@ const props = defineProps<{
   display: flex;
 
   flex-direction: column;
+
   &.row {
     flex-direction: row;
     align-items: center;
@@ -57,6 +58,10 @@ const props = defineProps<{
       font-size: 16px;
       color: $font_color_2;
     }
+  }
+
+  .instance_body {
+    border: 2px solid rgba($color: #000000, $alpha: 0.2);
   }
 }
 </style>

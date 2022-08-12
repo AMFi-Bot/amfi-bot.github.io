@@ -54,7 +54,6 @@ const justifyContent = computed(
   background-color: $dark_2;
   padding: 10px;
   border-radius: $border_radius_1;
-  border: 2px solid rgba($color: #000000, $alpha: 0.2);
 
   .element_title {
     margin-right: 10px;
