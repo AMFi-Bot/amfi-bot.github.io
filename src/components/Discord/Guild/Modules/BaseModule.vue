@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SaveChanges from "@/components/Discord/Guild/SaveChanges.vue";
+
 const props = defineProps<{
   moduleName: string;
   moduleDescriprion: string;
@@ -20,6 +22,8 @@ const props = defineProps<{
       <slot />
     </div>
   </div>
+
+  <SaveChanges />
 </template>
 
 <style module lang="scss">
