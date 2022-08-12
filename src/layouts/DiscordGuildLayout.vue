@@ -3,8 +3,6 @@ import DiscordGuildHeaderVue from "@/components/Discord/Guild/DiscordGuildHeader
 import FooterComponent from "@/components/FooterComponent.vue";
 
 import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
-
-import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
 </script>
 
 <template>
@@ -14,8 +12,6 @@ import SaveChanges from "../components/Discord/Guild/SaveChanges.vue";
     <div :class="$style.discord_guild">
       <NavigateVue />
       <slot />
-
-      <SaveChanges />
     </div>
   </div>
   <FooterComponent />

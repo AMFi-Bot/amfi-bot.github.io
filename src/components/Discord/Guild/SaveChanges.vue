@@ -3,6 +3,7 @@ import { useDiscordGuildStore } from "@/stores/discordGuild.js";
 import { storeToRefs } from "pinia";
 import _ from "lodash";
 import { computed, ref, type Ref } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
 
 const unsavedChangesAlertProperty = ref(false);
 const unsavedChangesAlertTimeout: Ref<number | undefined> = ref();
@@ -31,6 +32,21 @@ const discordGuildStore = useDiscordGuildStore();
 const { guild, oldGuild } = storeToRefs(discordGuildStore);
 
 const { syncGuild, resetGuildChanges } = discordGuildStore;
+
+const unsavedChanges = computed(
+  () =>
+    !(guild.value && oldGuild.value
+      ? _.isEqual(guild.value, oldGuild.value)
+      : true)
+);
+
+onBeforeRouteLeave(() => {
+  if (unsavedChanges.value) {
+    unsavedChangesAlert.value = true;
+    // cancel the navigation and stay on the same page
+    return false;
+  }
+});
 </script>
 
 <template>
@@ -40,7 +56,7 @@ const { syncGuild, resetGuildChanges } = discordGuildStore;
         $style.saveChangesAlert,
         unsavedChangesAlert && $style['unsaved-changes-shake'],
       ]"
-      v-show="!(guild && oldGuild ? _.isEqual(guild, oldGuild) : true)"
+      v-show="unsavedChanges"
     >
       <div :class="$style.unsavedText" @click="unsavedChangesAlert = true">
         Careful! You have unsaved changes
