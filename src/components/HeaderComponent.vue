@@ -12,11 +12,9 @@ const userStore = useUserStore();
 
 <template>
   <BaseVue>
-    <DiscordLogged v-if="userStore.discord_id"></DiscordLogged>
-    <TelegramLogged v-else-if="userStore.telegram_id"></TelegramLogged>
-    <UnloggedVue
-      v-else-if="!userStore.loading && !userStore.logged"
-    ></UnloggedVue>
+    <DiscordLogged v-if="userStore.user?.discordUser"></DiscordLogged>
+    <TelegramLogged v-else-if="userStore.user?.telegramUser"></TelegramLogged>
+    <UnloggedVue v-else-if="!userStore.user"></UnloggedVue>
     <div v-else>
       <div style="width: 50px">
         <LoadingComponent :loader-type="'line'" />
