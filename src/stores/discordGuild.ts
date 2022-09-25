@@ -9,6 +9,7 @@ import type {
   DiscordGuild,
   DiscordUserGuild,
 } from "@/types/discord/guild";
+import axios from "axios";
 import _ from "lodash";
 import { defineStore } from "pinia";
 import { ref, type Ref } from "vue";
@@ -37,12 +38,18 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
           `Cannot load discord guild. Guild with id ${id} does not exist in user guilds list.`
         );
 
+      // Load guild channels
+      const response = await axios.get(`/api/discord/guilds/${id}/channels`, {
+        headers: {
+          Authorization: getAuthorizationHeader("bot"),
+        },
+      });
+
       discordGuild.value = {
         ...userGuild,
-        channels: [],
+        channels: response.data,
       };
 
-      // TODO: #24 Realise load guild channels logic (On API too)
       return discordGuild.value;
     } catch (error) {
       console.error(error);
