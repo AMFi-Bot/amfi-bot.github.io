@@ -2,6 +2,7 @@ export type DiscordUserGuild = {
   name: string;
   id: string | number;
   icon: string;
+  permissions: number;
   bot_exists: boolean;
 };
 

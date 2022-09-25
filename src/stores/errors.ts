@@ -1,8 +1,3 @@
-import type {
-  apiClientErrorResponseType,
-  apiServerErrorResponseType,
-} from "@/types/api/base";
-import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 
 import { v4 } from "uuid";
@@ -42,50 +37,6 @@ export const useErrorsStore = defineStore("errors", {
     },
     removeError(id: string) {
       this.errors = this.errors.filter((f) => !f || f.id !== id);
-    },
-
-    addAPIError(axios_error: AxiosError, message: string) {
-      let error_message = `Oops, something went wrong: ${message || ""}`;
-
-      const br_symbol = "\n";
-
-      if (axios_error) {
-        if (axios_error.message)
-          error_message += br_symbol + axios_error.message;
-
-        if (axios_error.response) {
-          if (axios_error.response.status && axios_error.response.statusText)
-            error_message +=
-              br_symbol +
-              axios_error.response.status +
-              " " +
-              axios_error.response.statusText;
-
-          if (axios_error.response.data) {
-            const clientError = <apiClientErrorResponseType>(
-              axios_error.response.data
-            );
-
-            const serverError = <apiServerErrorResponseType>(
-              axios_error.response.data
-            );
-
-            if (clientError.response_type === "Client error.") {
-              if (clientError.error) {
-                if (clientError.error.message) {
-                  error_message += br_symbol + clientError.error.message;
-                }
-              }
-            } else if (serverError.response_type === "Server error") {
-              error_message +=
-                br_symbol +
-                `${serverError.response_type}. ${serverError.status} ${serverError.status_description}`;
-            }
-          }
-        }
-      }
-
-      this.addError(error_message);
     },
   },
 });

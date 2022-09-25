@@ -13,7 +13,8 @@ discordGuildsStore.loadGuilds();
     <div
       :class="$style.guild_list"
       v-else-if="
-        discordGuildsStore.loaded && discordGuildsStore.guilds.length !== 0
+        discordGuildsStore.guilds !== undefined &&
+        discordGuildsStore.guilds.length !== 0
       "
     >
       <div :class="$style.guild_list_title">Please choose a guild to setup</div>
@@ -63,7 +64,8 @@ discordGuildsStore.loadGuilds();
     <div
       :class="$style.no_guild_alert"
       v-else-if="
-        discordGuildsStore.loaded && discordGuildsStore.guilds.length === 0
+        discordGuildsStore.guilds !== undefined &&
+        discordGuildsStore.guilds.length === 0
       "
     >
       Oops you dont have any guilds

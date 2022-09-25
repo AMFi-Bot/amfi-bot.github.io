@@ -9,10 +9,14 @@ import router from "@/router/index";
 
 import { AxiosError } from "axios";
 import { ref, type Ref } from "vue";
-import jwtDecode from "jwt-decode";
 
-import type { JWTAuthorizationToken } from "@/types/api/base";
 import type { User, TelegramUser, DiscordUser } from "@/types/users";
+import {
+  deleteJWTAuthorizationToken,
+  getJWTAuthorizationToken,
+  getJWTAuthorizationTokenOrNull,
+  setJWTAuthorizationToken,
+} from "@/helpers/auth/jwt";
 
 export const useUserStore = defineStore("user", () => {
   const user: Ref<User | undefined> = ref();
@@ -47,7 +51,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   async function loadUser() {
-    const userToken = getJWTAuthorizationToken();
+    const userToken = getJWTAuthorizationTokenOrNull();
     if (!userToken) return false;
 
     if (user.value) {
@@ -167,7 +171,7 @@ export const useUserStore = defineStore("user", () => {
         `/api/auth/discord/callback?${query_string.replace(/^\?/, "")}`
       );
 
-      localStorage.setItem("Token", response.data);
+      setJWTAuthorizationToken(response.data);
 
       window.close();
     } catch {
@@ -181,7 +185,7 @@ export const useUserStore = defineStore("user", () => {
         `/api/auth/telegram/callback?${query_string.replace(/^\?/, "")}`
       );
 
-      localStorage.setItem("Token", response.data);
+      setJWTAuthorizationToken(response.data);
 
       if (await loadUser()) {
         postLogin();
@@ -246,7 +250,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   async function logout() {
-    localStorage.removeItem("Token");
+    deleteJWTAuthorizationToken();
 
     user.value = undefined;
 
@@ -275,17 +279,6 @@ export const useUserStore = defineStore("user", () => {
     }
 
     errorsStore.addError(err_message);
-  }
-
-  function getJWTAuthorizationToken():
-    | (JWTAuthorizationToken & { rawToken: string })
-    | null {
-    const rawToken = localStorage.getItem("Token");
-    if (!rawToken) return null;
-
-    const token: JWTAuthorizationToken = jwtDecode(rawToken);
-
-    return { ...token, rawToken };
   }
 
   return {

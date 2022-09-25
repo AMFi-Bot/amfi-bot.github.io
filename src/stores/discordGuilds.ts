@@ -2,94 +2,86 @@ import { defineStore } from "pinia";
 
 import axios, { api } from "@/api";
 
-import nProgress from "../nprogress";
+import { useErrorsStore } from "./errors";
 
 import router from "../router/index";
-import type { apiSuccessResponseType } from "@/types/api/base";
 import type { DiscordUserGuild } from "@/types/discord/guild";
+import { ref, type Ref } from "vue";
+import { getJWTAuthorizationToken } from "@/helpers/auth/jwt";
 
-type StateType = {
-  guilds: DiscordUserGuild[];
-  loading: boolean;
-  loaded: boolean;
-};
+export const useDiscordGuildsStore = defineStore("discordGuilds", () => {
+  const guilds: Ref<DiscordUserGuild[] | undefined> = ref();
+  const loading: Ref<boolean> = ref(false);
 
-export const useDiscordGuildsStore = defineStore("discordGuilds", {
-  state(): StateType {
-    return {
-      guilds: [],
-      loading: true,
-      loaded: false,
-    };
-  },
-  actions: {
-    async loadGuilds() {
-      try {
-        const response = await axios.get("/api/v1/discord/guilds");
+  async function loadGuilds() {
+    try {
+      loading.value = true;
 
-        this.guilds = response.data.data.guilds;
-        this.loading = false;
-        this.loaded = true;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async loginGuild(id: string | number) {
-      nProgress.inc();
-
-      // Generate bot auth uri
-      let discordURI = "https://discord.com/api/oauth2/authorize?";
-
-      // client id
-      discordURI += `client_id=${import.meta.env.VITE_DISCORD_BOT_ID}&`;
-
-      // bot permissions on guild
-      discordURI += `permissions=8&`;
-
-      // redirect uri, callback, where popup will redirected when discord authenticated
-      discordURI += `redirect_uri=${
-        import.meta.env.VITE_FRONTEND_URL +
-        import.meta.env.VITE_DISCORD_BOT_CALLBACK_URL
-      }&`;
-
-      // Discord will return code to redirect callback uri
-      discordURI += `response_type=code&`;
-
-      // Bot will authenticated as user(scope=bot) and as interaction bot commands(scope=applications.commands)
-      discordURI += `scope=bot%20applications.commands&`;
-
-      // Guild id where bot will logged in
-      discordURI += `guild_id=${id}&`;
-
-      // Disallows user to re-select guild in discord auth menu
-      discordURI += `disable_guild_select=true`;
-
-      // Open popup
-      const popup = window.open(discordURI, "", "width=500,height=900");
-
-      if (!popup) return;
-
-      nProgress.done();
-
-      await new Promise((resolve) => {
-        const interval = setInterval(async () => {
-          if (popup.closed) {
-            clearInterval(interval);
-            resolve(undefined);
-          }
-        }, 500);
+      const response = await axios.get("/api/discord/guilds/@me", {
+        headers: {
+          Authorization: `Bearer ${getJWTAuthorizationToken().rawToken}`,
+        },
       });
 
-      router.push(`/discord/guilds/${id}`);
-    },
-    async loginGuildCallback(query_string: string) {
-      try {
-        await api.post(`/api/v1/discord/guilds?${query_string}`);
+      const userGuilds: DiscordUserGuild[] = response.data;
 
-        window.close();
-      } catch (error) {
-        console.error(error);
-      }
-    },
-  },
+      guilds.value = userGuilds;
+
+      loading.value = false;
+    } catch (error) {
+      console.error(error);
+
+      useErrorsStore().addError(
+        "Oops something went wrong and we cannot get your guilds list."
+      );
+
+      loading.value = false;
+    }
+  }
+
+  async function loginGuild(id: string | number) {
+    const popupURI = `${
+      import.meta.env.VITE_API_URL
+    }/api/discord/guilds/auth/redirect?discordGuildId=${id}`;
+
+    // Open popup
+    const popup = window.open(popupURI, "", "width=500,height=900");
+
+    if (!popup) return;
+
+    await new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        if (popup.closed) {
+          clearInterval(interval);
+          resolve(undefined);
+        }
+      }, 500);
+    });
+
+    router.push(`/discord/guilds/${id}`);
+  }
+
+  async function loginGuildCallback(query_string: string) {
+    try {
+      await api.get(
+        `/api/discord/guilds/auth/callback?${query_string.replace(/^\?/, "")}`
+      );
+
+      window.close();
+    } catch (error) {
+      console.error(error);
+
+      useErrorsStore().addError(
+        "Oops something went wrong and we cannot load guild."
+      );
+    }
+  }
+
+  return {
+    guilds,
+    loading,
+    loadGuilds,
+    loginGuild,
+    loginGuildCallback,
+  };
 });

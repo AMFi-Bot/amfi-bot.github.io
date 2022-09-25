@@ -6,7 +6,7 @@ import DiscordLogoWhite from "../components/Icons/DiscordLogoWhite.vue";
 
 const userStore = useUserStore();
 
-if (!userStore.telegram_id) {
+if (!userStore.user?.telegramUser) {
   onMounted(() => {
     userStore.load_telegram_widget_script("telegram_login_mount");
   });
@@ -28,10 +28,13 @@ if (!userStore.telegram_id) {
         <div
           :class="[
             $style.setup_button,
-            userStore.telegram_id ? $style.green_button : undefined,
+            userStore.user?.telegramUser ? $style.green_button : undefined,
           ]"
         >
-          <RouterLink to="/telegram/dashboard" v-if="userStore.telegram_id">
+          <RouterLink
+            to="/telegram/dashboard"
+            v-if="userStore.user?.telegramUser"
+          >
             Set up
           </RouterLink>
           <div v-else>
@@ -54,10 +57,15 @@ if (!userStore.telegram_id) {
         <div
           :class="[
             $style.setup_button,
-            userStore.discord_id ? $style.green_button : $style.darkblue_button,
+            userStore.user?.discordUser
+              ? $style.green_button
+              : $style.darkblue_button,
           ]"
         >
-          <RouterLink to="/discord/dashboard" v-if="userStore.discord_id">
+          <RouterLink
+            to="/discord/dashboard"
+            v-if="userStore.user?.discordUser"
+          >
             Set up
           </RouterLink>
           <div v-else @click="userStore.login_discord">
