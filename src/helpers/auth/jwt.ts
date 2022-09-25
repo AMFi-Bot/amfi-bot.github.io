@@ -4,6 +4,23 @@ import jwtDecode from "jwt-decode";
 export const JWTAuthorizationTokenName = "Token";
 
 /**
+ * Returns authorization header value by JWT Authorization token
+ * @param type Type of authorization service
+ * @returns authorization header value
+ */
+export function getAuthorizationHeader(
+  type: "bot" | "discord" = "bot"
+): string {
+  if (type == "bot") {
+    return `Bearer ${getJWTAuthorizationToken().rawToken}`;
+  } else if (type == "discord") {
+    return `Bearer ${getJWTAuthorizationToken().accessToken}`;
+  }
+
+  throw new Error("type is not valid.");
+}
+
+/**
  *
  * Returns JWT Authorization token or updates the page if it is not exist
  *

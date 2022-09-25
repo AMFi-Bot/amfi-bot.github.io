@@ -1,11 +1,3 @@
-export type DiscordUserGuild = {
-  name: string;
-  id: string | number;
-  icon: string;
-  permissions: number;
-  bot_exists: boolean;
-};
-
 export type DiscordGuildChannel = {
   id: string;
   guild_id: string;
@@ -28,24 +20,27 @@ export type DiscordGuildRole = {
   flags: number;
 };
 
-export type DiscordBaseGuild = {
-  id: string;
-  name: string;
-  icon?: string;
+export type DiscordGuild = DiscordUserGuild & {
   channels: DiscordGuildChannel[];
-  roles: DiscordGuildRole[];
+};
+
+export type DiscordBotGuild = {
+  id: string;
+  module_general: DiscordGuildGeneralModule;
 };
 
 export type DiscordGuildGeneralModule = {
-  id: string;
   logChannel?: string;
   logEnabled?: boolean;
   logTypes?: string[];
-  [x: string]: any;
-  created_at?: string;
-  updated_at?: string;
+  [X: string]: any;
 };
 
-export type DiscordFullGuild = DiscordBaseGuild & {
-  module_general?: DiscordGuildGeneralModule;
+export type DiscordUserGuild = {
+  name: string;
+  id: string | number;
+  icon: string;
+  permissions: string;
+  roles: DiscordGuildRole[];
+  bot_exists?: boolean;
 };

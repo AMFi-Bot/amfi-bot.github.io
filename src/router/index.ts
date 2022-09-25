@@ -101,17 +101,13 @@ const router = createRouter({
           path: "guilds/:guild_id/",
           meta: { layout: "DiscordGuildLayout" },
           beforeEnter: async (to, from, next) => {
-            nProgress.inc();
             const discordGuildStore = useDiscordGuildStore();
 
             const guild_id = <string>to.params.guild_id;
             if (!guild_id) return next({ name: "discord_dashboard" });
 
-            nProgress.inc(2);
             if (!(await discordGuildStore.getGuild(guild_id)))
               return next({ name: "discord_dashboard" });
-
-            nProgress.inc(2);
 
             return next();
           },

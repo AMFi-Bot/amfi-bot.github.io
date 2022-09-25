@@ -8,17 +8,35 @@ import { ref } from "vue";
 import BaseInstance from "./Instances/BaseInstance.vue";
 import BaseModule from "./BaseModule.vue";
 import BaseElement from "./Elements/BaseElement.vue";
+import { useRoute } from "vue-router";
 
 const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
 
 const discordGuildStore = useDiscordGuildStore();
 
-const { guild, loading } = storeToRefs(discordGuildStore);
-const { loadModule, updateModule, updateModuleProperty } = discordGuildStore;
+const { guild, discordGuild } = storeToRefs(discordGuildStore);
+const {
+  loadGuild,
+  loadDiscordGuild,
+  loadModule,
+  updateModule,
+  updateModuleProperty,
+} = discordGuildStore;
 
-if (!guild) throw Error("Guild not loaded");
+const route = useRoute();
 
-if (guild.value && !guild.value.module_general) loadModule("general");
+const guild_id =
+  typeof route.params["guild_id"] == "string"
+    ? route.params["guild_id"]
+    : route.params["guild_id"].join("");
+
+if (!guild.value) {
+  loadGuild(guild_id);
+}
+
+if (!discordGuild.value) {
+  loadDiscordGuild(guild_id);
+}
 </script>
 
 <template>
@@ -27,7 +45,7 @@ if (guild.value && !guild.value.module_general) loadModule("general");
     :module-descriprion="`        Bot general settings module. Here you can configure most of the
         important settings on your server.`"
   >
-    <div v-if="guild && guild.module_general">
+    <div v-if="discordGuild && guild">
       <BaseInstance
         instance-name="Logs"
         instance-description="Here you can setup logs sending by bot"
@@ -40,7 +58,7 @@ if (guild.value && !guild.value.module_general) loadModule("general");
             clickButtonTitle="Choose a channel"
             :useChoosedElementAsTitle="true"
             :refChoosedElement="
-              guild.channels.filter(
+              discordGuild.channels.filter(
                 (q) =>
                   q.id ===
                   (guild && guild.module_general
@@ -49,7 +67,7 @@ if (guild.value && !guild.value.module_general) loadModule("general");
               )[0]
             "
             :position="'bottom-right'"
-            :dropdownContent="guild.channels.filter((q) => q.type === 0)"
+            :dropdownContent="discordGuild.channels.filter((q) => q.type === 0)"
             @choose="
               (element) => {
                 discordGuildStore.updateModuleProperty(
@@ -103,6 +121,8 @@ if (guild.value && !guild.value.module_general) loadModule("general");
         </BaseElement>
       </BaseInstance>
     </div>
-    <LoadingComponent :loader-type="'dotted'" v-else />
+    <div style="width: 100px; height: 100px; align-self: center" v-else>
+      <LoadingComponent :loader-type="'line'" />
+    </div>
   </BaseModule>
 </template>

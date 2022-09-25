@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 
-import axios, { api } from "@/api";
+import { api } from "@/api";
 
 import { useErrorsStore } from "./errors";
 
 import router from "../router/index";
 import type { DiscordUserGuild } from "@/types/discord/guild";
 import { ref, type Ref } from "vue";
-import { getJWTAuthorizationToken } from "@/helpers/auth/jwt";
+import loadUserGuilds from "@/helpers/discord/loadUserGuilds";
 
 export const useDiscordGuildsStore = defineStore("discordGuilds", () => {
   const guilds: Ref<DiscordUserGuild[] | undefined> = ref();
@@ -17,13 +17,7 @@ export const useDiscordGuildsStore = defineStore("discordGuilds", () => {
     try {
       loading.value = true;
 
-      const response = await axios.get("/api/discord/guilds/@me", {
-        headers: {
-          Authorization: `Bearer ${getJWTAuthorizationToken().rawToken}`,
-        },
-      });
-
-      const userGuilds: DiscordUserGuild[] = response.data;
+      const userGuilds: DiscordUserGuild[] = await loadUserGuilds("bot");
 
       guilds.value = userGuilds;
 
