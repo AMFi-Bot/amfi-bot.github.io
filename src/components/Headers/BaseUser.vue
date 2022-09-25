@@ -17,23 +17,23 @@ const userStore = useUserStore();
     <template #dropdownTitle>
       <img
         :class="$style.avatar"
-        :src="userStore.avatar"
-        v-if="userStore.avatar"
+        :src="userStore.user?.avatar"
+        v-if="userStore.user?.avatar"
       />
       <div :class="$style.name">
-        {{ userStore.name }}
-        <div :class="$style.type" v-if="userStore.privilege !== 0">
+        {{ userStore.user?.name }}
+        <div :class="$style.type" v-if="userStore.user?.privelege != 0">
           <img
             height="20px"
             width="20px"
             v-bind:src="
-              userStore.privilege === -1
+              userStore.user?.privelege === -1
                 ? '/img/administrator.svg'
                 : '/img/premium-yellow.svg'
             "
             v-tippy="{
               content:
-                userStore.privilege === -1
+                userStore.user?.privelege === -1
                   ? 'Администратор'
                   : 'Привелегированый пользователь',
             }"

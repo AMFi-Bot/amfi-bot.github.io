@@ -3,295 +3,293 @@ import { defineStore } from "pinia";
 import { useErrorsStore } from "@/stores/errors";
 
 import axios from "@/api";
-import _, { toInteger } from "lodash";
-
-import regenerateSession from "@/api/regenerateSession";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import { toInteger } from "lodash";
 
 import router from "@/router/index";
-import js_cookie from "js-cookie";
 
-import nProgress from "@/nprogress";
 import { AxiosError } from "axios";
+import { ref, type Ref } from "vue";
 
-type userType = {
-  name: string;
-  email: string;
-  avatar: string;
-  privilege: number;
-  questionnaire: string;
-  telegram_id: string;
-  discord_id: string;
-  discord_token: string;
-  discordd_refresh_token: string;
-  logged: boolean;
-  loading: boolean;
-};
+import type { User, TelegramUser, DiscordUser } from "@/types/users";
+import {
+  deleteJWTAuthorizationToken,
+  getJWTAuthorizationToken,
+  getJWTAuthorizationTokenOrNull,
+  setJWTAuthorizationToken,
+} from "@/helpers/auth/jwt";
 
-export const noUser: userType = {
-  name: "",
-  email: "",
-  avatar: "",
-  privilege: 0,
-  questionnaire: "",
-  telegram_id: "",
-  discord_id: "",
-  discord_token: "",
-  discordd_refresh_token: "",
-  logged: false,
-  loading: false,
-};
+export const useUserStore = defineStore("user", () => {
+  const user: Ref<User | undefined> = ref();
+  const loading: Ref<boolean> = ref(false);
 
-export const useUserStore = defineStore("user", {
-  state(): userType {
-    return _.cloneDeep(noUser);
-  },
-  actions: {
-    async loadUser() {
-      if (!this.checkUserCokkieExists()) return false;
+  function setTelegramUser(telegramUser: TelegramUser) {
+    user.value = {
+      name: `${telegramUser.first_name} ${telegramUser.last_name}`,
+      avatar: telegramUser.photo_url,
+      telegramUser,
+    };
 
-      if (this.loading) {
-        if (this.logged) {
-          return this.user;
-        } else {
-          await new Promise((resolve) => {
-            const interval = setInterval(async () => {
-              if (!this.loading) {
-                clearInterval(interval);
-                resolve(undefined);
-              }
-            }, 100);
-          });
+    return user.value;
+  }
 
-          return this.user;
-        }
+  function setDiscordUser(discordUser: DiscordUser) {
+    const accessToken = getJWTAuthorizationToken()?.accessToken;
+
+    if (!accessToken)
+      throw new Error("accessToken cannot be null with discord user");
+
+    user.value = {
+      name: `${discordUser.username}`,
+      avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`,
+      discordUser,
+      discordUserCredentials: {
+        accessToken,
+      },
+    };
+
+    return user.value;
+  }
+
+  async function loadUser() {
+    const userToken = getJWTAuthorizationTokenOrNull();
+    if (!userToken) return false;
+
+    if (user.value) {
+      if (!loading.value) {
+        return user;
+      } else {
+        await new Promise((resolve) => {
+          const interval = setInterval(async () => {
+            if (!loading.value) {
+              clearInterval(interval);
+              resolve(undefined);
+            }
+          }, 100);
+        });
+
+        return user;
       }
+    }
 
-      this.loading = true;
+    loading.value = true;
 
-      try {
-        const response = await axios.get("/api/v1/user");
-
-        if (response.status !== 200) throw "error";
-
-        const user = response.data.data.user;
-
-        return this.userAuthenticated(user);
-      } catch {
-        this.nullUser();
+    // Load user
+    if (userToken?.userType == "Discord user") {
+      if (!userToken.accessToken) {
+        logout();
+        loading.value = false;
 
         return false;
       }
-    },
+      try {
+        const response = await axios.get(
+          "https://discord.com/api/v10/users/@me",
+          {
+            headers: {
+              Authorization: `Bearer ${userToken.accessToken}`,
+            },
+          }
+        );
 
-    async login_discord() {
-      const popup = window.open("/loading", "", "width=500,height=900");
+        const user = response.data;
 
-      if (!popup) return useErrorsStore().addError("Cannot open popup");
+        setDiscordUser(user);
 
-      nProgress.inc();
+        console.log(user);
 
-      await regenerateSession();
+        loading.value = false;
 
-      nProgress.inc();
+        return user;
+      } catch {
+        loading.value = false;
 
+        logout();
+
+        return false;
+      }
+    } else if (userToken?.userType == "Telegram user") {
+      try {
+        const response = await axios.get("/api/telegram/users/@me", {
+          headers: {
+            Authorization: `Bearer ${userToken.rawToken}`,
+          },
+        });
+
+        const user = response.data;
+
+        setTelegramUser(user);
+
+        loading.value = false;
+
+        console.log(user);
+
+        return user;
+      } catch {
+        logout();
+
+        loading.value = false;
+
+        return false;
+      }
+    } else {
+      logout();
+
+      loading.value = false;
+
+      return false;
+    }
+  }
+
+  async function login_discord() {
+    const popup = window.open(
+      `${import.meta.env.VITE_API_URL}/api/auth/discord/redirect`,
+      "",
+      "width=500,height=900"
+    );
+
+    if (!popup) return useErrorsStore().addError("Cannot open popup");
+
+    await new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        if (popup.closed) {
+          clearInterval(interval);
+          resolve(undefined);
+        }
+      }, 500);
+    });
+
+    if (await loadUser()) {
+      postLogin();
+    } else {
+      useErrorsStore().addError("Login failed.");
+    }
+  }
+
+  async function discord_callback(query_string: string) {
+    try {
       const response = await axios.get(
-        `${backend_url}/auth/ext_services/discord/redirect`,
-        { maxRedirects: 0 }
+        `/api/auth/discord/callback?${query_string.replace(/^\?/, "")}`
       );
 
-      nProgress.done();
+      setJWTAuthorizationToken(response.data);
 
-      popup.location = response.data.redirectTo;
+      window.close();
+    } catch {
+      useErrorsStore().addError("Cannot login with discord.");
+    }
+  }
 
-      await new Promise((resolve) => {
-        const interval = setInterval(async () => {
-          if (popup.closed) {
-            clearInterval(interval);
-            resolve(undefined);
-          }
-        }, 500);
-      });
+  async function login_telegram(query_string: string) {
+    try {
+      const response = await axios.get(
+        `/api/auth/telegram/callback?${query_string.replace(/^\?/, "")}`
+      );
 
-      console.log("popup closed");
+      setJWTAuthorizationToken(response.data);
 
-      if (await this.loadUser()) {
-        this.postLogin();
+      if (await loadUser()) {
+        postLogin();
       } else {
         useErrorsStore().addError("Login failed.");
       }
-    },
-
-    async discord_callback(query_string: string) {
-      this.loading = true;
-
-      nProgress.inc();
-
-      await regenerateSession();
-
-      nProgress.inc();
-
-      await axios.get(`/auth/ext_services/discord/callback?${query_string}`);
-
-      nProgress.done();
-
-      window.close();
-    },
-
-    async login_telegram(query_string: string) {
-      this.loading = true;
-      nProgress.inc();
-
-      await regenerateSession();
-
-      try {
-        const response = await axios.get(
-          `/auth/ext_services/telegram/callback?${query_string}`
-        );
-
-        nProgress.inc();
-
-        if (response.status !== 200) throw response;
-
-        const user = response.data.data.user;
-
-        this.userAuthenticated(user);
-        return this.postLogin();
-      } catch (error) {
-        const errorsStore = useErrorsStore();
-
-        if (error instanceof AxiosError)
-          errorsStore.addError(
-            `Something went wrong: ${error.message}. ${
-              error.response ? error.response.data : ""
-            }`
-          );
-
-        this.nullUser();
-        return false;
-      }
-    },
-
-    load_telegram_widget_script(mount_to = "telegram_load") {
-      console.log("function");
-      const telegram_widget_script = document.createElement("script");
-      telegram_widget_script.setAttribute(
-        "src",
-        "https://telegram.org/js/telegram-widget.js?19"
-      );
-      telegram_widget_script.setAttribute(
-        "data-telegram-login",
-        import.meta.env.VITE_TELEGRAM_LOGIN
-      );
-      telegram_widget_script.setAttribute("data-size", "large");
-      telegram_widget_script.setAttribute(
-        "data-auth-url",
-        import.meta.env.VITE_TELEGRAM_REDIRECT_URL
-      );
-      telegram_widget_script.setAttribute("data-request-access", "write");
-      telegram_widget_script.setAttribute("data-userpic", "false");
-      const load_tg_widget_elems = document.getElementsByClassName(mount_to);
-
-      for (const i in load_tg_widget_elems) {
-        const load_tg_widget_elem = load_tg_widget_elems.item(toInteger(i));
-        if (!load_tg_widget_elem) continue;
-
-        load_tg_widget_elem.replaceChildren(telegram_widget_script);
-      }
-
-      // <script
-      //   async
-      //   src="https://telegram.org/js/telegram-widget.js?19"
-      //   data-telegram-login=import.meta.env.VITE_TELEGRAM_LOGIN
-      //   data-size="large"
-      //   data-userpic="false"
-      //   data-auth-url=import.meta.env.VITE_TELEGRAM_REDIRECT_URL
-      //   data-request-access="write"
-      // ></script>;
-    },
-
-    async isAuthenticated(): Promise<boolean> {
-      if (this.logged) {
-        return true;
-        // User not loaded. Trying load User
-      }
-      if (await this.loadUser()) return true;
-
-      return false;
-    },
-
-    async logout() {
-      await axios.post("/auth/logout");
-      this.nullUser();
-
-      router.push("/");
-    },
-
-    async postLogin() {
-      nProgress.done();
-      router.push("/dashboard");
-    },
-
-    checkUserCokkieExists() {
-      return js_cookie.get("XSRF-TOKEN") ? true : false;
-    },
-
-    changeUserProperty(user: userType) {
-      const cUser = _.cloneDeep(user);
-
-      this.$state = cUser;
-      return this.$state;
-    },
-
-    nullUser() {
-      nProgress.done();
-      return this.changeUserProperty(noUser);
-    },
-
-    userAuthenticated(user: userType) {
-      const cUser = this.changeUserProperty(user);
-
-      cUser.loading = false;
-      cUser.logged = this.user_logged;
-
-      return cUser;
-    },
-
-    throwAuthError(error: AxiosError) {
+    } catch (error) {
       const errorsStore = useErrorsStore();
 
-      let err_message = `Oops somtehing went wrong: ${error.message}`;
+      if (error instanceof AxiosError)
+        errorsStore.addError(
+          `Something went wrong: ${error.message}. ${
+            error.response ? error.response.data : ""
+          }`
+        );
+      return false;
+    }
+  }
 
-      if (error.response && error.response.data) {
-        type responseType = {
-          error: {
-            message: string;
-          };
+  function load_telegram_widget_script(mount_to = "telegram_load") {
+    console.log("function");
+    const telegram_widget_script = document.createElement("script");
+    telegram_widget_script.setAttribute(
+      "src",
+      "https://telegram.org/js/telegram-widget.js?19"
+    );
+    telegram_widget_script.setAttribute(
+      "data-telegram-login",
+      import.meta.env.VITE_TELEGRAM_LOGIN
+    );
+    telegram_widget_script.setAttribute("data-size", "large");
+    telegram_widget_script.setAttribute("data-auth-url", "/telegram_callback");
+    telegram_widget_script.setAttribute("data-request-access", "write");
+    telegram_widget_script.setAttribute("data-userpic", "false");
+    const load_tg_widget_elems = document.getElementsByClassName(mount_to);
+
+    for (const i in load_tg_widget_elems) {
+      const load_tg_widget_elem = load_tg_widget_elems.item(toInteger(i));
+      if (!load_tg_widget_elem) continue;
+
+      load_tg_widget_elem.replaceChildren(telegram_widget_script);
+    }
+
+    // <script
+    //   async
+    //   src="https://telegram.org/js/telegram-widget.js?19"
+    //   data-telegram-login=import.meta.env.VITE_TELEGRAM_LOGIN
+    //   data-size="large"
+    //   data-userpic="false"
+    //   data-auth-url="/telegram_callback"
+    //   data-request-access="write"
+    // ></script>;
+  }
+
+  async function isAuthenticated(): Promise<boolean> {
+    if (user.value && !loading.value) {
+      return true;
+    }
+    if (await loadUser()) return true;
+
+    return false;
+  }
+
+  async function logout() {
+    deleteJWTAuthorizationToken();
+
+    user.value = undefined;
+
+    router.push("/");
+  }
+
+  async function postLogin() {
+    router.push("/dashboard");
+  }
+
+  function throwAuthError(error: AxiosError) {
+    const errorsStore = useErrorsStore();
+
+    let err_message = `Oops somtehing went wrong: ${error.message}`;
+
+    if (error.response && error.response.data) {
+      type responseType = {
+        error: {
+          message: string;
         };
-        const response_data = <responseType>error.response.data;
-        if (response_data.error && response_data.error.message) {
-          err_message += ` ${response_data.error.message}`;
-        }
+      };
+      const response_data = <responseType>error.response.data;
+      if (response_data.error && response_data.error.message) {
+        err_message += ` ${response_data.error.message}`;
       }
+    }
 
-      errorsStore.addError(err_message);
+    errorsStore.addError(err_message);
+  }
 
-      nProgress.done();
-
-      this.nullUser();
-    },
-  },
-
-  getters: {
-    user(state: userType): userType | false {
-      return state.logged ? state : false;
-    },
-
-    user_logged(state) {
-      // this.logged = !_.isEqual(this.$state, noUser);
-
-      return !_.isEqual(state, noUser);
-    },
-  },
+  return {
+    user,
+    loading,
+    loadUser,
+    login_discord,
+    login_telegram,
+    discord_callback,
+    isAuthenticated,
+    load_telegram_widget_script,
+    logout,
+  };
 });

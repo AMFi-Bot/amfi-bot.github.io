@@ -31,7 +31,7 @@ export async function discordAuthenticated(
   next: NavigationGuardNext
 ) {
   const userStore = useUserStore();
-  if ((await userStore.isAuthenticated()) && userStore.discord_id) {
+  if ((await userStore.isAuthenticated()) && userStore.user?.discordUser) {
     return next();
   }
   next("/");
@@ -47,7 +47,7 @@ const router = createRouter({
       component: RootView,
     },
     {
-      path: import.meta.env.VITE_TELEGRAM_REDIRECT_URL,
+      path: "/telegram_callback",
       name: "telegram_auth",
       component: TelegramAuth,
       meta: {
@@ -55,7 +55,7 @@ const router = createRouter({
       },
     },
     {
-      path: import.meta.env.VITE_DISCORD_CALLBACK_URL,
+      path: "/discord_callback",
       name: "discord_auth",
       component: DiscordAuth,
       meta: {
@@ -63,7 +63,7 @@ const router = createRouter({
       },
     },
     {
-      path: import.meta.env.VITE_DISCORD_BOT_CALLBACK_URL,
+      path: "/discord_bot_callback",
       name: "discord_bot_auth",
       component: DiscordBotAuthCallback,
       meta: {
@@ -101,17 +101,13 @@ const router = createRouter({
           path: "guilds/:guild_id/",
           meta: { layout: "DiscordGuildLayout" },
           beforeEnter: async (to, from, next) => {
-            nProgress.inc();
             const discordGuildStore = useDiscordGuildStore();
 
             const guild_id = <string>to.params.guild_id;
             if (!guild_id) return next({ name: "discord_dashboard" });
 
-            nProgress.inc(2);
             if (!(await discordGuildStore.getGuild(guild_id)))
               return next({ name: "discord_dashboard" });
-
-            nProgress.inc(2);
 
             return next();
           },

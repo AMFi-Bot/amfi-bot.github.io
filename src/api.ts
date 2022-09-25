@@ -4,7 +4,7 @@ import _ from "lodash";
 import nProgress from "./nprogress";
 
 export const baseOptions: AxiosRequestConfig = {
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
   headers: {
     "Content-type": "application/json",

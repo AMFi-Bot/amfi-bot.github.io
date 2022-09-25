@@ -1,38 +1,90 @@
 import api from "@/api";
-import type { DiscordFullGuild } from "@/types/discord/guild";
+import {
+  getAuthorizationHeader,
+  getJWTAuthorizationToken,
+} from "@/helpers/auth/jwt";
+import loadUserGuilds from "@/helpers/discord/loadUserGuilds";
+import type {
+  DiscordBotGuild,
+  DiscordGuild,
+  DiscordUserGuild,
+} from "@/types/discord/guild";
 import axios from "axios";
 import _ from "lodash";
 import { defineStore } from "pinia";
 import { ref, type Ref } from "vue";
-import { useRouter } from "vue-router";
 import { useErrorsStore } from "./errors";
 
-type LoadingType = {
-  loading: boolean;
-  loaded: boolean;
-};
-
-const guildModules: ["general"] = ["general"];
-
 export const useDiscordGuildStore = defineStore("discordGuild", () => {
-  const guild: Ref<DiscordFullGuild | undefined> = ref();
-  const oldGuild: Ref<DiscordFullGuild | undefined> = ref();
+  const guild: Ref<DiscordBotGuild | undefined> = ref();
+  const oldGuild: Ref<DiscordBotGuild | undefined> = ref();
+  const discordGuild: Ref<DiscordGuild | undefined> = ref();
   const loading: Ref<boolean> = ref(false);
 
-  async function loadGuild(id: string | number) {
+  async function loadDiscordGuild(id: string): Promise<DiscordGuild | false> {
     try {
-      loading.value = true;
-      const response = await api.get(`/api/v1/discord/guilds/${id}?load=full`);
+      const userGuilds: DiscordUserGuild[] = await loadUserGuilds();
 
-      guild.value = response.data.data.guild;
+      console.log(userGuilds);
+
+      const userGuild: DiscordUserGuild | undefined = userGuilds.find(
+        (guild) => guild.id == id
+      );
+
+      console.log(userGuild);
+
+      if (!userGuild)
+        throw new Error(
+          `Cannot load discord guild. Guild with id ${id} does not exist in user guilds list.`
+        );
+
+      // Load guild channels
+      const response = await axios.get(`/api/discord/guilds/${id}/channels`, {
+        headers: {
+          Authorization: getAuthorizationHeader("bot"),
+        },
+      });
+
+      discordGuild.value = {
+        ...userGuild,
+        channels: response.data,
+      };
+
+      return discordGuild.value;
+    } catch (error) {
+      console.error(error);
+      useErrorsStore().addError(
+        "Oops. Something went wrong and we cannot load discord guild. Please try again"
+      );
+
+      return false;
+    }
+  }
+
+  async function loadGuild(id: string) {
+    loading.value = true;
+    try {
+      const response = await api.get(`/api/discord/guilds/${id}`, {
+        headers: {
+          Authorization: `Bearer ${getJWTAuthorizationToken().rawToken}`,
+        },
+      });
+
       loading.value = false;
 
-      return guild;
+      const loadedGuild = _.cloneDeep(response.data);
+      if (!loadedGuild.module_general) loadedGuild.module_general = {};
+
+      guild.value = loadedGuild;
+
+      return guild.value;
     } catch (error) {
       loading.value = false;
 
       const errorsStore = useErrorsStore();
-      errorsStore.addError("Cannot load guilds");
+      errorsStore.addError(
+        "Oops. Something went wrong and we cannot load guild from bot server. Please try again"
+      );
 
       return false;
     }
@@ -51,35 +103,29 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
   async function syncGuild() {
     if (!guild.value || !oldGuild.value) return false;
 
-    try {
-      for (const guildModule of guildModules)
-        if (
-          !_.isEqual(
-            oldGuild.value[`module_${guildModule}`],
-            guild.value[`module_${guildModule}`]
-          )
-        ) {
-          const response = await api.put(
-            `/api/v1/discord/guilds/${guild.value.id}/modules/${guildModule}`,
-            guild.value[`module_${guildModule}`]
-          );
+    if (!_.isEqual(oldGuild.value, guild.value)) {
+      try {
+        await api.put(`/api/discord/guilds/${guild.value.id}`, guild.value, {
+          headers: {
+            Authorization: getAuthorizationHeader("bot"),
+          },
+        });
 
-          guild.value[`module_${guildModule}`] = response.data.data;
-        }
+        oldGuild.value = _.cloneDeep(guild.value);
 
-      oldGuild.value = _.cloneDeep(guild.value);
+        return guild.value;
+      } catch (error) {
+        const errorsStore = useErrorsStore();
 
-      return guild.value;
-    } catch (error) {
-      const errorsStore = useErrorsStore();
+        errorsStore.addError(
+          "Oops. Somwhthing went wrong while syncing guild. Please try again."
+        );
 
-      errorsStore.addError("Cannot sync guild");
-
-      guild.value = _.cloneDeep(oldGuild.value);
-
-      return false;
+        return false;
+      }
     }
   }
+
   function resetGuildChanges() {
     if (!guild.value || !oldGuild.value) return false;
 
@@ -103,63 +149,29 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
   ) {
     if (!guild.value) return false;
 
-    const module = _.cloneDeep(guild.value[`module_${module_name}`]) || {
-      id: guild.value.id,
-    };
+    const module = _.cloneDeep(guild.value[`module_${module_name}`]) || {};
 
     module[propety_name] = _.cloneDeep(property_value);
     return updateModule(module_name, module);
   }
 
   async function loadModule(module_name: "general") {
-    loading.value = true;
+    if (!guild.value?.id) return false;
 
-    if (!guild.value) {
-      loading.value = false;
-      return false;
-    }
+    const loadedGuild = await loadGuild(guild.value.id);
+    if (!loadedGuild) return false;
 
-    if (guild.value[`module_${module_name}`]) {
-      loading.value = false;
-      return guild.value[`module_${module_name}`];
-    }
+    const loadedModule = loadedGuild[`module_${module_name}`];
 
-    try {
-      const response = await axios.get(
-        `/api/v1/discord/guilds/${guild.value.id}/modules/module_${module_name}`
-      );
-
-      guild.value[`module_${module_name}`] =
-        response.data.data[`module_${module_name}`];
-
-      loading.value = false;
-
-      return guild.value[`module_${module_name}`];
-    } catch (error: any) {
-      loading.value = false;
-      if (
-        error &&
-        error.response &&
-        error.response.status &&
-        error.response.status === 404
-      ) {
-        guild.value[`module_${module_name}`] = { id: guild.value.id };
-        return false;
-      }
-      const errorsStore = useErrorsStore();
-
-      errorsStore.addError(`Cannot load module ${module_name}`);
-
-      useRouter().push({ name: "DiscordDashboard" });
-
-      return false;
-    }
+    return loadedModule;
   }
 
   return {
     guild,
     loading,
     oldGuild,
+    discordGuild,
+    loadDiscordGuild,
     loadGuild,
     getGuild,
     updateModule,
