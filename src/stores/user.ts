@@ -2,13 +2,13 @@ import { defineStore } from "pinia";
 
 import { useErrorsStore } from "@/stores/errors";
 
-import axios from "@/api";
-import { toInteger } from "lodash";
+import api from "@/api";
+import _, { toInteger } from "lodash";
 
 import router from "@/router/index";
 
 import { AxiosError } from "axios";
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 
 import type { User, TelegramUser, DiscordUser } from "@/types/users";
 import {
@@ -22,7 +22,7 @@ export const useUserStore = defineStore("user", () => {
   const user: Ref<User | undefined> = ref();
   const loading: Ref<boolean> = ref(false);
 
-  function setTelegramUser(telegramUser: TelegramUser) {
+  function setTelegramUser(telegramUser: TelegramUser): User {
     user.value = {
       name: `${telegramUser.first_name} ${telegramUser.last_name}`,
       avatar: telegramUser.photo_url,
@@ -32,7 +32,7 @@ export const useUserStore = defineStore("user", () => {
     return user.value;
   }
 
-  function setDiscordUser(discordUser: DiscordUser) {
+  function setDiscordUser(discordUser: DiscordUser): User {
     const accessToken = getJWTAuthorizationToken()?.accessToken;
 
     if (!accessToken)
@@ -50,13 +50,13 @@ export const useUserStore = defineStore("user", () => {
     return user.value;
   }
 
-  async function loadUser() {
+  async function loadUser(): Promise<User | false> {
     const userToken = getJWTAuthorizationTokenOrNull();
     if (!userToken) return false;
 
     if (user.value) {
       if (!loading.value) {
-        return user;
+        return user.value;
       } else {
         await new Promise((resolve) => {
           const interval = setInterval(async () => {
@@ -64,10 +64,10 @@ export const useUserStore = defineStore("user", () => {
               clearInterval(interval);
               resolve(undefined);
             }
-          }, 100);
+          }, 10);
         });
 
-        return user;
+        return user.value;
       }
     }
 
@@ -75,14 +75,8 @@ export const useUserStore = defineStore("user", () => {
 
     // Load user
     if (userToken?.userType == "Discord user") {
-      if (!userToken.accessToken) {
-        logout();
-        loading.value = false;
-
-        return false;
-      }
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "https://discord.com/api/v10/users/@me",
           {
             headers: {
@@ -91,15 +85,11 @@ export const useUserStore = defineStore("user", () => {
           }
         );
 
-        const user = response.data;
-
-        setDiscordUser(user);
-
-        console.log(user);
+        setDiscordUser(response.data);
 
         loading.value = false;
 
-        return user;
+        return user.value ?? false;
       } catch {
         loading.value = false;
 
@@ -109,21 +99,17 @@ export const useUserStore = defineStore("user", () => {
       }
     } else if (userToken?.userType == "Telegram user") {
       try {
-        const response = await axios.get("/api/telegram/users/@me", {
+        const response = await api.get("/api/telegram/users/@me", {
           headers: {
             Authorization: `Bearer ${userToken.rawToken}`,
           },
         });
 
-        const user = response.data;
-
-        setTelegramUser(user);
+        setTelegramUser(response.data);
 
         loading.value = false;
 
-        console.log(user);
-
-        return user;
+        return user.value ?? false;
       } catch {
         logout();
 
@@ -167,7 +153,7 @@ export const useUserStore = defineStore("user", () => {
 
   async function discord_callback(query_string: string) {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `/api/auth/discord/callback?${query_string.replace(/^\?/, "")}`
       );
 
@@ -181,7 +167,7 @@ export const useUserStore = defineStore("user", () => {
 
   async function login_telegram(query_string: string) {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `/api/auth/telegram/callback?${query_string.replace(/^\?/, "")}`
       );
 
@@ -282,8 +268,8 @@ export const useUserStore = defineStore("user", () => {
   }
 
   return {
-    user,
-    loading,
+    user: computed(() => _.cloneDeep(user.value)),
+    loading: computed(() => _.cloneDeep(loading.value)),
     loadUser,
     login_discord,
     login_telegram,

@@ -1,4 +1,4 @@
-import { nProgress } from "./nprogress";
+import nProgress from "nprogress";
 
 nProgress.configure({ showSpinner: false });
 nProgress.inc();
@@ -18,8 +18,6 @@ import "tippy.js/dist/tippy.css"; // optional for styling
 import VueClickAway from "vue3-click-away";
 
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
-import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
-import DiscordGuildLayoutVue from "./layouts/DiscordGuildLayout.vue";
 
 const i18n = setupI18n();
 
@@ -38,9 +36,12 @@ app.use(
   }
 );
 
-app.component("LoadingLayout", LoadingLayoutVue);
 app.component("DefaultLayout", DefaultLayoutVue);
-app.component("DiscordGuildLayout", DiscordGuildLayoutVue);
+app.component("LoadingLayout", () => import("./layouts/DefaultLayout.vue"));
+app.component(
+  "DiscordGuildLayout",
+  () => import("./layouts/DiscordGuildLayout.vue")
+);
 
 app.mount("#app");
 

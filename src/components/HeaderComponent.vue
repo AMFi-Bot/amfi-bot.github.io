@@ -1,24 +1,11 @@
 <script setup lang="ts">
-//import "@/assets/scss/header.scss";
-import BaseVue from "./Headers/BaseContent.vue";
-import UnloggedVue from "./Headers/NoUser.vue";
-import DiscordLogged from "./Headers/DiscordLogged.vue";
-import TelegramLogged from "./Headers/TelegramLogged.vue";
-
-import { useUserStore } from "@/stores/user";
-import LoadingComponent from "./LoadingComponent.vue";
-const userStore = useUserStore();
+// import "@/assets/scss/header.scss";
+import BaseHeader from "./Headers/BaseContent.vue";
+import LoginDisplay from "./Headers/LoginDisplay.vue";
 </script>
 
 <template>
-  <BaseVue>
-    <DiscordLogged v-if="userStore.user?.discordUser"></DiscordLogged>
-    <TelegramLogged v-else-if="userStore.user?.telegramUser"></TelegramLogged>
-    <UnloggedVue v-else-if="!userStore.user"></UnloggedVue>
-    <div v-else>
-      <div style="width: 50px">
-        <LoadingComponent :loader-type="'line'" />
-      </div>
-    </div>
-  </BaseVue>
+  <BaseHeader>
+    <LoginDisplay></LoginDisplay>
+  </BaseHeader>
 </template>

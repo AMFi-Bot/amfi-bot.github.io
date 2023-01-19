@@ -4,18 +4,20 @@ import {
   type NavigationGuardNext,
   type RouteLocationNormalized,
 } from "vue-router";
-import nProgress from "@/nprogress";
+import nProgress from "nprogress";
 
-import { useUserStore } from "@/stores/user";
 import { useErrorsStore } from "@/stores/errors";
+
+const useUserStore = async () => {
+  return (await import("@/stores/user")).useUserStore;
+};
 
 // Auto loaded views
 
 import RootView from "@/views/RootView.vue";
-import LoadingView from "@/views/LoadingView.vue";
-import { useDiscordGuildStore } from "@/stores/discordGuild";
 
 // Lazy loaded views
+const LoadingView = () => import("@/views/LoadingView.vue");
 const TelegramAuth = () => import("@/views/TelegramAuth.vue");
 const DiscordAuth = () => import("@/views/DiscordAuth.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
@@ -30,7 +32,7 @@ export async function discordAuthenticated(
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  const userStore = useUserStore();
+  const userStore = await useUserStore();
   if ((await userStore.isAuthenticated()) && userStore.user?.discordUser) {
     return next();
   }
@@ -101,6 +103,9 @@ const router = createRouter({
           path: "guilds/:guild_id/",
           meta: { layout: "DiscordGuildLayout" },
           beforeEnter: async (to, from, next) => {
+            const { useDiscordGuildStore } = await import(
+              "@/stores/discordGuild"
+            );
             const discordGuildStore = useDiscordGuildStore();
 
             const guild_id = <string>to.params.guild_id;
@@ -163,9 +168,10 @@ const router = createRouter({
 router.beforeResolve(async (to, from, next) => {
   nProgress.inc();
 
-  const userStore = useUserStore();
-
-  if (to.meta.requiresAuth && !(await userStore.isAuthenticated())) {
+  if (
+    to.meta.requiresAuth &&
+    !(await (await useUserStore()).isAuthenticated())
+  ) {
     return {
       path: "/",
     };
@@ -178,4 +184,5 @@ router.beforeResolve(async (to, from, next) => {
 router.afterEach(() => {
   nProgress.done();
 });
+
 export default router;

@@ -76,7 +76,10 @@ function onChoose(element: ElementType) {
 
     return elements;
   };
-  if (!refChoosedElements || typeof refChoosedElements.value === "undefined") {
+  if (
+    !refChoosedElements.value ||
+    typeof refChoosedElements.value === "undefined"
+  ) {
     choosedElements.value = filter(choosedElements.value);
     emit("choose", _.cloneDeep(choosedElements.value));
   } else {

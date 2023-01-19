@@ -68,7 +68,7 @@ const choosedElement: Ref<ElementType | undefined> =
     : ref(_.cloneDeep(props.initChoosedElement || undefined));
 
 function onChoose(element: ElementType) {
-  if (!props.refChoosedElement || !refChoosedElement) {
+  if (!props.refChoosedElement || !refChoosedElement.value) {
     choosedElement.value = element;
     emit("choose", _.cloneDeep(choosedElement.value));
   } else {

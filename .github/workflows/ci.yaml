@@ -1,4 +1,4 @@
-name: Node.js CI
+name: AMFI Bot website CI
 
 on:
   push:
@@ -7,12 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  ci_check:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -30,14 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Check TypeScript syntax
-        run: pnpm type-check
-
-      - name: Check syntax with eslint
-        run: pnpm lint
+      - name: Check syntax/types
+        run: pnpm full-check
 
       - name: Run unit tests
         run: pnpm test:unit
 
-      - name: Build project
+      - name: Build a project
         run: pnpm build
