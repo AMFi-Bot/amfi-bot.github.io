@@ -39,6 +39,21 @@ export async function discordAuthenticated(
   next("/");
   useErrorsStore().addError("You are not authenticated with discord.");
 }
+export async function telegramAuthenticated(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) {
+  const userStore = useUserStore();
+  if (
+    (await userStore.isAuthenticated()) &&
+    userStore.user.state == "telegram"
+  ) {
+    return next();
+  }
+  next("/");
+  useErrorsStore().addError("You are not authenticated with telegram.");
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +62,9 @@ const router = createRouter({
       path: "/",
       name: "root",
       component: RootView,
+      meta: {
+        layout: "DefaultLayout",
+      },
     },
     {
       path: "/telegram_callback",
@@ -85,8 +103,17 @@ const router = createRouter({
     {
       path: "/dashboard",
       name: "dashboard",
-      component: DashboardView,
       meta: { requiresAuth: true },
+      redirect: () => {
+        const userStore = useUserStore();
+        if (userStore.user.state == "telegram") {
+          return { name: "telegram_dashboard" };
+        } else if (userStore.user.state == "discord") {
+          return { name: "discord_dashboard" };
+        } else {
+          return { path: "/" };
+        }
+      },
     },
 
     {
@@ -98,6 +125,9 @@ const router = createRouter({
           path: "dashboard",
           name: "discord_dashboard",
           component: DiscordDashboardView,
+          meta: {
+            layout: "DefaultLayout",
+          },
         },
         {
           path: "guilds/:guild_id/",
@@ -159,6 +189,18 @@ const router = createRouter({
                 import("@/views/Discord/Guild/DashboardView.vue"),
             },
           ],
+        },
+      ],
+    },
+    {
+      path: "/telegram",
+      beforeEnter: [telegramAuthenticated],
+      meta: { requiresAuth: true, layout: "DefaultLayout" },
+      children: [
+        {
+          path: "dashboard",
+          name: "telegram_dashboard",
+          component: () => import("@/views/Telegram/TelegramDashboard.vue"),
         },
       ],
     },

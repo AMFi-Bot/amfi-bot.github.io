@@ -6,7 +6,7 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 
 const layout = computed(() => {
-  return useRoute().meta.layout || "DefaultLayout";
+  return useRoute().meta.layout || "LoadingLayout";
 });
 </script>
 
