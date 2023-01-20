@@ -62,9 +62,6 @@ const router = createRouter({
       path: "/",
       name: "root",
       component: RootView,
-      meta: {
-        layout: "DefaultLayout",
-      },
     },
 
     {
@@ -132,9 +129,6 @@ const router = createRouter({
           path: "dashboard",
           name: "discord_dashboard",
           component: DiscordDashboardView,
-          meta: {
-            layout: "DefaultLayout",
-          },
         },
         {
           path: "guilds/:guild_id/",
@@ -208,7 +202,6 @@ const router = createRouter({
           path: "dashboard",
           name: "telegram_dashboard",
           component: () => import("@/views/Telegram/TelegramDashboard.vue"),
-          meta: { layout: "LoadingLayout" },
         },
       ],
     },

@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "run-p lint type-check build-only",
     "build-only": "vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --port 80",
     "full-check": "run-p type-check prettier lint",
     "full-check-fix": "run-p type-check prettier-fix lint-fix",
     "test:unit": "vitest --environment jsdom",
