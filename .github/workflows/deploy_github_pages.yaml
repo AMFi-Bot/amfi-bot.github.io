@@ -7,6 +7,10 @@ on:
 permissions:
   contents: write
 
+env:
+  VITE_API_URL: localhost:6001
+  VITE_TELEGRAM_LOGIN: amfi_telegram_bot
+
 jobs:
   gh-pages_deploy:
     concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
