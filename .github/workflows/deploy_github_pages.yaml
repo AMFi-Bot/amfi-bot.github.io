@@ -1,4 +1,4 @@
-name: CD Github Pages
+name: GithubPages CD
 
 on:
   push:
@@ -8,13 +8,13 @@ permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  gh-pages_deploy:
     concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -33,22 +33,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Do some tests
-      - name: Check TypeScript syntax
-        run: pnpm type-check
-
-      - name: Check syntax with eslint
-        run: pnpm lint
+      - name: Check syntax/types
+        run: pnpm full-check
 
       - name: Run unit tests
         run: pnpm test:unit
 
-      # Build
-      - name: Build project
+      - name: Build a project
         run: pnpm build
 
-      # If Ci tests completed, start to deploy
       - name: Deploy to Github Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist # The folder the action should deploy.
+
