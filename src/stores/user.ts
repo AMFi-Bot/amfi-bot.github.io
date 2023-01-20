@@ -93,7 +93,6 @@ export const useUserStore = defineStore("user", () => {
     if (user.value.state == "loading" && !force) {
       await new Promise((resolve) => {
         const interval = setInterval(async () => {
-          console.log("ddd");
           if (!(user.value.state == "loading")) {
             clearInterval(interval);
             resolve(undefined);
