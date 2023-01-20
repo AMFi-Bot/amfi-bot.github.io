@@ -8,12 +8,9 @@ import type { BaseUser } from "@/types/user";
 const userStore = useUserStore();
 
 const user: ComputedRef<BaseUser | undefined> = computed(() => {
-  if (
-    userStore.user.state == "unauthenticated" ||
-    userStore.user.state == "loading"
-  )
-    return undefined;
-  else return <BaseUser>userStore.user;
+  return userStore.user.state == "discord" || userStore.user.state == "telegram"
+    ? userStore.user
+    : undefined;
 });
 </script>
 
