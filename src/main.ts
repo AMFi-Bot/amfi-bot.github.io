@@ -3,7 +3,7 @@ import nProgress from "nprogress";
 nProgress.configure({ showSpinner: false });
 nProgress.inc();
 
-import { createApp } from "vue";
+import { createApp, defineAsyncComponent } from "vue";
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
@@ -19,6 +19,7 @@ import VueClickAway from "vue3-click-away";
 
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
 import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
+import DiscordGuildLayoutVue from "./layouts/DiscordGuildLayout.vue";
 
 const i18n = setupI18n();
 
@@ -41,7 +42,7 @@ app.component("DefaultLayout", DefaultLayoutVue);
 app.component("LoadingLayout", LoadingLayoutVue);
 app.component(
   "DiscordGuildLayout",
-  () => import("./layouts/DiscordGuildLayout.vue")
+  defineAsyncComponent(() => import("./layouts/DiscordGuildLayout.vue"))
 );
 
 app.mount("#app");
