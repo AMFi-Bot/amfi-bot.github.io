@@ -66,6 +66,13 @@ const router = createRouter({
         layout: "DefaultLayout",
       },
     },
+
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("@/views/NotFound.vue"),
+    },
+
     {
       path: "/telegram_callback",
       name: "telegram_auth",
@@ -195,12 +202,13 @@ const router = createRouter({
     {
       path: "/telegram",
       beforeEnter: [telegramAuthenticated],
-      meta: { requiresAuth: true, layout: "DefaultLayout" },
+      meta: { requiresAuth: true },
       children: [
         {
           path: "dashboard",
           name: "telegram_dashboard",
           component: () => import("@/views/Telegram/TelegramDashboard.vue"),
+          meta: { layout: "LoadingLayout" },
         },
       ],
     },

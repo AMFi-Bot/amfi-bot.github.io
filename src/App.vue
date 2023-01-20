@@ -2,11 +2,19 @@
 import { RouterView } from "vue-router";
 import ErrorsComponent from "./components/ErrorsComponent.vue";
 
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
+import _ from "lodash";
 
+const route = useRoute();
+
+//If the route has a guardian layout is undefined
+// route matched array is length 0 ONLY if route is not loaded(processing by guards)
+// or if route is not found(404)
 const layout = computed(() => {
-  return useRoute().meta.layout || "LoadingLayout";
+  return route.meta.layout ?? route.matched.length != 0
+    ? "DefaultLayout"
+    : "LoadingLayout";
 });
 </script>
 
