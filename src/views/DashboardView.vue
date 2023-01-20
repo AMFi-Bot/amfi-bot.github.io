@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useUserStore } from "../stores/user";
+import { computed, onMounted, watch } from "vue";
+import { useUserStore } from "@/stores/user";
 import TelegramLogo from "../components/Icons/TelegramLogo.vue";
 import DiscordLogoWhite from "../components/Icons/DiscordLogoWhite.vue";
 
 const userStore = useUserStore();
 
-if (!userStore.user?.telegramUser) {
+const userState = computed(() => userStore.user.state);
+
+if (!(userState.value == "telegram")) {
   onMounted(() => {
     userStore.load_telegram_widget_script("telegram_login_mount");
   });
 }
+
+watch(userState, (newState, oldState) => {
+  if (newState == "discord" && oldState != "discord") {
+    userStore.load_telegram_widget_script("telegram_login_mount");
+  }
+});
 </script>
 
 <template>
@@ -28,13 +36,10 @@ if (!userStore.user?.telegramUser) {
         <div
           :class="[
             $style.setup_button,
-            userStore.user?.telegramUser ? $style.green_button : undefined,
+            userState == 'telegram' ? $style.green_button : undefined,
           ]"
         >
-          <RouterLink
-            to="/telegram/dashboard"
-            v-if="userStore.user?.telegramUser"
-          >
+          <RouterLink to="/telegram/dashboard" v-if="userState == 'telegram'">
             Set up
           </RouterLink>
           <div v-else>
@@ -57,15 +62,12 @@ if (!userStore.user?.telegramUser) {
         <div
           :class="[
             $style.setup_button,
-            userStore.user?.discordUser
+            userState == 'discord'
               ? $style.green_button
               : $style.darkblue_button,
           ]"
         >
-          <RouterLink
-            to="/discord/dashboard"
-            v-if="userStore.user?.discordUser"
-          >
+          <RouterLink to="/discord/dashboard" v-if="userState == 'discord'">
             Set up
           </RouterLink>
           <div v-else @click="userStore.login_discord">

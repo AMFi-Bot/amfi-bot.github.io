@@ -7,10 +7,9 @@ import _, { toInteger } from "lodash";
 
 import router from "@/router/index";
 
-import { AxiosError } from "axios";
 import { computed, ref, type Ref } from "vue";
 
-import type { User, TelegramUser, DiscordUser } from "@/types/users";
+import type { User, TelegramUser, DiscordUser } from "@/types/user";
 import {
   deleteJWTAuthorizationToken,
   getJWTAuthorizationToken,
@@ -19,110 +18,117 @@ import {
 } from "@/helpers/auth/jwt";
 
 export const useUserStore = defineStore("user", () => {
-  const user: Ref<User | undefined> = ref();
-  const loading: Ref<boolean> = ref(false);
+  const initial_user: User = { state: "loading" };
+  const user: Ref<User> = ref(initial_user);
+  loadUser()
+    .then((us) => (user.value = us))
+    .catch((err) => {
+      user.value = { state: "unauthenticated" };
+      console.error(err);
+    });
+  const errorsStore = useErrorsStore();
 
-  function setTelegramUser(telegramUser: TelegramUser): User {
-    user.value = {
+  function parseTelegramUser(telegramUser: TelegramUser): User {
+    return {
       name: `${telegramUser.first_name} ${telegramUser.last_name}`,
       avatar: telegramUser.photo_url,
       telegramUser,
+      state: "telegram",
     };
-
-    return user.value;
   }
 
-  function setDiscordUser(discordUser: DiscordUser): User {
+  function parseDiscordUser(discordUser: DiscordUser): User {
     const accessToken = getJWTAuthorizationToken()?.accessToken;
 
     if (!accessToken)
       throw new Error("accessToken cannot be null with discord user");
 
-    user.value = {
+    return {
       name: `${discordUser.username}`,
       avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`,
       discordUser,
       discordUserCredentials: {
         accessToken,
       },
+      state: "discord",
     };
+  }
+
+  async function loadUser(): Promise<User> {
+    const userToken = getJWTAuthorizationTokenOrNull();
+    if (!userToken) return { state: "unauthenticated" };
+
+    // Load user
+    if (userToken.userType == "Discord user") {
+      const response = await api.get("https://discord.com/api/v10/users/@me", {
+        headers: {
+          Authorization: `Bearer ${userToken.accessToken}`,
+        },
+      });
+
+      return parseDiscordUser(response.data);
+    } else if (userToken.userType == "Telegram user") {
+      const response = await api.get("/api/telegram/users/@me", {
+        headers: {
+          Authorization: `Bearer ${userToken.rawToken}`,
+        },
+      });
+
+      return parseTelegramUser(response.data);
+    } else {
+      console.error("Invalid JWT Authorization token. Unauthenticated");
+      deleteJWTAuthorizationToken();
+      return { state: "unauthenticated" };
+    }
+  }
+
+  async function reloadUser(force = false): Promise<User> {
+    const userToken = getJWTAuthorizationTokenOrNull();
+    if (!userToken)
+      throw new Error(
+        "JWT Authorization token is not provided. Cannot load user."
+      );
+
+    // Escape multiple user loading when one is already in a process
+    if (user.value.state == "loading" && !force) {
+      await new Promise((resolve) => {
+        const interval = setInterval(async () => {
+          console.log("ddd");
+          if (!(user.value.state == "loading")) {
+            clearInterval(interval);
+            resolve(undefined);
+          }
+        }, 10);
+      });
+
+      return user.value;
+    }
+
+    user.value.state = "loading";
+
+    // Load user
+    const tempUser = await loadUser();
+
+    user.value = tempUser;
 
     return user.value;
   }
 
-  async function loadUser(): Promise<User | false> {
-    const userToken = getJWTAuthorizationTokenOrNull();
-    if (!userToken) return false;
+  async function getUser(): Promise<User> {
+    if (user.value.state != "unauthenticated" && user.value.state != "loading")
+      return user.value;
 
-    if (user.value) {
-      if (!loading.value) {
-        return user.value;
-      } else {
-        await new Promise((resolve) => {
-          const interval = setInterval(async () => {
-            if (!loading.value) {
-              clearInterval(interval);
-              resolve(undefined);
-            }
-          }, 10);
-        });
-
-        return user.value;
-      }
-    }
-
-    loading.value = true;
-
-    // Load user
-    if (userToken?.userType == "Discord user") {
-      try {
-        const response = await api.get(
-          "https://discord.com/api/v10/users/@me",
-          {
-            headers: {
-              Authorization: `Bearer ${userToken.accessToken}`,
-            },
-          }
-        );
-
-        setDiscordUser(response.data);
-
-        loading.value = false;
-
-        return user.value ?? false;
-      } catch {
-        loading.value = false;
-
-        logout();
-
-        return false;
-      }
-    } else if (userToken?.userType == "Telegram user") {
-      try {
-        const response = await api.get("/api/telegram/users/@me", {
-          headers: {
-            Authorization: `Bearer ${userToken.rawToken}`,
-          },
-        });
-
-        setTelegramUser(response.data);
-
-        loading.value = false;
-
-        return user.value ?? false;
-      } catch {
-        logout();
-
-        loading.value = false;
-
-        return false;
-      }
-    } else {
+    try {
+      return await reloadUser();
+    } catch (error: Error | any) {
       logout();
-
-      loading.value = false;
-
-      return false;
+      console.error(error);
+      errorsStore.addError(
+        `Something went wrong. Cannot load user:\n${
+          error?.message ? error.message : ""
+        }`
+      );
+      return user.value;
     }
   }
 
@@ -133,7 +139,7 @@ export const useUserStore = defineStore("user", () => {
       "width=500,height=900"
     );
 
-    if (!popup) return useErrorsStore().addError("Cannot open popup");
+    if (!popup) return errorsStore.addError("Cannot open popup");
 
     await new Promise((resolve) => {
       const interval = setInterval(async () => {
@@ -144,10 +150,13 @@ export const useUserStore = defineStore("user", () => {
       }, 500);
     });
 
-    if (await loadUser()) {
+    try {
+      await reloadUser(true);
       postLogin();
-    } else {
-      useErrorsStore().addError("Login failed.");
+    } catch (error: Error | any) {
+      errorsStore.addError(
+        `Login failed with error: \n${error?.message ?? ""}`
+      );
     }
   }
 
@@ -160,8 +169,12 @@ export const useUserStore = defineStore("user", () => {
       setJWTAuthorizationToken(response.data);
 
       window.close();
-    } catch {
-      useErrorsStore().addError("Cannot login with discord.");
+    } catch (error: Error | any) {
+      errorsStore.addError(
+        `Something went wrong while logging ini with discord: ${
+          error?.message ?? ""
+        }`
+      );
     }
   }
 
@@ -173,20 +186,12 @@ export const useUserStore = defineStore("user", () => {
 
       setJWTAuthorizationToken(response.data);
 
-      if (await loadUser()) {
-        postLogin();
-      } else {
-        useErrorsStore().addError("Login failed.");
-      }
-    } catch (error) {
-      const errorsStore = useErrorsStore();
-
-      if (error instanceof AxiosError)
-        errorsStore.addError(
-          `Something went wrong: ${error.message}. ${
-            error.response ? error.response.data : ""
-          }`
-        );
+      await reloadUser(true);
+      postLogin();
+    } catch (error: Error | any) {
+      errorsStore.addError(
+        `Login failed with error: \n${error?.message ?? ""}`
+      );
       return false;
     }
   }
@@ -227,50 +232,37 @@ export const useUserStore = defineStore("user", () => {
   }
 
   async function isAuthenticated(): Promise<boolean> {
-    if (user.value && !loading.value) {
+    if (
+      user.value.state != "unauthenticated" &&
+      user.value.state != "loading"
+    ) {
       return true;
     }
-    if (await loadUser()) return true;
+
+    await getUser();
+
+    if (user.value.state != "unauthenticated" && user.value.state != "loading")
+      return true;
 
     return false;
   }
 
-  async function logout() {
+  function logout() {
     deleteJWTAuthorizationToken();
 
-    user.value = undefined;
+    user.value = { state: "unauthenticated" };
 
     router.push("/");
   }
 
-  async function postLogin() {
+  function postLogin() {
     router.push("/dashboard");
   }
 
-  function throwAuthError(error: AxiosError) {
-    const errorsStore = useErrorsStore();
-
-    let err_message = `Oops somtehing went wrong: ${error.message}`;
-
-    if (error.response && error.response.data) {
-      type responseType = {
-        error: {
-          message: string;
-        };
-      };
-      const response_data = <responseType>error.response.data;
-      if (response_data.error && response_data.error.message) {
-        err_message += ` ${response_data.error.message}`;
-      }
-    }
-
-    errorsStore.addError(err_message);
-  }
-
   return {
-    user: computed(() => _.cloneDeep(user.value)),
-    loading: computed(() => _.cloneDeep(loading.value)),
-    loadUser,
+    user: user,
+    getUser,
+    reloadUser,
     login_discord,
     login_telegram,
     discord_callback,

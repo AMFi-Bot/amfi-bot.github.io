@@ -18,6 +18,7 @@ import "tippy.js/dist/tippy.css"; // optional for styling
 import VueClickAway from "vue3-click-away";
 
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
+import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
 
 const i18n = setupI18n();
 
@@ -37,7 +38,7 @@ app.use(
 );
 
 app.component("DefaultLayout", DefaultLayoutVue);
-app.component("LoadingLayout", () => import("./layouts/DefaultLayout.vue"));
+app.component("LoadingLayout", LoadingLayoutVue);
 app.component(
   "DiscordGuildLayout",
   () => import("./layouts/DiscordGuildLayout.vue")

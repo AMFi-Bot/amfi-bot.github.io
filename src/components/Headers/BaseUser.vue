@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user.js";
+import { computed, type ComputedRef } from "vue";
 import DropdownComponent from "../DropdownComponent.vue";
 import LanguagesContent from "../LanguagesContent.vue";
+import type { BaseUser } from "@/types/user";
 
 const userStore = useUserStore();
+
+const user: ComputedRef<BaseUser | undefined> = computed(() => {
+  if (
+    userStore.user.state == "unauthenticated" ||
+    userStore.user.state == "loading"
+  )
+    return undefined;
+  else return <BaseUser>userStore.user;
+});
 </script>
 
 <template>
@@ -15,25 +26,21 @@ const userStore = useUserStore();
     :no-hide-on-click-content="true"
   >
     <template #dropdownTitle>
-      <img
-        :class="$style.avatar"
-        :src="userStore.user?.avatar"
-        v-if="userStore.user?.avatar"
-      />
+      <img :class="$style.avatar" :src="user?.avatar" v-if="user?.avatar" />
       <div :class="$style.name">
-        {{ userStore.user?.name }}
-        <div :class="$style.type" v-if="userStore.user?.privelege != 0">
+        {{ user?.name }}
+        <div :class="$style.type" v-if="user?.privelege != 0">
           <img
             height="20px"
             width="20px"
             v-bind:src="
-              userStore.user?.privelege === -1
+              user?.privelege === -1
                 ? '/img/administrator.svg'
                 : '/img/premium-yellow.svg'
             "
             v-tippy="{
               content:
-                userStore.user?.privelege === -1
+                user?.privelege === -1
                   ? 'Администратор'
                   : 'Привелегированый пользователь',
             }"

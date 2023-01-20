@@ -7,10 +7,7 @@ import {
 import nProgress from "nprogress";
 
 import { useErrorsStore } from "@/stores/errors";
-
-const useUserStore = async () => {
-  return (await import("@/stores/user")).useUserStore;
-};
+import { useUserStore } from "@/stores/user";
 
 // Auto loaded views
 
@@ -32,8 +29,11 @@ export async function discordAuthenticated(
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  const userStore = await useUserStore();
-  if ((await userStore.isAuthenticated()) && userStore.user?.discordUser) {
+  const userStore = useUserStore();
+  if (
+    (await userStore.isAuthenticated()) &&
+    userStore.user.state == "discord"
+  ) {
     return next();
   }
   next("/");

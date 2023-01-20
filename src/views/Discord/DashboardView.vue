@@ -1,24 +1,38 @@
 <script setup lang="ts">
-import { useDiscordGuildsStore } from "../../stores/discordGuilds";
-const discordGuildsStore = useDiscordGuildsStore();
+import loadUserGuilds from "@/helpers/discord/loadUserGuilds";
+import { useErrorsStore } from "@/stores/errors";
+import type { DiscordUserGuild } from "@/types/discord/guild";
+import { ref, type Ref } from "vue";
+import { RouterLink } from "vue-router";
+import { loginGuild } from "@/helpers/discord/loginGuild";
 
-discordGuildsStore.loadGuilds();
+const userGuilds: Ref<DiscordUserGuild[] | "loading" | "error"> =
+  ref("loading");
+
+loadUserGuilds("bot")
+  .then((g) => (userGuilds.value = g))
+  .catch((error) => {
+    console.error(error);
+
+    useErrorsStore().addError(
+      "Oops something went wrong and we cannot get your guilds list."
+    );
+
+    userGuilds.value = "error";
+  });
 </script>
 
 <template>
   <div :class="$style.discord_dashboard">
-    <div :class="$style.guilds_loading" v-if="discordGuildsStore.loading">
+    <div :class="$style.guilds_loading" v-if="userGuilds == 'loading'">
       Loading guilds...
     </div>
-    <div
-      :class="$style.guild_list"
-      v-else-if="
-        discordGuildsStore.guilds !== undefined &&
-        discordGuildsStore.guilds.length !== 0
-      "
-    >
+    <div :class="$style.guilds_load_error" v-else-if="userGuilds == 'error'">
+      Something went wrong! Try again
+    </div>
+    <div :class="$style.guild_list" v-else-if="userGuilds.length !== 0">
       <div :class="$style.guild_list_title">Please choose a guild to setup</div>
-      <div v-for="guild in discordGuildsStore.guilds" :key="guild.id">
+      <div v-for="guild in userGuilds" :key="guild.id">
         <div :class="$style.guild">
           <div :class="$style.guild_desc">
             <img
@@ -52,7 +66,7 @@ discordGuildsStore.loadGuilds();
             v-else
             @click="
               () => {
-                discordGuildsStore.loginGuild(guild.id);
+                loginGuild(guild.id);
               }
             "
           >
@@ -61,17 +75,8 @@ discordGuildsStore.loadGuilds();
         </div>
       </div>
     </div>
-    <div
-      :class="$style.no_guild_alert"
-      v-else-if="
-        discordGuildsStore.guilds !== undefined &&
-        discordGuildsStore.guilds.length === 0
-      "
-    >
+    <div :class="$style.no_guild_alert" v-else-if="userGuilds.length == 0">
       Oops you dont have any guilds
-    </div>
-    <div :class="$style.guilds_load_error" v-else>
-      Something went wrong! Try again
     </div>
   </div>
 </template>

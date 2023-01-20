@@ -77,7 +77,7 @@ function onChoose(element: ElementType) {
     return elements;
   };
   if (
-    !refChoosedElements.value ||
+    !refChoosedElements?.value ||
     typeof refChoosedElements.value === "undefined"
   ) {
     choosedElements.value = filter(choosedElements.value);

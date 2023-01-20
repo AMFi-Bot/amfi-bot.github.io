@@ -1,30 +1,23 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
-import { computed, type ComputedRef } from "vue";
 import LoadingComponent from "../LoadingComponent.vue";
 
 import Unlogged from "./NoUser.vue";
-import DiscordLogged from "./NoUser.vue";
-import TelegramLogged from "./NoUser.vue";
+import DiscordLogged from "./DiscordLogged.vue";
+import TelegramLogged from "./TelegramLogged.vue";
 
 const userStore = useUserStore();
-userStore.loadUser();
-const userState: ComputedRef<"loading" | "unLogged" | "discord" | "telegram"> =
-  computed(() => {
-    if (userStore.loading) return "loading";
-    else if (userStore.user?.discordUser) return "discord";
-    else if (userStore.user?.telegramUser) return "telegram";
-    else return "unLogged";
-  });
 </script>
 
 <template>
-  <div v-if="userState == 'loading'">
+  <div v-if="userStore.user.state == 'loading'">
     <div style="width: 50px">
       <LoadingComponent :loader-type="'line'" />
     </div>
   </div>
-  <Unlogged v-else-if="userState == 'unLogged'"></Unlogged>
-  <DiscordLogged v-else-if="userState == 'discord'"></DiscordLogged>
-  <TelegramLogged v-else-if="userState == 'telegram'"></TelegramLogged>
+  <DiscordLogged v-else-if="userStore.user.state == 'discord'"></DiscordLogged>
+  <Unlogged v-else-if="userStore.user.state == 'unauthenticated'"></Unlogged>
+  <TelegramLogged
+    v-else-if="userStore.user.state == 'telegram'"
+  ></TelegramLogged>
 </template>
