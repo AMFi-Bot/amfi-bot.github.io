@@ -1,64 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AMFi-Bot | The bot for messengers</title>
+    <style>
+      body {
+        background-color: #34383c;
+        color: #ddd;
+      }
 
-<head>
-	<meta charset="UTF-8" />
-	<link rel="icon" href="/favicon.png" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>AMFi-Bot | The bot for messengers</title>
-	<style>
-		body {
-			background-color: #34383c;
-			color: #ddd;
+      .lds-dual-ring {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+      }
 
-		}
+      .lds-dual-ring:after {
+        content: " ";
+        display: block;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border-radius: 50%;
+        border: 6px solid #ddd;
+        border-color: #ddd transparent #ddd transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
 
-		.lds-dual-ring {
-			display: inline-block;
-			width: 80px;
-			height: 80px;
-		}
+      @keyframes lds-dual-ring {
+        0% {
+          transform: rotate(0deg);
+        }
 
-		.lds-dual-ring:after {
-			content: " ";
-			display: block;
-			width: 64px;
-			height: 64px;
-			margin: 8px;
-			border-radius: 50%;
-			border: 6px solid #ddd;
-			border-color: #ddd transparent #ddd transparent;
-			animation: lds-dual-ring 1.2s linear infinite;
-		}
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-83fef770.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/runtime-core.esm-bundler-3e803943.js">
+    <link rel="modulepreload" crossorigin href="/assets/vue-router-1dd73624.js">
+    <link rel="modulepreload" crossorigin href="/assets/jwt-dc6be0b0.js">
+    <link rel="modulepreload" crossorigin href="/assets/_plugin-vue_export-helper-c27b6911.js">
+    <link rel="modulepreload" crossorigin href="/assets/index-2ecccbb3.js">
+    <link rel="modulepreload" crossorigin href="/assets/LoadingComponent-55249104.js">
+    <link rel="modulepreload" crossorigin href="/assets/DropdownComponent-6b6f811c.js">
+    <link rel="stylesheet" href="/assets/LoadingComponent-9b8775c8.css">
+    <link rel="stylesheet" href="/assets/DropdownComponent-6ebc8e6c.css">
+    <link rel="stylesheet" href="/assets/index-cca1b94b.css">
+  </head>
 
-		@keyframes lds-dual-ring {
-			0% {
-				transform: rotate(0deg);
-			}
+  <body>
+    <div id="app">
+      <div class="lds-dual-ring"></div>
+    </div>
 
-			100% {
-				transform: rotate(360deg);
-			}
-		}
-	</style>
+    <!-- <link
+      rel="stylesheet"
+      href="https://unpkg.com/nprogress@0.2.0/nprogress.css"
+    />
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <script>
+      NProgress.configure({ showSpinner: false });
+      NProgress.inc();
+    </script> -->
 
-  <script type="module" crossorigin src="/assets/index.90cafe9d.js"></script>
-  <link rel="stylesheet" href="/assets/index.130143da.css">
-</head>
-
-<body>
-	<div id="app">
-		<div class="lds-dual-ring"></div>
-	</div>
-
-	<link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
-	<script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
-	<script>
-		NProgress.configure({ showSpinner: false });
-		NProgress.inc();
-	</script>
-
-	
-</body>
-
+    
+  </body>
 </html>
