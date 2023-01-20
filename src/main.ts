@@ -19,7 +19,6 @@ import VueClickAway from "vue3-click-away";
 
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
 import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
-import DiscordGuildLayoutVue from "./layouts/DiscordGuildLayout.vue";
 
 const i18n = setupI18n();
 
