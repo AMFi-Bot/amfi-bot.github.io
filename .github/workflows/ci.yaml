@@ -17,24 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install
 
       - name: Check syntax/types
-        run: pnpm full-check
+        run: yarn run full-check
 
       - name: Run unit tests
-        run: pnpm test:unit
+        run: yarn test:unit
 
       - name: Build a project
-        run: pnpm build
+        run: yarn build

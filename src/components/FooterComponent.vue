@@ -3,6 +3,9 @@ import DropdownComponent from "./DropdownComponent.vue";
 import DiscordLogoWhite from "./Icons/DiscordLogoWhite.vue";
 import TelegramLogo from "./Icons/TelegramLogo.vue";
 import LanguagesContent from "./LanguagesContent.vue";
+import { useI18n } from "vue-i18n";
+
+const { t, n } = useI18n();
 </script>
 
 <template>
@@ -14,7 +17,7 @@ import LanguagesContent from "./LanguagesContent.vue";
         :title_class="$style.dropdown_title"
         :position="'top-left'"
       >
-        <template #dropdownTitle> {{ $t("language") }}/Language </template>
+        <template #dropdownTitle> {{ t("language") }}/Language </template>
 
         <template #default>
           <LanguagesContent />
@@ -22,11 +25,11 @@ import LanguagesContent from "./LanguagesContent.vue";
       </DropdownComponent>
 
       <a :class="$style.grid_elem" href="/tos">
-        {{ $t("check_tos") }}
+        {{ t("check_tos") }}
       </a>
-      <a :class="$style.grid_elem" href="/r_bug">{{ $t("report_bug") }}</a>
+      <a :class="$style.grid_elem" href="/r_bug">{{ t("report_bug") }}</a>
       <a :class="$style.grid_elem" href="/sug_ftrs">{{
-        $t("suggest_features")
+        t("suggest_features")
       }}</a>
     </div>
     <div :class="$style.down_panel">
@@ -88,7 +91,7 @@ import LanguagesContent from "./LanguagesContent.vue";
           >
         </div>
         <div :class="$style.copyright">
-          © Vetrov V. D., 2021 - 2022 {{ $t("rights_reserved") }}
+          © Vetrov V. D., 2021 - 2022 {{ t("rights_reserved") }}
         </div>
       </div>
     </div>

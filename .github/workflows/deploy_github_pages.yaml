@@ -23,28 +23,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Install node and node modules (via pnpm)
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
+      # Install node and node modules
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install
 
       - name: Check syntax/types
-        run: pnpm full-check
+        run: yarn run full-check
 
       - name: Run unit tests
-        run: pnpm test:unit
+        run: yarn run test:unit
 
       - name: Build a project
-        run: pnpm build
+        run: yarn run build
 
       - name: Bypass Jekyll processing
         run: echo > dist/.nojekyll

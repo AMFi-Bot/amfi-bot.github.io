@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import DropdownComponent from "../DropdownComponent.vue";
+import { useI18n } from "vue-i18n";
+
+const { t, n } = useI18n();
 </script>
 
 <template>
@@ -14,11 +17,11 @@ import DropdownComponent from "../DropdownComponent.vue";
         <template #dropdownTitle>...</template>
         <template #default>
           <a href="/tutorials">
-            <span>{{ $t("tutorials") }}</span>
+            <span>{{ t("tutorials") }}</span>
           </a>
 
           <a href="/premium" :class="$style.premium">
-            <span>{{ $t("premium") }}</span>
+            <span>{{ t("premium") }}</span>
             <img
               src="/img/premium-yellow.svg"
               :class="$style.premium_icon"

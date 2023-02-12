@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user.js";
 import { computed, type ComputedRef } from "vue";
+import { useI18n } from "vue-i18n";
 import DropdownComponent from "../DropdownComponent.vue";
 import LanguagesContent from "../LanguagesContent.vue";
 import type { BaseUser } from "@/types/user";
+
+const { t, n } = useI18n();
 
 const userStore = useUserStore();
 
@@ -47,13 +50,13 @@ const user: ComputedRef<BaseUser | undefined> = computed(() => {
     </template>
     <template #default>
       <RouterLink to="/dashboard" :class="$style.cart_link">
-        {{ $t("dashboard") }}
+        {{ t("dashboard") }}
       </RouterLink>
       <RouterLink to="/premium" :class="$style.cart_link">{{
-        $t("premium")
+        t("premium")
       }}</RouterLink>
       <RouterLink to="/user/account/settings" :class="$style.cart_link">
-        {{ $t("user_settings") }}
+        {{ t("user_settings") }}
       </RouterLink>
 
       <DropdownComponent
@@ -61,7 +64,7 @@ const user: ComputedRef<BaseUser | undefined> = computed(() => {
         :content_class="$style.cart_languages"
         :title_class="$style.dropdown_title"
       >
-        <template #dropdownTitle> {{ $t("language") }}/Language </template>
+        <template #dropdownTitle> {{ t("language") }}/Language </template>
         <template #default><LanguagesContent /></template>
       </DropdownComponent>
 
@@ -69,7 +72,7 @@ const user: ComputedRef<BaseUser | undefined> = computed(() => {
         @click="userStore.logout()"
         :class="[$style.cart_link, $style.logout_link]"
       >
-        {{ $t("log_out") }}
+        {{ t("log_out") }}
       </div>
     </template>
   </DropdownComponent>
