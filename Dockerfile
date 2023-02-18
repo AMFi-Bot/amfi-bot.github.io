@@ -7,9 +7,9 @@ WORKDIR /app
 COPY src ./src
 COPY public ./public
 # COPY .yarn/patches .
-# COPY .yarn/plugins .
-# COPY .yarn/releases .
-# COPY .yarn/sdks .
+COPY .yarn/plugins .
+COPY .yarn/releases .
+COPY .yarn/sdks .
 # COPY .yarn/versions .
 COPY .yarnrc.yml .
 COPY env.d.ts .
