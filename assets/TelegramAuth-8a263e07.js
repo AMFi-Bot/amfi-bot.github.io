@@ -1,0 +1,1 @@
+import{d as e,u as o,o as r,c as t}from"./index-bbf8b0ea.js";import{_ as s}from"./LoadingView.vue_vue_type_style_index_0_lang-c2c88eb5.js";const i=e({__name:"TelegramAuth",setup(a){return o().login_telegram(window.location.search),(c,_)=>(r(),t(s))}});export{i as default};

@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{o as r,c as o}from"./runtime-core.esm-bundler-3293aa72.js";const a={};function c(t,n){return r(),o("div",null,"Telegram dashboard")}const l=e(a,[["render",c]]);export{l as default};

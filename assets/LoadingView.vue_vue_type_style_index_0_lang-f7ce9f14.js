@@ -1,1 +1,0 @@
-import{L as e}from"./LoadingComponent-6885d789.js";import{d as o,o as t,c as n,h as a}from"./runtime-core.esm-bundler-3293aa72.js";const _={class:"loaderView"},p=o({__name:"LoadingView",setup(s){return(d,i)=>(t(),n("div",_,[a(e,{"loader-type":"dotted","dotted-animation-duration":"15s"})]))}});export{p as _};

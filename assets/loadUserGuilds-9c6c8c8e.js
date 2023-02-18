@@ -1,0 +1,1 @@
+import{S as i,U as a,P as n}from"./index-bbf8b0ea.js";async function l(s="discord"){const e=i(),o=s=="bot"?`${a.baseURL}/api/discord/guilds/@me`:"https://discord.com/api/v10/users/@me/guilds",r=s=="bot"?`Bearer ${e.rawToken}`:`Bearer ${e.accessToken}`;return(await n.get(o,{headers:{Authorization:r}})).data.filter(t=>(Number.parseInt(t.permissions)&8)==8)}export{l};
