@@ -16,7 +16,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: toInteger(process.env.VITE_FRONTEND_PORT) || 3000,
+    port: toInteger(process.env.VITE_FRONTEND_PORT) || 8080,
     host: "0.0.0.0",
   },
 });
