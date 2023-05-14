@@ -1015,6 +1015,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rushstack/eslint-patch@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@rushstack/eslint-patch@npm:1.2.0"
+  checksum: faa749faae0e83c26ae9eb00ad36a897ac78f3cf27da8e8ff21c00bcf7973b598d823d8f2b3957ef66079288bcf577f94df831eae2d65f3f68d8ca32f18b6aff
+  languageName: node
+  linkType: hard
+
 "@sideway/address@npm:^4.1.3":
   version: 4.1.4
   resolution: "@sideway/address@npm:4.1.4"
@@ -1042,6 +1049,13 @@ __metadata:
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
   checksum: ad87447820dd3f24825d2d947ebc03072b20a42bfc96cbafec16bff8bbda6c1a81fcb0be56d5b21968560c5359a0af4038a68ba150c3e1694fe4c109a063bed8
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node18@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@tsconfig/node18@npm:2.0.1"
+  checksum: a7bf667fadf3825c5c476d33b054e363b10156f764b649d9d6f8ffa1613c13f539be2b09812e1e86bc5b81df3bac02ea76b0c8779dc285cf4a2044fdbdae0180
   languageName: node
   linkType: hard
 
@@ -1792,6 +1806,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "amfi_bot_frontend@workspace:."
   dependencies:
+    "@rushstack/eslint-patch": ^1.2.0
+    "@tsconfig/node18": ^2.0.1
     "@types/js-cookie": ^3.0.2
     "@types/jsdom": ^20.0.1
     "@types/lodash": ^4.14.191
@@ -1824,7 +1840,7 @@ __metadata:
     sass: ^1.62.1
     start-server-and-test: ^2.0.0
     tippy.js: ^6.3.7
-    typescript: ^5.0.4
+    typescript: ~5.0.4
     uuid: ^9.0.0
     vite: ^4.3.5
     vitest: ^0.31.0
@@ -5745,7 +5761,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.0.4":
+"typescript@npm:~5.0.4":
   version: 5.0.4
   resolution: "typescript@npm:5.0.4"
   bin:
@@ -5755,7 +5771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@~5.0.4#~builtin<compat/typescript>":
   version: 5.0.4
   resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=1f5320"
   bin:
