@@ -1,4 +1,4 @@
-import type { JWTAuthorizationToken } from "@/types/api/base";
+import { userType, type JWTWithRaw, type JWT } from "@/types/auth";
 import jwtDecode from "jwt-decode";
 
 export const JWTAuthorizationTokenName = "Token";
@@ -9,12 +9,14 @@ export const JWTAuthorizationTokenName = "Token";
  * @returns authorization header value
  */
 export function getAuthorizationHeader(
-  type: "bot" | "discord" = "bot"
+  type: "api" | "discord" = "api"
 ): string {
-  if (type == "bot") {
-    return `Bearer ${getJWTAuthorizationToken().rawToken}`;
-  } else if (type == "discord") {
-    return `Bearer ${getJWTAuthorizationToken().accessToken}`;
+  const token = getJWT();
+
+  if (type == "api") {
+    return `Bearer ${token.rawToken}`;
+  } else if (type == "discord" && token.userType == userType.discord) {
+    return `Bearer ${token.discordAccessToken}`;
   }
 
   throw new Error("type is not valid.");
@@ -22,14 +24,12 @@ export function getAuthorizationHeader(
 
 /**
  *
- * Returns JWT Authorization token or updates the page if it is not exist
+ * Returns JWT Authorization token or updates the page if it does not exist
  *
  * @returns User JWT Authorization token
  */
-export function getJWTAuthorizationToken(): JWTAuthorizationToken & {
-  rawToken: string;
-} {
-  const token = getJWTAuthorizationTokenOrNull();
+export function getJWT(): JWTWithRaw {
+  const token = getJWTOrNull();
 
   if (!token) {
     window.location.href = "/";
@@ -46,19 +46,19 @@ export function getJWTAuthorizationToken(): JWTAuthorizationToken & {
  *
  * @returns User JWT Authorization token
  */
-export function getJWTAuthorizationTokenOrNull():
-  | (JWTAuthorizationToken & { rawToken: string })
-  | null {
+export function getJWTOrNull(): JWTWithRaw | null {
   const rawToken = localStorage.getItem(JWTAuthorizationTokenName);
   if (!rawToken) return null;
 
-  const token: JWTAuthorizationToken = jwtDecode(rawToken);
+  const token: JWT = jwtDecode(rawToken);
 
   const tokenExp = new Date(0);
   tokenExp.setUTCSeconds(token.exp);
 
   if (tokenExp.getTime() < new Date().getTime()) {
-    deleteJWTAuthorizationToken();
+    console.error("A JWT token has expired.");
+
+    deleteJWT();
 
     return null;
   }
@@ -70,13 +70,13 @@ export function getJWTAuthorizationTokenOrNull():
  * Setts user JWT Authorizaion token
  * @param rawToken JWT raw token
  */
-export function setJWTAuthorizationToken(rawToken: string) {
+export function setJWT(rawToken: string) {
   localStorage.setItem(JWTAuthorizationTokenName, rawToken);
 }
 
 /**
  * Deletes user jwt authorization token
  */
-export function deleteJWTAuthorizationToken() {
+export function deleteJWT() {
   localStorage.removeItem(JWTAuthorizationTokenName);
 }

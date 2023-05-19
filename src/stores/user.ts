@@ -10,18 +10,14 @@ import router from "@/router/index";
 import { ref, type Ref } from "vue";
 
 import type { User, TelegramUser, DiscordUser } from "@/types/user";
-import {
-  deleteJWTAuthorizationToken,
-  getJWTAuthorizationToken,
-  getJWTAuthorizationTokenOrNull,
-  setJWTAuthorizationToken,
-} from "@/helpers/auth/jwt";
+import { deleteJWT, getJWT, getJWTOrNull, setJWT } from "@/helpers/auth/jwt";
 import {
   codeChallengeMethod,
   performFinalPKCE_flow,
   performInitialPKCE_flow,
 } from "@/helpers/auth/pkce";
-import { redirect_uri } from "@/helpers/auth/oauth2";
+import { redirect_uri, type tokenResponse } from "@/helpers/auth/oauth2";
+import { userType } from "@/types/auth";
 
 export const useUserStore = defineStore("user", () => {
   const initial_user: User = { state: "loading" };
@@ -44,10 +40,13 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function parseDiscordUser(discordUser: DiscordUser): User {
-    const accessToken = getJWTAuthorizationToken()?.accessToken;
+    const token = getJWT();
 
-    if (!accessToken)
-      throw new Error("accessToken cannot be null with discord user");
+    if (token.userType != userType.discord) {
+      throw new Error("JWT token is not discord based");
+    }
+
+    const accessToken = token.discordAccessToken;
 
     return {
       name: `${discordUser.username}`,
@@ -61,22 +60,22 @@ export const useUserStore = defineStore("user", () => {
   }
 
   async function loadUser(): Promise<User> {
-    const userToken = getJWTAuthorizationTokenOrNull();
+    const userToken = getJWTOrNull();
     if (!userToken) return { state: "unauthenticated" };
 
     // Load user
-    if (userToken.userType == "Discord user") {
+    if (userToken.userType == userType.discord) {
       const response = await axios.get(
         "https://discord.com/api/v10/users/@me",
         {
           headers: {
-            Authorization: `Bearer ${userToken.accessToken}`,
+            Authorization: `Bearer ${userToken.discordAccessToken}`,
           },
         }
       );
 
       return parseDiscordUser(response.data);
-    } else if (userToken.userType == "Telegram user") {
+    } else if (userToken.userType == userType.telegram) {
       // TODO: set an api for telegram user
       const response = await axios.get("/api/telegram/users/@me", {
         headers: {
@@ -87,13 +86,13 @@ export const useUserStore = defineStore("user", () => {
       return parseTelegramUser(response.data);
     } else {
       console.error("Invalid JWT Authorization token. Unauthenticated");
-      deleteJWTAuthorizationToken();
+      deleteJWT();
       return { state: "unauthenticated" };
     }
   }
 
   async function reloadUser(force = false): Promise<User> {
-    const userToken = getJWTAuthorizationTokenOrNull();
+    const userToken = getJWTOrNull();
     if (!userToken)
       throw new Error(
         "JWT Authorization token is not provided. Cannot load user."
@@ -206,9 +205,9 @@ export const useUserStore = defineStore("user", () => {
         code_verifier,
       });
 
-      console.log(response.data);
+      const data: tokenResponse = response.data;
 
-      //setJWTAuthorizationToken(response.data);
+      setJWT(data.access_token);
 
       //window.close();
     } catch (e) {
@@ -237,7 +236,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function logout() {
-    deleteJWTAuthorizationToken();
+    deleteJWT();
 
     user.value = { state: "unauthenticated" };
 

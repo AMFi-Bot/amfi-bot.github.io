@@ -1,8 +1,5 @@
 import api from "axios";
-import {
-  getAuthorizationHeader,
-  getJWTAuthorizationToken,
-} from "@/helpers/auth/jwt";
+import { getAuthorizationHeader, getJWT } from "@/helpers/auth/jwt";
 import loadUserGuilds from "@/helpers/discord/loadUserGuilds";
 import type {
   DiscordBotGuild,
@@ -41,7 +38,7 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
       // Load guild channels
       const response = await axios.get(`/api/discord/guilds/${id}/channels`, {
         headers: {
-          Authorization: getAuthorizationHeader("bot"),
+          Authorization: getAuthorizationHeader("api"),
         },
       });
 
@@ -66,7 +63,7 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
     try {
       const response = await api.get(`/api/discord/guilds/${id}`, {
         headers: {
-          Authorization: `Bearer ${getJWTAuthorizationToken().rawToken}`,
+          Authorization: `Bearer ${getJWT().rawToken}`,
         },
       });
 
@@ -107,7 +104,7 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
       try {
         await api.put(`/api/discord/guilds/${guild.value.id}`, guild.value, {
           headers: {
-            Authorization: getAuthorizationHeader("bot"),
+            Authorization: getAuthorizationHeader("api"),
           },
         });
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from "vue";
+import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import TelegramLogo from "../components/Icons/TelegramLogo.vue";
 import DiscordLogoWhite from "../components/Icons/DiscordLogoWhite.vue";
@@ -7,18 +7,6 @@ import DiscordLogoWhite from "../components/Icons/DiscordLogoWhite.vue";
 const userStore = useUserStore();
 
 const userState = computed(() => userStore.user.state);
-
-if (!(userState.value == "telegram")) {
-  onMounted(() => {
-    userStore.load_telegram_widget_script("telegram_login_mount");
-  });
-}
-
-watch(userState, (newState, oldState) => {
-  if (newState == "discord" && oldState != "discord") {
-    userStore.load_telegram_widget_script("telegram_login_mount");
-  }
-});
 </script>
 
 <template>
@@ -70,7 +58,7 @@ watch(userState, (newState, oldState) => {
           <RouterLink to="/discord/dashboard" v-if="userState == 'discord'">
             Set up
           </RouterLink>
-          <div v-else @click="userStore.login_discord">
+          <div v-else @click="userStore.loginFlow">
             Log In Discord and set up
           </div>
         </div>
