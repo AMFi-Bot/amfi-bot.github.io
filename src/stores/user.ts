@@ -2,12 +2,12 @@ import { defineStore } from "pinia";
 
 import { useErrorsStore } from "@/stores/errors";
 
-import api from "@/api";
-import _, { toInteger } from "lodash";
+import authAPI from "@/helpers/auth/api";
+import axios from "axios";
 
 import router from "@/router/index";
 
-import { computed, ref, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 
 import type { User, TelegramUser, DiscordUser } from "@/types/user";
 import {
@@ -16,6 +16,12 @@ import {
   getJWTAuthorizationTokenOrNull,
   setJWTAuthorizationToken,
 } from "@/helpers/auth/jwt";
+import {
+  codeChallengeMethod,
+  performFinalPKCE_flow,
+  performInitialPKCE_flow,
+} from "@/helpers/auth/pkce";
+import { redirect_uri } from "@/helpers/auth/oauth2";
 
 export const useUserStore = defineStore("user", () => {
   const initial_user: User = { state: "loading" };
@@ -60,15 +66,19 @@ export const useUserStore = defineStore("user", () => {
 
     // Load user
     if (userToken.userType == "Discord user") {
-      const response = await api.get("https://discord.com/api/v10/users/@me", {
-        headers: {
-          Authorization: `Bearer ${userToken.accessToken}`,
-        },
-      });
+      const response = await axios.get(
+        "https://discord.com/api/v10/users/@me",
+        {
+          headers: {
+            Authorization: `Bearer ${userToken.accessToken}`,
+          },
+        }
+      );
 
       return parseDiscordUser(response.data);
     } else if (userToken.userType == "Telegram user") {
-      const response = await api.get("/api/telegram/users/@me", {
+      // TODO: set an api for telegram user
+      const response = await axios.get("/api/telegram/users/@me", {
         headers: {
           Authorization: `Bearer ${userToken.rawToken}`,
         },
@@ -119,24 +129,40 @@ export const useUserStore = defineStore("user", () => {
 
     try {
       return await reloadUser();
-    } catch (error: Error | any) {
+    } catch (e) {
       logout();
-      console.error(error);
-      errorsStore.addError(
-        `Something went wrong. Cannot load user:\n${
-          error?.message ? error.message : ""
-        }`
-      );
+      console.error(e);
+
+      if (e instanceof Error)
+        errorsStore.addError(
+          `Something went wrong. Cannot load user:\n${e.message ?? ""}`
+        );
+      else errorsStore.addError(`An unhandled error occurred`);
+
       return user.value;
     }
   }
 
-  async function login_discord() {
-    const popup = window.open(
-      `${import.meta.env.VITE_API_URL}/api/auth/discord/redirect`,
-      "",
-      "width=500,height=900"
-    );
+  /**
+   *
+   * Perform oauth2 login with an authorization server
+   *
+   */
+  async function loginFlow() {
+    const { codeChallenge } = performInitialPKCE_flow();
+
+    let url = `${
+      import.meta.env.VITE_AUTHORIZATION_SERVER_URL
+    }/oauth2/authorize?`;
+
+    url += `client_id=${import.meta.env.VITE_CLIENT_ID}&`;
+    url += `redirect_uri=${redirect_uri}&`;
+    url += `response_type=code&`;
+    url += `scope=openid&`;
+    url += `code_challenge=${codeChallenge}&`;
+    url += `code_challenge_method=${codeChallengeMethod}`;
+
+    const popup = window.open(url, "", "width=500,height=900");
 
     if (!popup) return errorsStore.addError("Cannot open popup");
 
@@ -146,88 +172,52 @@ export const useUserStore = defineStore("user", () => {
           clearInterval(interval);
           resolve(undefined);
         }
-      }, 500);
+      }, 200);
     });
 
     try {
       await reloadUser(true);
       postLogin();
-    } catch (error: Error | any) {
-      errorsStore.addError(
-        `Login failed with error: \n${error?.message ?? ""}`
-      );
+    } catch (e) {
+      if (e instanceof Error)
+        errorsStore.addError(
+          `Login failed with an error: \n${e.message ?? ""}`
+        );
+      else errorsStore.addError(`An unhandled error occurred`);
     }
   }
 
-  async function discord_callback(query_string: string) {
+  /**
+   *
+   * Second path of the OAuth2 authorization flow.
+   * Exchanges an access token
+   *
+   * @param code OAuth2 authorization code grant
+   */
+  async function loginFlowCallback(code: string) {
+    const code_verifier: string = performFinalPKCE_flow();
+
     try {
-      const response = await api.get(
-        `/api/auth/discord/callback?${query_string.replace(/^\?/, "")}`
-      );
+      const response = await authAPI.postForm(`/oauth2/token`, {
+        code,
+        grant_type: "authorization_code",
+        client_id: import.meta.env.VITE_CLIENT_ID,
+        redirect_uri,
+        code_verifier,
+      });
 
-      setJWTAuthorizationToken(response.data);
+      console.log(response.data);
 
-      window.close();
-    } catch (error: Error | any) {
-      errorsStore.addError(
-        `Something went wrong while logging ini with discord: ${
-          error?.message ?? ""
-        }`
-      );
+      //setJWTAuthorizationToken(response.data);
+
+      //window.close();
+    } catch (e) {
+      if (e instanceof Error)
+        errorsStore.addError(
+          `Something went wrong while logging with discord: ${e?.message ?? ""}`
+        );
+      else errorsStore.addError(`An unhandled error occurred`);
     }
-  }
-
-  async function login_telegram(query_string: string) {
-    try {
-      const response = await api.get(
-        `/api/auth/telegram/callback?${query_string.replace(/^\?/, "")}`
-      );
-
-      setJWTAuthorizationToken(response.data);
-
-      await reloadUser(true);
-      postLogin();
-    } catch (error: Error | any) {
-      errorsStore.addError(
-        `Login failed with error: \n${error?.message ?? ""}`
-      );
-      return false;
-    }
-  }
-
-  function load_telegram_widget_script(mount_to = "telegram_load") {
-    console.log("function");
-    const telegram_widget_script = document.createElement("script");
-    telegram_widget_script.setAttribute(
-      "src",
-      "https://telegram.org/js/telegram-widget.js?19"
-    );
-    telegram_widget_script.setAttribute(
-      "data-telegram-login",
-      import.meta.env.VITE_TELEGRAM_LOGIN
-    );
-    telegram_widget_script.setAttribute("data-size", "large");
-    telegram_widget_script.setAttribute("data-auth-url", "/telegram_callback");
-    telegram_widget_script.setAttribute("data-request-access", "write");
-    telegram_widget_script.setAttribute("data-userpic", "false");
-    const load_tg_widget_elems = document.getElementsByClassName(mount_to);
-
-    for (const i in load_tg_widget_elems) {
-      const load_tg_widget_elem = load_tg_widget_elems.item(toInteger(i));
-      if (!load_tg_widget_elem) continue;
-
-      load_tg_widget_elem.replaceChildren(telegram_widget_script);
-    }
-
-    // <script
-    //   async
-    //   src="https://telegram.org/js/telegram-widget.js?19"
-    //   data-telegram-login=import.meta.env.VITE_TELEGRAM_LOGIN
-    //   data-size="large"
-    //   data-userpic="false"
-    //   data-auth-url="/telegram_callback"
-    //   data-request-access="write"
-    // ></script>;
   }
 
   async function isAuthenticated(): Promise<boolean> {
@@ -262,11 +252,9 @@ export const useUserStore = defineStore("user", () => {
     user: user,
     getUser,
     reloadUser,
-    login_discord,
-    login_telegram,
-    discord_callback,
+    loginFlow,
+    loginFlowCallback,
     isAuthenticated,
-    load_telegram_widget_script,
     logout,
   };
 });

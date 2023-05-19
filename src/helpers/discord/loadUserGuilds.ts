@@ -1,5 +1,4 @@
 import type { DiscordUserGuild } from "@/types/discord/guild";
-import { baseOptions } from "@/api";
 import axios from "axios";
 import { getJWTAuthorizationToken } from "../auth/jwt";
 
@@ -15,7 +14,7 @@ export default async function (
 
   const path: string =
     loadFrom == "bot"
-      ? `${baseOptions.baseURL}/api/discord/guilds/@me`
+      ? `/api/discord/guilds/@me`
       : "https://discord.com/api/v10/users/@me/guilds";
 
   const auth_header: string =
