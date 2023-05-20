@@ -1,58 +1,12 @@
-import {
-  createRouter,
-  createWebHistory,
-  type NavigationGuardNext,
-  type RouteLocationNormalized,
-} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import nProgress from "nprogress";
 
-import { useErrorsStore } from "@/stores/errors";
-import { useUserStore } from "@/stores/user";
+import { authenticated } from "./middlewares/authenticationGuard";
 
-// Auto loaded views
-
-import RootView from "@/views/RootView.vue";
-
-// Lazy loaded views
-const LoadingView = () => import("@/views/LoadingView.vue");
-const LoginCallback = () => import("@/views/LoginCallback.vue");
-const DashboardView = () => import("@/views/DashboardView.vue");
-const DiscordBotAuthCallback = () =>
-  import("@/views/DiscordBotAuthCallback.vue");
-
-//Discord components
-const DiscordDashboardView = () => import("@/views/Discord/DashboardView.vue");
-
-export async function discordAuthenticated(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
-  const userStore = useUserStore();
-  if (
-    (await userStore.isAuthenticated()) &&
-    userStore.user.state == "discord"
-  ) {
-    return next();
-  }
-  next("/");
-  useErrorsStore().addError("You are not authenticated with discord.");
-}
-export async function telegramAuthenticated(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
-  const userStore = useUserStore();
-  if (
-    (await userStore.isAuthenticated()) &&
-    userStore.user.state == "telegram"
-  ) {
-    return next();
-  }
-  next("/");
-  useErrorsStore().addError("You are not authenticated with telegram.");
-}
+import OAuth2Routes from "./routes/oauth2";
+import MiscRoutes from "./routes/misc";
+import DiscordRoute from "./routes/discord/index";
+import TelegramRoute from "./routes/telegram/index";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,7 +14,7 @@ const router = createRouter({
     {
       path: "/",
       name: "root",
-      component: RootView,
+      component: import("@/views/RootView.vue"),
     },
 
     {
@@ -69,150 +23,17 @@ const router = createRouter({
       component: () => import("@/views/NotFound.vue"),
     },
 
-    {
-      path: "/login_callback",
-      name: "login_callback",
-      component: LoginCallback,
-      meta: {
-        layout: "LoadingLayout",
-      },
-    },
-    {
-      path: "/discord_bot_callback",
-      name: "discord_bot_auth",
-      component: DiscordBotAuthCallback,
-      meta: {
-        layout: "LoadingLayout",
-      },
-    },
-
-    {
-      path: "/loading",
-      name: "loading",
-      component: LoadingView,
-      meta: {
-        layout: "LoadingLayout",
-      },
-    },
-
-    {
-      path: "/dashboard",
-      name: "dashboard",
-      meta: { requiresAuth: true },
-      redirect: () => {
-        const userStore = useUserStore();
-        if (userStore.user.state == "telegram") {
-          return { name: "telegram_dashboard" };
-        } else if (userStore.user.state == "discord") {
-          return { name: "discord_dashboard" };
-        } else {
-          return { path: "/" };
-        }
-      },
-    },
-
-    {
-      path: "/discord",
-      beforeEnter: [discordAuthenticated],
-      meta: { requiresAuth: true },
-      children: [
-        {
-          path: "dashboard",
-          name: "discord_dashboard",
-          component: DiscordDashboardView,
-        },
-        {
-          path: "guilds/:guild_id/",
-          meta: { layout: "DiscordGuildLayout" },
-          beforeEnter: async (to, from, next) => {
-            const { useDiscordGuildStore } = await import(
-              "@/stores/discordGuild"
-            );
-            const discordGuildStore = useDiscordGuildStore();
-
-            const guild_id = <string>to.params.guild_id;
-            if (!guild_id) return next({ name: "discord_dashboard" });
-
-            if (!(await discordGuildStore.getGuild(guild_id)))
-              return next({ name: "discord_dashboard" });
-
-            return next();
-          },
-          children: [
-            {
-              path: "",
-              redirect: {
-                name: "DiscordDashboard",
-              },
-            },
-            {
-              path: "dashboard",
-              name: "DiscordDashboard",
-              component: () =>
-                import("@/views/Discord/Guild/DashboardView.vue"),
-            },
-            {
-              path: "general",
-              name: "DiscordGuildGeneral",
-              component: () => import("@/views/Discord/Guild/GeneralView.vue"),
-            },
-            {
-              path: "moderation",
-              name: "DiscordGuildModeration",
-              component: () =>
-                import("@/views/Discord/Guild/DashboardView.vue"),
-            },
-            {
-              path: "automoderation",
-              name: "DiscordGuildAutomoderation",
-              component: () =>
-                import("@/views/Discord/Guild/DashboardView.vue"),
-            },
-            {
-              path: "commands",
-              name: "DiscordGuildCommands",
-              component: () =>
-                import("@/views/Discord/Guild/DashboardView.vue"),
-            },
-            {
-              path: "features",
-              name: "DiscordGuildFeatures",
-              component: () =>
-                import("@/views/Discord/Guild/DashboardView.vue"),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      path: "/telegram",
-      beforeEnter: [telegramAuthenticated],
-      meta: { requiresAuth: true },
-      children: [
-        {
-          path: "dashboard",
-          name: "telegram_dashboard",
-          component: () => import("@/views/Telegram/TelegramDashboard.vue"),
-        },
-      ],
-    },
+    ...OAuth2Routes,
+    ...MiscRoutes,
+    DiscordRoute,
+    TelegramRoute,
   ],
 });
 
-router.beforeResolve(async (to, from, next) => {
-  nProgress.inc();
+router.beforeResolve(authenticated);
 
-  if (
-    to.meta.requiresAuth &&
-    !(await (await useUserStore()).isAuthenticated())
-  ) {
-    return {
-      path: "/",
-    };
-  }
-
+router.beforeResolve(() => {
   nProgress.inc();
-  next();
 });
 
 router.afterEach(() => {

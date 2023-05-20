@@ -1,7 +1,8 @@
 import nProgress from "nprogress";
 
+window.NProgress?.done();
 nProgress.configure({ showSpinner: false });
-nProgress.inc();
+nProgress.inc(0.7);
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
@@ -45,7 +46,3 @@ app.component(
 );
 
 app.mount("#app");
-
-nProgress.inc();
-
-nProgress.inc();
