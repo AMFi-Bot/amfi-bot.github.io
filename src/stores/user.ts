@@ -11,8 +11,11 @@ import { deleteJWT, getJWTOrNull } from "@/helpers/auth/jwt";
 
 import { OAuth2AuthorizeFlow } from "@/helpers/auth/oauth2";
 import { loadUser } from "@/helpers/auth/user";
+import { UserSetManager } from "@/helpers/auth/userSetManager";
 
 export const useUserStore = defineStore("user", () => {
+  const userSetter = new UserSetManager();
+
   const user: Ref<User> = ref({ state: "loading" });
 
   if (getJWTOrNull()) reloadUser(true);
@@ -20,7 +23,10 @@ export const useUserStore = defineStore("user", () => {
 
   const errorsStore = useErrorsStore();
 
-  // TODO: implement a security logic to prevent multiple reloadUser instances reload the user.
+  function setUser(newUser: User, setter: string) {
+    if (userSetter.approveSetter(setter)) user.value = newUser;
+    else throw new Error("The given user setter cannot be approved");
+  }
 
   async function reloadUser(force = false): Promise<User> {
     const userToken = getJWTOrNull();
@@ -30,45 +36,37 @@ export const useUserStore = defineStore("user", () => {
       );
 
     // Escape multiple user loading when one is already in a process
-    if (user.value.state == "loading" && !force) {
-      await new Promise((resolve) => {
-        const interval = setInterval(async () => {
-          if (!(user.value.state == "loading")) {
-            clearInterval(interval);
-            resolve(undefined);
-          }
-        }, 10);
-      });
+    if (user.value.state == "loading" && !force) return await getUser();
 
-      return user.value;
+    const setter = userSetter.reinitSetter();
+
+    try {
+      setUser({ state: "loading" }, setter);
+
+      // Load user
+      setUser(await loadUser(userToken), setter);
+    } catch (e) {
+      /* empty */
     }
 
-    user.value.state = "loading";
+    return await getUser();
+  }
 
-    // Load user
-    user.value = await loadUser(userToken);
+  async function getUser(): Promise<User> {
+    if (user.value.state == "loading") await awaitForUserLoading();
 
     return user.value;
   }
 
-  async function getUser(): Promise<User> {
-    if (user.value.state != "unauthenticated" && user.value.state != "loading")
-      return user.value;
-
-    try {
-      return await reloadUser();
-    } catch (e) {
-      logout();
-      console.error(e);
-
-      if (e instanceof Error)
-        errorsStore.addError(
-          `Something went wrong. Cannot load user:\n${e.message ?? ""}`
-        );
-      else errorsStore.addError(`An unhandled error occurred`);
-
-      return user.value;
-    }
+  async function awaitForUserLoading() {
+    await new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        if (!(user.value.state == "loading")) {
+          clearInterval(interval);
+          resolve(undefined);
+        }
+      }, 10);
+    });
   }
 
   /**
@@ -91,25 +89,17 @@ export const useUserStore = defineStore("user", () => {
   }
 
   async function isAuthenticated(): Promise<boolean> {
-    if (
-      user.value.state != "unauthenticated" &&
-      user.value.state != "loading"
-    ) {
-      return true;
-    }
+    const user = await getUser();
 
-    await getUser();
-
-    if (user.value.state != "unauthenticated" && user.value.state != "loading")
-      return true;
-
-    return false;
+    return user.state != "unauthenticated";
   }
 
   function logout() {
     deleteJWT();
 
-    user.value = { state: "unauthenticated" };
+    setUser({ state: "unauthenticated" }, userSetter.reinitSetter());
+
+    userSetter.clearSetters();
 
     router.push("/");
   }
