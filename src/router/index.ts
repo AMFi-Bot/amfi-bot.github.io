@@ -12,16 +12,6 @@ import {
   telegramAuthenticated,
 } from "./middlewares/authenticationGuard";
 
-// Lazy loaded views
-const LoadingView = () => import("@/views/LoadingView.vue");
-const LoginCallback = () => import("@/views/LoginCallback.vue");
-const DashboardView = () => import("@/views/DashboardView.vue");
-const DiscordBotAuthCallback = () =>
-  import("@/views/DiscordBotAuthCallback.vue");
-
-//Discord components
-const DiscordDashboardView = () => import("@/views/Discord/DashboardView.vue");
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -40,7 +30,7 @@ const router = createRouter({
     {
       path: "/login_callback",
       name: "login_callback",
-      component: LoginCallback,
+      component: import("@/views/LoginCallback.vue"),
       meta: {
         layout: "LoadingLayout",
       },
@@ -48,7 +38,7 @@ const router = createRouter({
     {
       path: "/discord_bot_callback",
       name: "discord_bot_auth",
-      component: DiscordBotAuthCallback,
+      component: import("@/views/DiscordBotAuthCallback.vue"),
       meta: {
         layout: "LoadingLayout",
       },
@@ -57,7 +47,7 @@ const router = createRouter({
     {
       path: "/loading",
       name: "loading",
-      component: LoadingView,
+      component: import("@/views/LoadingView.vue"),
       meta: {
         layout: "LoadingLayout",
       },
@@ -87,7 +77,7 @@ const router = createRouter({
         {
           path: "dashboard",
           name: "discord_dashboard",
-          component: DiscordDashboardView,
+          component: import("@/views/Discord/DashboardView.vue"),
         },
         {
           path: "guilds/:guild_id/",
