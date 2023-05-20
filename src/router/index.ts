@@ -1,17 +1,16 @@
-import {
-  createRouter,
-  createWebHistory,
-  type NavigationGuardNext,
-  type RouteLocationNormalized,
-} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import nProgress from "nprogress";
 
-import { useErrorsStore } from "@/stores/errors";
 import { useUserStore } from "@/stores/user";
 
 // Auto loaded views
 
 import RootView from "@/views/RootView.vue";
+import {
+  authenticated,
+  discordAuthenticated,
+  telegramAuthenticated,
+} from "./middlewares/authenticationGuard";
 
 // Lazy loaded views
 const LoadingView = () => import("@/views/LoadingView.vue");
@@ -22,37 +21,6 @@ const DiscordBotAuthCallback = () =>
 
 //Discord components
 const DiscordDashboardView = () => import("@/views/Discord/DashboardView.vue");
-
-export async function discordAuthenticated(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
-  const userStore = useUserStore();
-  if (
-    (await userStore.isAuthenticated()) &&
-    userStore.user.state == "discord"
-  ) {
-    return next();
-  }
-  next("/");
-  useErrorsStore().addError("You are not authenticated with discord.");
-}
-export async function telegramAuthenticated(
-  to: RouteLocationNormalized,
-  from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
-  const userStore = useUserStore();
-  if (
-    (await userStore.isAuthenticated()) &&
-    userStore.user.state == "telegram"
-  ) {
-    return next();
-  }
-  next("/");
-  useErrorsStore().addError("You are not authenticated with telegram.");
-}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -199,21 +167,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeResolve(async (to, from, next) => {
-  nProgress.inc();
-
-  if (
-    to.meta.requiresAuth &&
-    !(await (await useUserStore()).isAuthenticated())
-  ) {
-    return {
-      path: "/",
-    };
-  }
-
-  nProgress.inc();
-  next();
-});
+router.beforeResolve(authenticated);
 
 router.afterEach(() => {
   nProgress.done();
