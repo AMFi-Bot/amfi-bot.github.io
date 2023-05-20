@@ -209,7 +209,7 @@ export const useUserStore = defineStore("user", () => {
 
       setJWT(data.access_token);
 
-      //window.close();
+      window.close();
     } catch (e) {
       if (e instanceof Error)
         errorsStore.addError(
