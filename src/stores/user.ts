@@ -7,15 +7,17 @@ import router from "@/router/index";
 import { ref, type Ref } from "vue";
 
 import type { User } from "@/types/user";
-import { deleteJWT, getJWT, getJWTOrNull } from "@/helpers/auth/jwt";
+import { deleteJWT, getJWTOrNull } from "@/helpers/auth/jwt";
 
 import { OAuth2AuthorizeFlow } from "@/helpers/auth/oauth2";
 import { loadUser } from "@/helpers/auth/user";
 
 export const useUserStore = defineStore("user", () => {
-  const initial_user: User = { state: "loading" };
-  const user: Ref<User> = ref(initial_user);
-  reloadUser();
+  const user: Ref<User> = ref({ state: "loading" });
+
+  if (getJWTOrNull()) reloadUser(true);
+  else user.value = { state: "unauthenticated" };
+
   const errorsStore = useErrorsStore();
 
   // TODO: implement a security logic to prevent multiple reloadUser instances reload the user.
