@@ -1,0 +1,1 @@
+import{d as e,o,f as t,a,L as n}from"./index-de2ac130.js";const _={class:"loaderView"},c=e({__name:"LoadingView",setup(s){return(d,i)=>(o(),t("div",_,[a(n,{"loader-type":"dotted","dotted-animation-duration":"15s"})]))}});export{c as _};
