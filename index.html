@@ -39,6 +39,12 @@
         }
       }
     </style>
+
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/nprogress@0.2.0/nprogress.css"
+    />
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
   </head>
 
   <body>
@@ -46,15 +52,10 @@
       <div class="lds-dual-ring"></div>
     </div>
 
-    <!-- <link
-      rel="stylesheet"
-      href="https://unpkg.com/nprogress@0.2.0/nprogress.css"
-    />
-    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <script>
       NProgress.configure({ showSpinner: false });
-      NProgress.inc();
-    </script> -->
+      NProgress.start();
+    </script>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

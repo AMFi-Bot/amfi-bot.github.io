@@ -32,6 +32,10 @@ const router = createRouter({
 
 router.beforeResolve(authenticated);
 
+router.beforeResolve(() => {
+  nProgress.inc();
+});
+
 router.afterEach(() => {
   nProgress.done();
 });
