@@ -1,1 +1,0 @@
-import{d as s,u as a,l as r,o as c,c as n}from"./index-bbf8b0ea.js";import{_}from"./LoadingView.vue_vue_type_style_index_0_lang-c2c88eb5.js";const d=s({__name:"DiscordAuth",async setup(i){let e,o;const t=a();return[e,o]=r(()=>t.discord_callback(window.location.search)),await e,o(),(m,p)=>(c(),n(_))}});export{d as default};

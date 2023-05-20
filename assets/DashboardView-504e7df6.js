@@ -1,0 +1,1 @@
+import{u as t}from"./discordGuild-cbbbee4a.js";import{d as e,z as a,r as i}from"./index-bcc7b48f.js";import"./loadUserGuilds-b7ef1d12.js";const m=e({__name:"DashboardView",setup(d){const o=t(),r=a().params.guild_id,s=typeof r=="string"?r:r[0];return i(o.getGuild(s)),(u,n)=>"Dashboard"}});export{m as default};
