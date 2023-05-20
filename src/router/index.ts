@@ -3,9 +3,6 @@ import nProgress from "nprogress";
 
 import { useUserStore } from "@/stores/user";
 
-// Auto loaded views
-
-import RootView from "@/views/RootView.vue";
 import {
   authenticated,
   discordAuthenticated,
@@ -18,7 +15,7 @@ const router = createRouter({
     {
       path: "/",
       name: "root",
-      component: RootView,
+      component: import("@/views/RootView.vue"),
     },
 
     {
