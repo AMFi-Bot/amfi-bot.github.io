@@ -1856,7 +1856,7 @@ __metadata:
     vue: ^3.3.2
     vue-i18n: 9.3.0-beta.17
     vue-router: ^4.2.0
-    vue-tippy: ^6.1.2
+    vue-tippy: ^6.2.0
     vue-tsc: ^1.6.5
     vue3-click-away: ^1.2.4
   languageName: unknown
@@ -6120,14 +6120,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-tippy@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "vue-tippy@npm:6.1.2"
+"vue-tippy@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "vue-tippy@npm:6.2.0"
   dependencies:
     tippy.js: ^6.3.7
   peerDependencies:
     vue: ^3.2.0
-  checksum: 012a4dc910aaad39a0d6d9e455f49c4b2616b40d59005f300bd364601af2e90c1ec32b5292088a99eafff76343cd777bc72164e864f220e59f8d0337107280d4
+  checksum: 8444fcccd6aa5ec7a102bd4f92627ae53e8114f2daa1b7bcbaca87b763cdcda6efd9bacb6782a62569e4db5b482892c895e2ab4010d1913c6f9a8629ecb1abcf
   languageName: node
   linkType: hard
 

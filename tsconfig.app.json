@@ -7,8 +7,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    // TODO: Remove when the vue-tippy package is updated to TS 5
-    "resolvePackageJsonExports": false
+    }
   }
 }
