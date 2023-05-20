@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useErrorsStore } from "@/stores/errors";
-import { useUserStore } from "../stores/user";
 import LoadingView from "./LoadingView.vue";
+import { OAuth2Callback } from "@/helpers/auth/oauth2";
 
-const userStore = useUserStore();
 const errorsStore = useErrorsStore();
 
 // Get an authorization code from the query string
@@ -23,7 +22,7 @@ if (!code_param) {
 
 const code: string = code_param.split("=")[1];
 
-await userStore.loginFlowCallback(code);
+await OAuth2Callback(code);
 </script>
 
 <template><LoadingView /></template>
