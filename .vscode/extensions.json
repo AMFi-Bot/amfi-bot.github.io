@@ -4,6 +4,7 @@
     "Vue.vscode-typescript-vue-plugin",
     "arcanis.vscode-zipfs",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "zixuanchen.vitest-explorer"
   ]
 }
