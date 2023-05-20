@@ -3,7 +3,7 @@ import { useErrorsStore } from "../errors";
 
 import { describe, it, expect, beforeEach } from "vitest";
 
-describe("Counter Store", () => {
+describe("Errors Store", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
