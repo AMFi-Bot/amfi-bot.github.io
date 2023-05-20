@@ -15,8 +15,7 @@ import RootView from "@/views/RootView.vue";
 
 // Lazy loaded views
 const LoadingView = () => import("@/views/LoadingView.vue");
-const TelegramAuth = () => import("@/views/TelegramAuth.vue");
-const DiscordAuth = () => import("@/views/DiscordAuth.vue");
+const LoginCallback = () => import("@/views/LoginCallback.vue");
 const DashboardView = () => import("@/views/DashboardView.vue");
 const DiscordBotAuthCallback = () =>
   import("@/views/DiscordBotAuthCallback.vue");
@@ -71,17 +70,9 @@ const router = createRouter({
     },
 
     {
-      path: "/telegram_callback",
-      name: "telegram_auth",
-      component: TelegramAuth,
-      meta: {
-        layout: "LoadingLayout",
-      },
-    },
-    {
-      path: "/discord_callback",
-      name: "discord_auth",
-      component: DiscordAuth,
+      path: "/login_callback",
+      name: "login_callback",
+      component: LoginCallback,
       meta: {
         layout: "LoadingLayout",
       },

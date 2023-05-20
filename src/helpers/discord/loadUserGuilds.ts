@@ -1,27 +1,33 @@
 import type { DiscordUserGuild } from "@/types/discord/guild";
-import { baseOptions } from "@/api";
 import axios from "axios";
-import { getJWTAuthorizationToken } from "../auth/jwt";
+import { getJWT } from "../auth/jwt";
+import { userType } from "@/types/auth";
 
 /**
- * Loads user discord guilds list from discord or amfiBot server.
+ * Loads user discord guilds list from discord or amfiBot api.
  * @param loadFrom Source from guilds will be loaded.
  * @returns User discord guilds list (filtered by admin permission)
  */
 export default async function (
-  loadFrom: "discord" | "bot" = "discord"
+  loadFrom: "discord" | "api" = "discord"
 ): Promise<DiscordUserGuild[]> {
-  const token = getJWTAuthorizationToken();
+  const token = getJWT();
 
   const path: string =
-    loadFrom == "bot"
-      ? `${baseOptions.baseURL}/api/discord/guilds/@me`
+    loadFrom == "api"
+      ? `/api/discord/guilds/@me`
       : "https://discord.com/api/v10/users/@me/guilds";
 
-  const auth_header: string =
-    loadFrom == "bot"
+  const auth_header =
+    loadFrom == "api"
       ? `Bearer ${token.rawToken}`
-      : `Bearer ${token.accessToken}`;
+      : loadFrom == "discord"
+      ? token.userType == userType.discord
+        ? `Bearer ${token.discordAccessToken}`
+        : new Error("Cannot load from discord: the token is not discord-based")
+      : new Error("Undefined loadFrom");
+
+  if (auth_header instanceof Error) throw auth_header;
 
   const response = await axios.get(path, {
     headers: {
