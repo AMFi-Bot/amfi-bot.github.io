@@ -2,9 +2,8 @@
 import { RouterView } from "vue-router";
 import ErrorsComponent from "./components/ErrorsComponent.vue";
 
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
-import _ from "lodash";
 
 const route = useRoute();
 

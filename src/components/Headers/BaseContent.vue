@@ -2,7 +2,7 @@
 import DropdownComponent from "../DropdownComponent.vue";
 import { useI18n } from "vue-i18n";
 
-const { t, n } = useI18n();
+const { t } = useI18n();
 </script>
 
 <template>

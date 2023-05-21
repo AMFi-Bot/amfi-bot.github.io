@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { ElementType } from "@/types/components/DropdownComponents";
-import { ref, toRef, toRefs, watch, type Ref, computed } from "vue";
+import { ref, toRefs, type Ref, computed } from "vue";
 import _ from "lodash";
 import DropdownComponent from "./DropdownComponent.vue";
-
-const dropdownShow = ref(false);
 
 const props = defineProps<{
   clickButtonTitle: string;
