@@ -3,8 +3,6 @@ import _ from "lodash";
 import { computed, ref, toRefs, type Ref } from "vue";
 import DropdownComponent from "./DropdownComponent.vue";
 
-const dropdownShow = ref(false);
-
 type ElementType =
   | string
   | {

@@ -6,7 +6,7 @@ import DropdownComponent from "../DropdownComponent.vue";
 import LanguagesContent from "../LanguagesContent.vue";
 import type { BaseUser } from "@/types/user";
 
-const { t, n } = useI18n();
+const { t } = useI18n();
 
 const userStore = useUserStore();
 

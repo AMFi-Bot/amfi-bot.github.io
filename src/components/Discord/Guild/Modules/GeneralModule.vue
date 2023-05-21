@@ -4,7 +4,6 @@ import { storeToRefs } from "pinia";
 import DropdownComponent from "@/components/DropdownChooseComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
 import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vue";
-import { ref } from "vue";
 import BaseInstance from "./Instances/BaseInstance.vue";
 import BaseModule from "./BaseModule.vue";
 import BaseElement from "./Elements/BaseElement.vue";
@@ -15,13 +14,7 @@ const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
 const discordGuildStore = useDiscordGuildStore();
 
 const { guild, discordGuild } = storeToRefs(discordGuildStore);
-const {
-  loadGuild,
-  loadDiscordGuild,
-  loadModule,
-  updateModule,
-  updateModuleProperty,
-} = discordGuildStore;
+const { loadGuild, loadDiscordGuild, updateModuleProperty } = discordGuildStore;
 
 const route = useRoute();
 

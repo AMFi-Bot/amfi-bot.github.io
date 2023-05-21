@@ -1,9 +1,4 @@
-import {
-  createI18n,
-  type Composer,
-  type VueI18n,
-  type VueMessageType,
-} from "vue-i18n";
+import { createI18n, type Composer } from "vue-i18n";
 import js_cookie from "js-cookie";
 
 import en from "@/assets/locales/en";

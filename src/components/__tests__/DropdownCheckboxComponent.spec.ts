@@ -5,9 +5,6 @@ import DropdownCheckboxComponent from "../DropdownCheckboxComponent.vue";
 import type { ElementType } from "@/types/components/DropdownComponents";
 
 import VueClickAwayPlugin from "vue3-click-away";
-import { ref, type Ref } from "vue";
-
-import _, { filter } from "lodash";
 
 const clickButtonTitle = "Click me!";
 const dropdownContent: ElementType[] = [
@@ -95,7 +92,6 @@ describe("Dropdown Checkbox", () => {
     const dropdownElements = dropdownList.findAll(".dropdown_content_elem");
 
     for (const key in dropdownContent) {
-      const element = dropdownContent[key];
       const renderedElement = dropdownElements[key];
 
       const elementCheckbox = renderedElement.find(".checkbox");
@@ -136,7 +132,6 @@ describe("Dropdown Checkbox", () => {
     // Choosed every element
 
     for (const key in dropdownContent) {
-      const element = dropdownContent[key];
       const renderedElement = dropdownElements[key];
 
       const elementCheckbox = renderedElement.find(".checkbox");

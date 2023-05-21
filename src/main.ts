@@ -46,7 +46,7 @@ app.component(
   () => import("./layouts/DiscordGuildLayout.vue")
 );
 
-app.config.errorHandler = (err, instance, info) => {
+app.config.errorHandler = (err) => {
   console.error("An unhandled error occured");
   console.error(err);
 

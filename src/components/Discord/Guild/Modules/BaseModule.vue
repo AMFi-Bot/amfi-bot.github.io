@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SaveChanges from "@/components/Discord/Guild/SaveChanges.vue";
 
-const props = defineProps<{
+defineProps<{
   moduleName: string;
   moduleDescriprion: string;
   moduleBaseClass?: string;
