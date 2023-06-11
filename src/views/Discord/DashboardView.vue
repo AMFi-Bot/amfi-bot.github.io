@@ -9,7 +9,7 @@ import { loginGuild } from "@/helpers/discord/loginGuild";
 const userGuilds: Ref<DiscordUserGuild[] | "loading" | "error"> =
   ref("loading");
 
-loadUserGuilds("api")
+loadUserGuilds()
   .then((g) => (userGuilds.value = g))
   .catch((error) => {
     console.error(error);
