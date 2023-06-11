@@ -36,11 +36,14 @@ export type DiscordGuildGeneralModule = {
   [X: string]: any;
 };
 
-export type DiscordUserGuild = {
+export interface DiscordUserGuildRAW {
   name: string;
-  id: string | number;
+  id: string;
   icon: string;
   permissions: string;
   roles: DiscordGuildRole[];
-  bot_exists?: boolean;
-};
+}
+
+export interface DiscordUserGuild extends DiscordUserGuildRAW {
+  bot_exists: boolean;
+}
