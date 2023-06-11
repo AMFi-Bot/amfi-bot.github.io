@@ -1,5 +1,6 @@
 import { userType, type JWTWithRaw, type JWT } from "@/types/auth";
 import jwtDecode from "jwt-decode";
+import UnauthorizedError from "./UnauthorizedError";
 
 export const JWTAuthorizationTokenName = "Token";
 
@@ -32,7 +33,9 @@ export function getJWT(): JWTWithRaw {
   const token = getJWTOrNull();
 
   if (!token)
-    throw new Error("Unauthorized. A JWT token does not exist or have expired");
+    throw new UnauthorizedError(
+      "Unauthorized. A JWT token does not exist or have expired"
+    );
 
   return token;
 }
