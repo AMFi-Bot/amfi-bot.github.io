@@ -12,6 +12,11 @@ interface ImportMetaEnv {
   readonly VITE_CLIENT_ID: string;
 
   /**
+   * Discord client id
+   */
+  readonly VITE_DISCORD_CLIENT_ID: string;
+
+  /**
    * Points to the amfi bot API that operates with the discord bot
    */
   readonly VITE_DISCORD_API_URL: string;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { loginGuildCallback } from "@/helpers/discord/loginGuild";
+import { registerGuildCallback } from "@/helpers/discord/loginGuild";
 import LoadingView from "./LoadingView.vue";
 
-await loginGuildCallback(window.location.search);
+await registerGuildCallback(window.location.search);
 </script>
 
 <template><LoadingView /></template>

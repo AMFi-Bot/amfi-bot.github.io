@@ -4,7 +4,7 @@ import { useErrorsStore } from "@/stores/errors";
 import type { DiscordUserGuild } from "@/types/discord/guild";
 import { ref, type Ref } from "vue";
 import { RouterLink } from "vue-router";
-import { loginGuild } from "@/helpers/discord/loginGuild";
+import { registerGuild } from "@/helpers/discord/loginGuild";
 
 const userGuilds: Ref<DiscordUserGuild[] | "loading" | "error"> =
   ref("loading");
@@ -66,7 +66,7 @@ loadUserGuilds()
             v-else
             @click="
               () => {
-                loginGuild(guild.id);
+                registerGuild(guild.id);
               }
             "
           >
