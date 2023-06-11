@@ -24,18 +24,15 @@ export function getAuthorizationHeader(
 
 /**
  *
- * Returns JWT Authorization token or updates the page if it does not exist
+ * Returns JWT Authorization token or throws an error if it does not exist
  *
  * @returns User JWT Authorization token
  */
 export function getJWT(): JWTWithRaw {
   const token = getJWTOrNull();
 
-  if (!token) {
-    window.location.href = "/";
-
-    throw new Error("A JWT token does not exist or have expired");
-  }
+  if (!token)
+    throw new Error("Unauthorized. A JWT token does not exist or have expired");
 
   return token;
 }
