@@ -55,7 +55,7 @@ export async function registerGuildCallback(query_string: string) {
     await api.get(
       `${
         import.meta.env.VITE_DISCORD_API_URL
-      }/api/discord/guilds/register?${query_string.replace(/^\?/, "")}`,
+      }/api/discord/guilds/register?${query_string}&redirect_uri=${redirect_uri}`,
       {
         headers: {
           Authorization: `Bearer ${getJWT().rawToken}`,
