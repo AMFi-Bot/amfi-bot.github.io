@@ -50,7 +50,7 @@ export async function registerGuild(id: string) {
   }
 }
 
-export async function registerGuildCallback(query_string: string) {
+export async function registerGuildCallback(redirect_uri: string, query_string: string) {
   try {
     await api.get(
       `${
