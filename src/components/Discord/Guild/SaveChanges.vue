@@ -1,48 +1,43 @@
 <script setup lang="ts">
 import { useDiscordGuildStore } from "@/stores/discordGuild.js";
 import { storeToRefs } from "pinia";
-import _ from "lodash";
 import { computed, ref, type Ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
-const unsavedChangesAlertProperty = ref(false);
-const unsavedChangesAlertTimeout: Ref<any> = ref();
+const shakeProperty = ref(false);
+const shakeTimeout: Ref<ReturnType<typeof setTimeout> | undefined> = ref();
 
-const unsavedChangesAlert = computed({
+/**
+ * Shakes the component
+ *
+ * Assign true to shake
+ */
+const shake = computed({
   get() {
-    return unsavedChangesAlertProperty.value;
+    return shakeProperty.value;
   },
   set(value) {
     if (value) {
-      if (unsavedChangesAlertProperty.value) {
-        clearTimeout(unsavedChangesAlertTimeout.value);
-        unsavedChangesAlertTimeout.value = undefined;
+      if (shakeProperty.value) {
+        clearTimeout(shakeTimeout.value);
+        shakeTimeout.value = undefined;
       }
-      unsavedChangesAlertProperty.value = true;
-      unsavedChangesAlertTimeout.value = setTimeout(
-        () => (unsavedChangesAlertProperty.value = false),
-        820
-      );
-    } else unsavedChangesAlertProperty.value = false;
+      shakeProperty.value = true;
+      shakeTimeout.value = setTimeout(() => (shakeProperty.value = false), 820);
+    } else shakeProperty.value = false;
   },
 });
 
 const discordGuildStore = useDiscordGuildStore();
 
-const { guild, oldGuild } = storeToRefs(discordGuildStore);
+const { guildManager } = storeToRefs(discordGuildStore);
 
-const { syncGuild, resetGuildChanges } = discordGuildStore;
-
-const unsavedChanges = computed(
-  () =>
-    !(guild.value && oldGuild.value
-      ? _.isEqual(guild.value, oldGuild.value)
-      : true)
-);
+const unsavedChanges = computed(() => !guildManager.value?.synced);
 
 onBeforeRouteLeave(() => {
   if (unsavedChanges.value) {
-    unsavedChangesAlert.value = true;
+    // Shake the alert
+    shake.value = true;
     // cancel the navigation and stay on the same page
     return false;
   }
@@ -54,18 +49,21 @@ onBeforeRouteLeave(() => {
     <div
       :class="[
         $style.saveChangesAlert,
-        unsavedChangesAlert && $style['unsaved-changes-shake'],
+        shake && $style['unsaved-changes-shake'],
       ]"
       v-show="unsavedChanges"
     >
-      <div :class="$style.unsavedText" @click="unsavedChangesAlert = true">
+      <div :class="$style.unsavedText" @click="shake = true">
         Careful! You have unsaved changes
       </div>
       <div :class="$style.saveButtons">
-        <div :class="$style.resetChangesButton" @click="resetGuildChanges">
+        <div
+          :class="$style.resetChangesButton"
+          @click="guildManager?.resetChanges()"
+        >
           Reset
         </div>
-        <div :class="$style.saveChangesButton" @click="syncGuild">
+        <div :class="$style.saveChangesButton" @click="guildManager?.sync()">
           Save changes
         </div>
       </div>

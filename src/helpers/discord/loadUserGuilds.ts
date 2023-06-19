@@ -1,7 +1,5 @@
-import type {
-  DiscordUserGuild,
-  DiscordUserGuildRAW,
-} from "@/types/discord/guild";
+import type { PartialCurrentUserGuild } from "@/types/discord/guild";
+import type { RESTAPIPartialCurrentUserGuild } from "discord-api-types/v10";
 import axios from "axios";
 import { getJWT } from "../auth/jwt";
 import { userType } from "@/types/auth";
@@ -11,7 +9,7 @@ import { userType } from "@/types/auth";
  * @param loadFrom Source from guilds will be loaded.
  * @returns User discord guilds list (filtered by admin permission)
  */
-export default async function (): Promise<DiscordUserGuild[]> {
+export default async function (): Promise<PartialCurrentUserGuild[]> {
   const token = getJWT();
 
   if (token.userType != userType.discord)
@@ -26,18 +24,19 @@ export default async function (): Promise<DiscordUserGuild[]> {
     }
   );
 
-  const userGuilds: DiscordUserGuildRAW[] = response.data;
+  const userGuilds: RESTAPIPartialCurrentUserGuild[] = response.data;
 
   const userAdminGuilds = userGuilds.filter(
-    (guild) => (Number.parseInt(guild.permissions) & 0x8) == 0x8
+    (guild) =>
+      guild.permissions && (Number.parseInt(guild.permissions) & 0x8) == 0x8
   );
 
   return await loadRegisteredList(userAdminGuilds);
 }
 
 export async function loadRegisteredList(
-  rawUserGuilds: DiscordUserGuildRAW[]
-): Promise<DiscordUserGuild[]> {
+  rawUserGuilds: RESTAPIPartialCurrentUserGuild[]
+): Promise<PartialCurrentUserGuild[]> {
   const guildsIds = rawUserGuilds.map((g) => g.id);
 
   console.log(guildsIds);
@@ -57,7 +56,7 @@ export async function loadRegisteredList(
   return rawUserGuilds.map((g) => {
     const bot_exists: boolean = registeredGuilds.includes(g.id);
 
-    const guild: DiscordUserGuild = {
+    const guild: PartialCurrentUserGuild = {
       ...g,
       bot_exists,
     };
