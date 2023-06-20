@@ -7,6 +7,8 @@ import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vu
 import BaseInstance from "./Instances/BaseInstance.vue";
 import BaseModule from "./BaseModule.vue";
 import BaseElement from "./Elements/BaseElement.vue";
+import { computed, type ComputedRef } from "vue";
+import type { ElementType } from "@/types/components/DropdownComponents";
 
 const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
 
@@ -16,6 +18,16 @@ const { guildManager, discordGuild } = storeToRefs(discordGuildStore);
 
 if (guildManager == undefined || discordGuild == undefined)
   throw new Error("The guild is not loaded");
+
+const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
+  if (!guildManager.value?.newGuild.generalModule?.logChannel) return;
+
+  const channel = discordGuild.value?.channels.find(
+    (q) => q.id === guildManager.value?.newGuild.generalModule?.logChannel
+  );
+
+  return channel?.name || channel?.id;
+});
 </script>
 
 <template>
@@ -37,16 +49,7 @@ if (guildManager == undefined || discordGuild == undefined)
             clickButtonTitle="Choose a channel"
             :useChoosedElementAsTitle="true"
             :position="'bottom-right'"
-            :refChoosedElement="
-              () => {
-                const channel = discordGuild?.channels.find(
-                  (q) =>
-                    q.id === guildManager?.newGuild.generalModule?.logChannel
-                );
-
-                return channel?.name || channel?.id;
-              }
-            "
+            :refChoosedElement="choosedLogChannel"
             :dropdownContent="
               discordGuild.channels
                 .filter((q) => q.type === 0 && q.name != null)

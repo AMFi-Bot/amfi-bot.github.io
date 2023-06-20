@@ -6,7 +6,7 @@ export type BotGuild = {
 };
 
 export type GeneralModule = {
-  logChannel?: string;
+  logChannel?: string?;
   logEnabled?: boolean;
   logTypes?: string[];
 };
