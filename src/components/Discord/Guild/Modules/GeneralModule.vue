@@ -41,7 +41,7 @@ if (guildManager == undefined || discordGuild == undefined)
               () => {
                 const channel = discordGuild?.channels.find(
                   (q) =>
-                    q.id === guildManager?.newGuild.module_general?.logChannel
+                    q.id === guildManager?.newGuild.generalModule?.logChannel
                 );
 
                 return channel?.name || channel?.id;
@@ -58,7 +58,7 @@ if (guildManager == undefined || discordGuild == undefined)
             @choose="
               (element) =>
                 guildManager &&
-                (guildManager.newGuild.module_general.logChannel =
+                (guildManager.newGuild.generalModule.logChannel =
                   typeof element === 'string'
                     ? element
                     : typeof element.id === 'number'
@@ -74,8 +74,8 @@ if (guildManager == undefined || discordGuild == undefined)
           <DropdownCheckboxComponent
             clickButtonTitle="Choose types"
             :refChoosedElements="
-              guildManager.newGuild.module_general.logTypes
-                ? guildManager.newGuild.module_general.logTypes.map(
+              guildManager.newGuild.generalModule.logTypes
+                ? guildManager.newGuild.generalModule.logTypes.map(
                     (q) => logEvents.find((a) => a.id === q) || q
                   )
                 : []
@@ -86,7 +86,7 @@ if (guildManager == undefined || discordGuild == undefined)
             @choose="
               (elements) =>
                 guildManager &&
-                (guildManager.newGuild.module_general.logTypes = elements.map(
+                (guildManager.newGuild.generalModule.logTypes = elements.map(
                   (element) =>
                     typeof element === 'string'
                       ? element
@@ -101,14 +101,14 @@ if (guildManager == undefined || discordGuild == undefined)
           <div
             class="state_checkbox"
             :class="
-              guildManager.newGuild.module_general.logEnabled
+              guildManager.newGuild.generalModule.logEnabled
                 ? 'enabled'
                 : 'disabled'
             "
             @click="
               guildManager &&
-                (guildManager.newGuild.module_general.logEnabled =
-                  !guildManager.newGuild.module_general.logEnabled)
+                (guildManager.newGuild.generalModule.logEnabled =
+                  !guildManager.newGuild.generalModule.logEnabled)
             "
           />
         </BaseElement>

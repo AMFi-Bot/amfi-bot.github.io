@@ -32,7 +32,7 @@ const discordGuildStore = useDiscordGuildStore();
 
 const { guildManager } = storeToRefs(discordGuildStore);
 
-const unsavedChanges = computed(() => !guildManager.value?.synced);
+const unsavedChanges = computed(() => !guildManager.value?.synced());
 
 onBeforeRouteLeave(() => {
   if (unsavedChanges.value) {

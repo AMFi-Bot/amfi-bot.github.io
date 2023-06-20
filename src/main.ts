@@ -59,6 +59,8 @@ app.config.errorHandler = (err) => {
   else if (err instanceof Error)
     errorsStore.addError(`An unexpected error handled: ${err.message}`);
   else errorsStore.addError(`An unexpected error handled.`);
+
+  throw err;
 };
 
 app.mount("#app");

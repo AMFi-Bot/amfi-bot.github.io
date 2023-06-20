@@ -46,10 +46,11 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
       })
     ).data;
 
-    const discordGuildChannels: RESTGetAPIGuildChannelsResult =
+    const discordGuildChannels: RESTGetAPIGuildChannelsResult = (
       await discordBotAPI.get(`/api/discord/guilds/${guildId}/channels`, {
         headers: { Authorization: getAuthorizationHeader() },
-      });
+      })
+    ).data;
 
     return { ...discordBaseGuild, channels: discordGuildChannels };
   }
@@ -66,8 +67,8 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
   }
 
   return {
-    guildManager: computed(() => guildManager.value),
-    discordGuild: computed(() => discordGuild.value),
+    guildManager,
+    discordGuild,
     loading: computed(() => loading.value),
     loadGuild,
     resetGuild,

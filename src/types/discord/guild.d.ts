@@ -2,7 +2,7 @@ import type { RESTAPIPartialCurrentUserGuild } from "discord-api-types/v10";
 
 export type BotGuild = {
   id: string;
-  module_general: GeneralModule;
+  generalModule: GeneralModule;
 };
 
 export type GeneralModule = {
