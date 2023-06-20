@@ -1,18 +1,35 @@
+import DiscordGuildLayoutVue from "@/layouts/DiscordGuildLayout.vue";
+import { useDiscordGuildStore } from "@/stores/discordGuild";
+import { useErrorsStore } from "@/stores/errors";
 import type { RouteRecordRaw } from "vue-router";
 
 export const route: RouteRecordRaw = {
   path: "guilds/:guild_id/",
-  meta: { layout: "DiscordGuildLayout" },
+  meta: { layout: DiscordGuildLayoutVue },
   beforeEnter: async (to, from, next) => {
-    // const discordGuildStore = useDiscordGuildStore();
+    const discordGuildStore = useDiscordGuildStore();
 
-    // const guild_id = to.params.guild_id as string;
-    // if (!guild_id) return next({ name: "discord_dashboard" });
+    const guild_id = to.params.guild_id as string;
+    if (!guild_id) return next({ name: "discord_dashboard" });
 
-    // if (!(await discordGuildStore.getGuild(guild_id)))
-    //   return next({ name: "discord_dashboard" });
+    try {
+      await discordGuildStore.loadGuild(guild_id);
+      return next();
+    } catch (err) {
+      console.error(err);
 
-    return next();
+      if (err instanceof Error) {
+        useErrorsStore().addError(
+          `Something went wrong and we cannot load the guild: ${err.message}`
+        );
+      } else {
+        useErrorsStore().addError(
+          `Something went wrong and we cannot load the guild.`
+        );
+      }
+
+      return next({ name: "discord_dashboard" });
+    }
   },
   children: [
     {
