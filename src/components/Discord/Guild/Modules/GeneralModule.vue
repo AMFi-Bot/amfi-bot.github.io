@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 import { storeToRefs } from "pinia";
-import DropdownComponent from "@/components/DropdownChooseComponent.vue";
+import DropdownComponent from "@/components/dropdown/DropdownChooseComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vue";
+import DropdownCheckboxComponent from "@/components/dropdown/DropdownCheckboxComponent.vue";
 import BaseInstance from "./Instances/BaseInstance.vue";
 import BaseModule from "./BaseModule.vue";
 import BaseElement from "./Elements/BaseElement.vue";
 import { computed, type ComputedRef } from "vue";
-import type { ElementType } from "@/types/components/DropdownComponents";
+import type { ElementType } from "@/types/components/dropdowns";
+
+import { getKeyOfElement } from "@/helpers/components/dropdown";
 
 const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
 
@@ -19,14 +21,24 @@ const { guildManager, discordGuild } = storeToRefs(discordGuildStore);
 if (guildManager == undefined || discordGuild == undefined)
   throw new Error("The guild is not loaded");
 
+const guildChannelsAsElemType: ComputedRef<ElementType[]> = computed(() => {
+  if (!discordGuild?.value) return [];
+
+  return discordGuild.value.channels
+    .filter((q) => q.type === 0 && q.name != null)
+    .map((cn) => ({
+      name: cn.name || cn.id,
+      id: cn.id,
+    }));
+});
+
 const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
-  if (!guildManager.value?.newGuild.generalModule?.logChannel) return;
+  const channel = guildManager.value?.newGuild.generalModule?.logChannel;
+  if (!channel) return;
 
-  const channel = discordGuild.value?.channels.find(
-    (q) => q.id === guildManager.value?.newGuild.generalModule?.logChannel
+  return guildChannelsAsElemType.value.find(
+    (q) => getKeyOfElement(q) === channel
   );
-
-  return channel?.name || channel?.id;
 });
 </script>
 
@@ -50,23 +62,12 @@ const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
             :useChoosedElementAsTitle="true"
             :position="'bottom-right'"
             :refChoosedElement="choosedLogChannel"
-            :dropdownContent="
-              discordGuild.channels
-                .filter((q) => q.type === 0 && q.name != null)
-                .map((cn) => ({
-                  name: cn.name || cn.id,
-                  id: cn.id,
-                }))
-            "
+            :dropdownContent="guildChannelsAsElemType"
             @choose="
               (element) =>
                 guildManager &&
                 (guildManager.newGuild.generalModule.logChannel =
-                  typeof element === 'string'
-                    ? element
-                    : typeof element.id === 'number'
-                    ? element.id.toString()
-                    : element.id)
+                  getKeyOfElement(element)?.toString())
             "
           />
         </BaseElement>
@@ -122,3 +123,4 @@ const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
     </div>
   </BaseModule>
 </template>
+@/types/components/dropdowns

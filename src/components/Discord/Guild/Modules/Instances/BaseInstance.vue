@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import DropdownArrow from "../../../../DropdownArrow.vue";
+import DropdownArrow from "@/components/dropdown/DropdownArrow.vue";
 
 const props = defineProps<{
   instanceName: string;
@@ -26,7 +26,7 @@ const instanceShow = ref(!hiddenable.value);
 
       <div :class="$style.dropdown_arrow">
         <DropdownArrow
-          :arrow-state-show="instanceShow"
+          :arrow-state="instanceShow"
           :arrow-animation-side="'left'"
           :width="'3px'"
           :side-size="'12px'"

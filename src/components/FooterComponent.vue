@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DropdownComponent from "./DropdownComponent.vue";
+import DropdownComponent from "@/components/dropdown/DropdownComponent.vue";
 import DiscordLogoWhite from "./Icons/DiscordLogoWhite.vue";
 import TelegramLogo from "./Icons/TelegramLogo.vue";
 import LanguagesContent from "./LanguagesContent.vue";

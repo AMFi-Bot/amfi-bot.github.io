@@ -2,7 +2,7 @@
 import { useUserStore } from "@/stores/user.js";
 import { computed, type ComputedRef } from "vue";
 import { useI18n } from "vue-i18n";
-import DropdownComponent from "../DropdownComponent.vue";
+import DropdownComponent from "@/components/dropdown/DropdownComponent.vue";
 import LanguagesContent from "../LanguagesContent.vue";
 import type { BaseUser } from "@/types/user";
 
@@ -23,7 +23,7 @@ const user: ComputedRef<BaseUser | undefined> = computed(() => {
     :elem_class="$style.user"
     :content_class="$style.cart"
     :title_class="$style.dropdown_title"
-    :no-hide-on-click-content="true"
+    :hide-on-click-content="false"
   >
     <template #dropdownTitle>
       <img :class="$style.avatar" :src="user?.avatar" v-if="user?.avatar" />
@@ -76,18 +76,6 @@ const user: ComputedRef<BaseUser | undefined> = computed(() => {
       </div>
     </template>
   </DropdownComponent>
-  <!-- <tippy
-    class="user"
-    v-tippy="{
-      interactive: true,
-      arrow: false,
-      placement: 'bottom',
-    }"
-  >
-    <template #content>
-      <ul id="cart"></ul>
-    </template>
-  </tippy> -->
 </template>
 
 <style module lang="scss">

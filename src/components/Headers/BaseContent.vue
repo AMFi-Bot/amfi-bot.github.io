@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DropdownComponent from "../DropdownComponent.vue";
+import DropdownComponent from "@/components/dropdown/DropdownComponent.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();

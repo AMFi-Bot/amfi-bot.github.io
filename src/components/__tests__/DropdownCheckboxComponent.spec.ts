@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 
 import { mount } from "@vue/test-utils";
-import DropdownCheckboxComponent from "../DropdownCheckboxComponent.vue";
-import type { ElementType } from "@/types/components/DropdownComponents";
+import DropdownCheckboxComponent from "@/components/dropdown/DropdownCheckboxComponent.vue";
+import type { ElementType } from "@/types/components/dropdowns";
 
 import VueClickAwayPlugin from "vue3-click-away";
 
