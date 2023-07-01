@@ -1,14 +1,9 @@
 import type { RESTAPIPartialCurrentUserGuild } from "discord-api-types/v10";
+import type { GeneralModule } from "./modules/general/generalModule";
 
 export type BotGuild = {
   id: string;
   generalModule: GeneralModule;
-};
-
-export type GeneralModule = {
-  logChannel?: string?;
-  logEnabled?: boolean;
-  logTypes?: string[];
 };
 
 export interface PartialCurrentUserGuild

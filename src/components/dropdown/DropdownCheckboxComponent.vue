@@ -115,4 +115,3 @@ function onChoose(element: ElementType) {
     </template>
   </DropdownComponent>
 </template>
-@/types/components/dropdowns

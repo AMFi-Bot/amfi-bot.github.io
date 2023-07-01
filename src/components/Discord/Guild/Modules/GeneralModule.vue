@@ -11,8 +11,7 @@ import { computed, type ComputedRef } from "vue";
 import type { ElementType } from "@/types/components/dropdowns";
 
 import { getKeyOfElement } from "@/helpers/components/dropdown";
-
-const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
+import { logTypes } from "@/types/discord/modules/general/logging";
 
 const discordGuildStore = useDiscordGuildStore();
 
@@ -33,7 +32,7 @@ const guildChannelsAsElemType: ComputedRef<ElementType[]> = computed(() => {
 });
 
 const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
-  const channel = guildManager.value?.newGuild.generalModule?.logChannel;
+  const channel = guildManager.value?.newGuild.generalModule.log.channel;
   if (!channel) return;
 
   return guildChannelsAsElemType.value.find(
@@ -66,7 +65,7 @@ const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
             @choose="
               (element) =>
                 guildManager &&
-                (guildManager.newGuild.generalModule.logChannel =
+                (guildManager.newGuild.generalModule.log.channel =
                   getKeyOfElement(element)?.toString())
             "
           />
@@ -78,19 +77,17 @@ const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
           <DropdownCheckboxComponent
             clickButtonTitle="Choose types"
             :refChoosedElements="
-              guildManager.newGuild.generalModule.logTypes
-                ? guildManager.newGuild.generalModule.logTypes.map(
-                    (q) => logEvents.find((a) => a.id === q) || q
-                  )
-                : []
+              guildManager.newGuild.generalModule.log.types?.map(
+                (q) => logTypes.find((a) => a.id == q) ?? q
+              ) ?? []
             "
-            :dropdownContent="logEvents"
+            :dropdownContent="logTypes"
             :position="'bottom-right'"
             :no-hide-on-click-content="true"
             @choose="
               (elements) =>
                 guildManager &&
-                (guildManager.newGuild.generalModule.logTypes = elements.map(
+                (guildManager.newGuild.generalModule.log.types = elements.map(
                   (element) =>
                     typeof element === 'string'
                       ? element
@@ -105,14 +102,14 @@ const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
           <div
             class="state_checkbox"
             :class="
-              guildManager.newGuild.generalModule.logEnabled
+              guildManager.newGuild.generalModule.log.enabled
                 ? 'enabled'
                 : 'disabled'
             "
             @click="
               guildManager &&
-                (guildManager.newGuild.generalModule.logEnabled =
-                  !guildManager.newGuild.generalModule.logEnabled)
+                (guildManager.newGuild.generalModule.log.enabled =
+                  !guildManager.newGuild.generalModule.log.enabled)
             "
           />
         </BaseElement>
