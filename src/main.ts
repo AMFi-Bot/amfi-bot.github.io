@@ -21,6 +21,9 @@ import VueClickAway from "vue3-click-away";
 import DefaultLayoutVue from "./layouts/DefaultLayout.vue";
 import LoadingLayoutVue from "./layouts/LoadingLayout.vue";
 import { useErrorsStore } from "./stores/errors";
+import UnauthorizedError, {
+  basicUnauthorizedErrorHandler,
+} from "./helpers/auth/UnauthorizedError";
 
 const i18n = setupI18n();
 
@@ -50,17 +53,14 @@ app.config.errorHandler = (err) => {
   console.error("An unhandled error occured");
   console.error(err);
 
-  try {
-    const errorsStore = useErrorsStore();
+  const errorsStore = useErrorsStore();
 
-    if (err instanceof Error)
-      errorsStore.addError(
-        `An unexpected error handled: ${err.message} ${err.stack}`
-      );
-    else errorsStore.addError(`An unexpected error handled.`);
-  } catch {
-    /* empty */
-  }
+  if (err instanceof UnauthorizedError) basicUnauthorizedErrorHandler(err);
+  else if (err instanceof Error)
+    errorsStore.addError(`An unexpected error handled: ${err.message}`);
+  else errorsStore.addError(`An unexpected error handled.`);
+
+  throw err;
 };
 
 app.mount("#app");

@@ -3,16 +3,29 @@ import api from "axios";
 import { useErrorsStore } from "@/stores/errors";
 
 import router from "@/router/index";
+import axios from "axios";
+import { getJWT } from "../auth/jwt";
+import { baseURL } from "../app";
 
-export async function loginGuild(id: string | number) {
-  const popupURI = `${
-    import.meta.env.VITE_API_URL
-  }/api/discord/guilds/auth/redirect?discordGuildId=${id}`;
+/**
+ * Registers a guild in the bot space (simply, adds the bot to the user guild)
+ * @param id The id of the guild
+ */
+export async function registerGuild(id: string) {
+  const uri =
+    "https://discord.com/api/oauth2/authorize" +
+    `?client_id=${import.meta.env.VITE_DISCORD_CLIENT_ID}` +
+    "&scope=applications.commands%20bot" +
+    `&guild_id=${id}` +
+    "&permissions=8" +
+    "&disable_guild_select=true" +
+    "&response_type=code" +
+    `&redirect_uri=${baseURL}discord_bot_callback`;
 
   // Open popup
-  const popup = window.open(popupURI, "", "width=500,height=900");
+  const popup = window.open(uri, "", "width=500,height=900");
 
-  if (!popup) return;
+  if (!popup) throw new Error("Cannot open a popup window.");
 
   await new Promise((resolve) => {
     const interval = setInterval(async () => {
@@ -20,16 +33,37 @@ export async function loginGuild(id: string | number) {
         clearInterval(interval);
         resolve(undefined);
       }
-    }, 500);
+    }, 100);
   });
 
-  router.push(`/discord/guilds/${id}`);
+  const response = await axios.get(
+    `${
+      import.meta.env.VITE_DISCORD_API_URL
+    }/api/discord/guilds/registered/${id}`
+  );
+
+  if (response.data === true) router.push(`/discord/guilds/${id}`);
+  else if (response.data === false) {
+    useErrorsStore().addError(
+      "Guild is not registered and the bot was not added to it."
+    );
+  }
 }
 
-export async function loginGuildCallback(query_string: string) {
+export async function registerGuildCallback(
+  redirect_uri: string,
+  query_string: string
+) {
   try {
     await api.get(
-      `/api/discord/guilds/auth/callback?${query_string.replace(/^\?/, "")}`
+      `${
+        import.meta.env.VITE_DISCORD_API_URL
+      }/api/discord/guilds/register?${query_string}&redirect_uri=${redirect_uri}`,
+      {
+        headers: {
+          Authorization: `Bearer ${getJWT().rawToken}`,
+        },
+      }
     );
 
     window.close();
@@ -37,7 +71,7 @@ export async function loginGuildCallback(query_string: string) {
     console.error(error);
 
     useErrorsStore().addError(
-      "Oops something went wrong and we cannot load guild."
+      "Oops something went wrong and we cannot register guild."
     );
   }
 }

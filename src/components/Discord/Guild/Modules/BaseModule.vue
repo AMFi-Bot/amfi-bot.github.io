@@ -113,7 +113,7 @@ defineProps<{
       z-index: 60;
 
       .dropdown_content_elem {
-        height: 30px;
+        min-height: 30px;
         width: 100%;
 
         display: flex;
@@ -122,7 +122,7 @@ defineProps<{
 
         cursor: pointer;
 
-        padding: 5px 10px;
+        padding: 5px;
 
         font-size: 16px;
         color: $font_color_1;

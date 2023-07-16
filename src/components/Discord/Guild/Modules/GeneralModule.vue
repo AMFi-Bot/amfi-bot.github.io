@@ -1,35 +1,44 @@
 <script setup lang="ts">
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 import { storeToRefs } from "pinia";
-import DropdownComponent from "@/components/DropdownChooseComponent.vue";
+import DropdownComponent from "@/components/dropdown/DropdownChooseComponent.vue";
 import LoadingComponent from "@/components/LoadingComponent.vue";
-import DropdownCheckboxComponent from "@/components/DropdownCheckboxComponent.vue";
+import DropdownCheckboxComponent from "@/components/dropdown/DropdownCheckboxComponent.vue";
 import BaseInstance from "./Instances/BaseInstance.vue";
 import BaseModule from "./BaseModule.vue";
 import BaseElement from "./Elements/BaseElement.vue";
-import { useRoute } from "vue-router";
+import { computed, type ComputedRef } from "vue";
+import type { ElementType } from "@/types/components/dropdowns";
 
-const logEvents = [{ name: "messageCreate", id: "messageCreate" }];
+import { getKeyOfElement } from "@/helpers/components/dropdown";
+import { logTypes } from "@/types/discord/modules/general/logging";
 
 const discordGuildStore = useDiscordGuildStore();
 
-const { guild, discordGuild } = storeToRefs(discordGuildStore);
-const { loadGuild, loadDiscordGuild, updateModuleProperty } = discordGuildStore;
+const { guildManager, discordGuild } = storeToRefs(discordGuildStore);
 
-const route = useRoute();
+if (guildManager == undefined || discordGuild == undefined)
+  throw new Error("The guild is not loaded");
 
-const guild_id =
-  typeof route.params["guild_id"] == "string"
-    ? route.params["guild_id"]
-    : route.params["guild_id"].join("");
+const guildChannelsAsElemType: ComputedRef<ElementType[]> = computed(() => {
+  if (!discordGuild?.value) return [];
 
-if (!guild.value) {
-  loadGuild(guild_id);
-}
+  return discordGuild.value.channels
+    .filter((q) => q.type === 0 && q.name != null)
+    .map((cn) => ({
+      name: cn.name || cn.id,
+      id: cn.id,
+    }));
+});
 
-if (!discordGuild.value) {
-  loadDiscordGuild(guild_id);
-}
+const choosedLogChannel: ComputedRef<ElementType | undefined> = computed(() => {
+  const channel = guildManager.value?.newGuild.generalModule.log.channel;
+  if (!channel) return;
+
+  return guildChannelsAsElemType.value.find(
+    (q) => getKeyOfElement(q) === channel
+  );
+});
 </script>
 
 <template>
@@ -38,7 +47,7 @@ if (!discordGuild.value) {
     :module-descriprion="`        Bot general settings module. Here you can configure most of the
         important settings on your server.`"
   >
-    <div v-if="discordGuild && guild">
+    <div v-if="guildManager && discordGuild">
       <BaseInstance
         instance-name="Logs"
         instance-description="Here you can setup logs sending by bot"
@@ -50,25 +59,14 @@ if (!discordGuild.value) {
           <DropdownComponent
             clickButtonTitle="Choose a channel"
             :useChoosedElementAsTitle="true"
-            :refChoosedElement="
-              discordGuild.channels.filter(
-                (q) =>
-                  q.id ===
-                  (guild && guild.module_general
-                    ? guild.module_general.logChannel
-                    : undefined)
-              )[0]
-            "
             :position="'bottom-right'"
-            :dropdownContent="discordGuild.channels.filter((q) => q.type === 0)"
+            :refChoosedElement="choosedLogChannel"
+            :dropdownContent="guildChannelsAsElemType"
             @choose="
-              (element) => {
-                discordGuildStore.updateModuleProperty(
-                  'general',
-                  'logChannel',
-                  typeof element === 'string' ? element : element.id
-                );
-              }
+              (element) =>
+                guildManager &&
+                (guildManager.newGuild.generalModule.log.channel =
+                  getKeyOfElement(element)?.toString())
             "
           />
         </BaseElement>
@@ -79,36 +77,39 @@ if (!discordGuild.value) {
           <DropdownCheckboxComponent
             clickButtonTitle="Choose types"
             :refChoosedElements="
-              guild.module_general.logTypes
-                ? guild.module_general.logTypes.map(
-                    (q) => logEvents.find((a) => a.id === q) || q
-                  )
-                : []
+              guildManager.newGuild.generalModule.log.types?.map(
+                (q) => logTypes.find((a) => a.id == q) ?? q
+              ) ?? []
             "
-            :dropdownContent="logEvents"
+            :dropdownContent="logTypes"
             :position="'bottom-right'"
             :no-hide-on-click-content="true"
             @choose="
-              (elements) => {
-                discordGuildStore.updateModuleProperty(
-                  'general',
-                  'logTypes',
-                  elements.map((q) => (typeof q === 'string' ? q : q.id))
-                );
-              }
+              (elements) =>
+                guildManager &&
+                (guildManager.newGuild.generalModule.log.types = elements.map(
+                  (element) =>
+                    typeof element === 'string'
+                      ? element
+                      : typeof element.id === 'number'
+                      ? element.id.toString()
+                      : element.id || element.name
+                ))
             "
           />
         </BaseElement>
         <BaseElement element-title="Log state:">
           <div
             class="state_checkbox"
-            :class="guild.module_general.logEnabled ? 'enabled' : 'disabled'"
+            :class="
+              guildManager.newGuild.generalModule.log.enabled
+                ? 'enabled'
+                : 'disabled'
+            "
             @click="
-              guild &&
-                guild.module_general &&
-                (guild.module_general.logEnabled
-                  ? updateModuleProperty('general', 'logEnabled', false)
-                  : updateModuleProperty('general', 'logEnabled', true))
+              guildManager &&
+                (guildManager.newGuild.generalModule.log.enabled =
+                  !guildManager.newGuild.generalModule.log.enabled)
             "
           />
         </BaseElement>
@@ -119,3 +120,4 @@ if (!discordGuild.value) {
     </div>
   </BaseModule>
 </template>
+@/types/components/dropdowns

@@ -11,7 +11,7 @@ export const route: RouteRecordRaw = {
     {
       path: "dashboard",
       name: "discord_dashboard",
-      component: import("@/views/Discord/DashboardView.vue"),
+      component: () => import("@/views/Discord/DashboardView.vue"),
     },
     discordGuildsRoute,
   ],

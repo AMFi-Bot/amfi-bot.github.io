@@ -7,9 +7,8 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-//If the route has a guardian layout is undefined
-// route matched array is length 0 ONLY if route is not loaded(processing by guards)
-// or if route is not found(404)
+// The route may have the legth of the matched array equal 0 ONLY when it is not loaded(being processed by the guards)
+// or if the route is not found(404)
 const layout = computed(() => {
   return (
     route.meta.layout ??
