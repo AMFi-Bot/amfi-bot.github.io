@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import DiscordGuildHeaderVue from "@/components/Discord/Guild/DiscordGuildHeader.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
-
-import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
 </script>
 
 <template>
@@ -10,7 +8,6 @@ import NavigateVue from "@/components/Discord/Guild/NavigateBar.vue";
 
   <div class="content">
     <div :class="$style.discord_guild">
-      <NavigateVue />
       <slot />
     </div>
   </div>
