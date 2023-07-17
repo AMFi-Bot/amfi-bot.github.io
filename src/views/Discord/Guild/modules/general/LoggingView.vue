@@ -29,7 +29,9 @@ const logModule = computed(() => guildManager.newGuild.general.log);
         />
       </div>
       <div :class="$style.defaultChannel">
-        <div :class="$style.label">Please choose a default logging channel</div>
+        <div :class="$style.label">
+          Please choose a default logging channel:
+        </div>
         <DropdownChooseComponent
           click-button-title="Choose a channel"
           :dropdownContent="
@@ -75,12 +77,15 @@ const logModule = computed(() => guildManager.newGuild.general.log);
 <style module lang="scss">
 @import "@/assets/scss/library";
 
+.welcome {
+  font-size: 24px;
+}
+
 .setup {
-  width: 100%;
+  min-width: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
-
   margin-top: 20px;
 
   .state {
@@ -96,10 +101,29 @@ const logModule = computed(() => guildManager.newGuild.general.log);
   .defaultChannel {
     display: flex;
     flex-direction: row;
+    align-items: center;
+
     margin-top: 10px;
 
     > div:first-child {
       margin-right: 20px;
+    }
+  }
+
+  .loggers {
+    display: flex;
+    flex-direction: column;
+    min-width: 60%;
+    margin-top: 20px;
+
+    padding: 10px 20px;
+
+    > * {
+      margin-top: 20px;
+
+      &:first-child {
+        margin-top: 0;
+      }
     }
   }
 }

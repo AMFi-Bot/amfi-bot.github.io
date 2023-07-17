@@ -18,7 +18,9 @@ function goUp() {
       <div :class="$style.arrow"></div>
     </div>
 
-    <div :class="$style.board"><slot /></div>
+    <div :class="[$style.board, 'discordGuildModule']">
+      <div><slot /></div>
+    </div>
   </div>
 </template>
 
@@ -85,6 +87,32 @@ function goUp() {
     width: 100%;
 
     align-items: center;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+
+      align-items: center;
+
+      min-width: 80%;
+
+      background-color: $dark_2;
+      border-radius: 8px;
+
+      padding: 20px;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+@import "@/assets/scss/library";
+
+.discordGuildModule {
+  .toggler {
+    border: 2px solid $dark_3;
+    height: 54px;
+    width: 104px;
   }
 }
 </style>

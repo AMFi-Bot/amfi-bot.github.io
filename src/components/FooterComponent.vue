@@ -105,7 +105,7 @@ const { t } = useI18n();
   background-color: rgb(33, 36, 38);
   width: 100%;
 
-  z-index: 999999;
+  z-index: 1200;
 
   * {
     user-select: none;

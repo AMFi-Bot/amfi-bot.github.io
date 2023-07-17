@@ -23,20 +23,20 @@ const emit = defineEmits<{
 </script>
 <template>
   <div :class="$style.logger">
-    <div :class="$style.loggerAbout">
-      <div :class="$style.loggerName">{{ loggerName }}</div>
-      <div :class="$style.loggerDescription">{{ loggerDescription }}</div>
+    <div :class="$style.about">
+      <div :class="$style.name">{{ loggerName }}</div>
+      <div :class="$style.description">{{ loggerDescription }}</div>
     </div>
-    <div :class="$style.loggerSettings">
-      <div :class="$style.loggerState">
+    <div :class="$style.settings">
+      <div :class="$style.state">
         <div>Logger enabled:</div>
         <TogglerComponent
           :state="logger.state"
           @state-changed="(st) => emit('stateChanged', st)"
         />
       </div>
-      <div :class="$style.loggerChannel">
-        <div :class="$style.label">Please choose a logging channel</div>
+      <div :class="$style.loggingChannel">
+        <div :class="$style.label">Please choose a logging channel:</div>
         <DropdownChooseComponent
           click-button-title="Choose a channel"
           :dropdownContent="
@@ -63,6 +63,55 @@ const emit = defineEmits<{
 </template>
 
 <style module lang="scss">
+@import "@/assets/scss/library";
 .logger {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  width: 100%;
+
+  border: 3px solid $dark_3;
+  border-radius: 10px;
+  .about {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    font-size: 18px;
+
+    text-align: center;
+
+    .description {
+      margin-top: 5px;
+      color: $font_color_2;
+    }
+  }
+
+  .settings {
+    display: flex;
+    flex-direction: column;
+
+    .state {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      & > :first-child {
+        margin-right: 20px;
+      }
+    }
+    .loggingChannel {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      margin-top: 20px;
+
+      & > :first-child {
+        margin-right: 20px;
+      }
+    }
+  }
 }
 </style>

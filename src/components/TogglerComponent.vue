@@ -14,6 +14,7 @@ const emit = defineEmits<{ (e: "stateChanged", state: boolean): void }>();
       $style.toggler,
       $style[state ? 'enabled' : 'disabled'],
       togglerClass,
+      'toggler',
     ]"
     @click="emit('stateChanged', !state)"
   ></div>
