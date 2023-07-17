@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import router from "@/router";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function goUp() {
+  const path = router.currentRoute.value.path.endsWith("/") ? "../" : "./";
+
+  if (router.resolve(path).meta.type !== "discordGuild")
+    throw new Error("Cannot navigate outside of discord guild scope");
+  else router.push(path);
+}
 </script>
 
 <template>
   <div :class="$style.module">
-    <div :class="$style.previousPage" @click="router.back">
+    <div :class="$style.previousPage" @click="goUp">
       <div :class="$style.arrow"></div>
     </div>
 
