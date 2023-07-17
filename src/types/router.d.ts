@@ -7,5 +7,6 @@ declare module "vue-router" {
   interface RouteMeta {
     requiresAuth?: boolean;
     layout?: string | Component;
+    type?: "discordGuild";
   }
 }

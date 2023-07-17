@@ -2,7 +2,7 @@
 import { useDiscordGuildStore } from "@/stores/discordGuild.js";
 import { storeToRefs } from "pinia";
 import { computed, ref, type Ref } from "vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { useRouter } from "vue-router";
 
 const shakeProperty = ref(false);
 const shakeTimeout: Ref<ReturnType<typeof setTimeout> | undefined> = ref();
@@ -34,12 +34,15 @@ const { guildManager } = storeToRefs(discordGuildStore);
 
 const unsavedChanges = computed(() => !guildManager.value?.synced());
 
-onBeforeRouteLeave(() => {
-  if (unsavedChanges.value) {
-    // Shake the alert
+useRouter().beforeEach((to, from, next) => {
+  if (
+    from.meta.type === "discordGuild" &&
+    to.meta.type !== "discordGuild" &&
+    unsavedChanges.value
+  ) {
     shake.value = true;
-    // cancel the navigation and stay on the same page
-    return false;
+  } else {
+    return next();
   }
 });
 </script>

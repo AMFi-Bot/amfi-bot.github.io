@@ -66,11 +66,28 @@ export const useDiscordGuildStore = defineStore("discordGuild", () => {
     loading.value = false;
   }
 
+  /**
+   * @returns The guild manager and discord guild or throws an error if undefined
+   */
+  function getDiscordAndBotGuildOrError() {
+    const GM: GuildManager | undefined = guildManager.value;
+    const DG: FullDiscordGuild | undefined = discordGuild.value;
+
+    if (!GM || !DG)
+      throw new Error("The guild manager or discord guild is undefined");
+
+    return {
+      guildManager: GM,
+      discordGuild: DG,
+    };
+  }
+
   return {
     guildManager,
     discordGuild,
     loading: computed(() => loading.value),
     loadGuild,
     resetGuild,
+    getDiscordAndBotGuildOrError,
   };
 });

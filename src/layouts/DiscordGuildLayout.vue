@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import DiscordGuildHeaderVue from "@/components/Discord/Guild/DiscordGuildHeader.vue";
+import SaveChangesVue from "@/components/Discord/Guild/SaveChanges.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 </script>
 
 <template>
   <DiscordGuildHeaderVue />
 
-  <div class="content">
+  <div :class="['content']">
     <div :class="$style.discord_guild">
       <slot />
     </div>
+    <SaveChangesVue />
   </div>
   <FooterComponent />
 </template>
@@ -22,8 +24,8 @@ import FooterComponent from "@/components/FooterComponent.vue";
   flex-direction: row;
 
   position: relative;
-  justify-content: center;
+  align-items: center;
 
-  margin-top: 10px;
+  width: 100%;
 }
 </style>

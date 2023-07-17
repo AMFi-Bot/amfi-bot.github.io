@@ -1,11 +1,14 @@
 import DiscordGuildLayoutVue from "@/layouts/DiscordGuildLayout.vue";
 import { useDiscordGuildStore } from "@/stores/discordGuild";
 import { useErrorsStore } from "@/stores/errors";
+
+import generalModule from "./modules/general";
+
 import type { RouteRecordRaw } from "vue-router";
 
 export const route: RouteRecordRaw = {
   path: "guilds/:guild_id/",
-  meta: { layout: DiscordGuildLayoutVue },
+  meta: { layout: DiscordGuildLayoutVue, type: "discordGuild" },
   beforeEnter: async (to, from, next) => {
     const discordGuildStore = useDiscordGuildStore();
 
@@ -34,40 +37,10 @@ export const route: RouteRecordRaw = {
   children: [
     {
       path: "",
-      redirect: {
-        name: "DiscordDashboard",
-      },
-    },
-    {
-      path: "dashboard",
       name: "DiscordDashboard",
       component: () => import("@/views/Discord/Guild/DashboardView.vue"),
     },
-    {
-      path: "general",
-      name: "DiscordGuildGeneral",
-      component: () => import("@/views/Discord/Guild/GeneralView.vue"),
-    },
-    {
-      path: "moderation",
-      name: "DiscordGuildModeration",
-      component: () => import("@/views/Discord/Guild/DashboardView.vue"),
-    },
-    {
-      path: "automoderation",
-      name: "DiscordGuildAutomoderation",
-      component: () => import("@/views/Discord/Guild/DashboardView.vue"),
-    },
-    {
-      path: "commands",
-      name: "DiscordGuildCommands",
-      component: () => import("@/views/Discord/Guild/DashboardView.vue"),
-    },
-    {
-      path: "features",
-      name: "DiscordGuildFeatures",
-      component: () => import("@/views/Discord/Guild/DashboardView.vue"),
-    },
+    generalModule,
   ],
 };
 

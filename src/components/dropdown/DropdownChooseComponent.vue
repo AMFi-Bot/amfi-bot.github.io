@@ -30,7 +30,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: "choose", elements: ElementType): void;
+  (e: "choose", element: ElementType): void;
 }>();
 
 const propsRefs = toRefs(props);

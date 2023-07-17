@@ -3,7 +3,7 @@ import type { GeneralModule } from "./modules/general/generalModule";
 
 export type BotGuild = {
   id: string;
-  generalModule: GeneralModule;
+  general: GeneralModule;
 };
 
 export interface PartialCurrentUserGuild
